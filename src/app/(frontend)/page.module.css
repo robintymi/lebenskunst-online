@@ -1,0 +1,117 @@
+.hero {
+  background: linear-gradient(135deg, var(--color-bg-warm) 0%, var(--color-bg) 100%);
+  padding: 6rem 1.5rem;
+  text-align: center;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.heroContent {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.heroSubtitle {
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--color-text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.heroTitle {
+  font-size: 4rem;
+  font-family: var(--font-heading);
+  color: var(--color-primary);
+  margin-bottom: 1.25rem;
+}
+
+.heroText {
+  font-size: 1.125rem;
+  color: var(--color-text-light);
+  line-height: 1.7;
+  margin-bottom: 2rem;
+}
+
+.heroCta {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.sectionTitle {
+  text-align: center;
+  margin-bottom: 2.5rem;
+  color: var(--color-primary-dark);
+}
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.featureCard {
+  background: var(--color-white);
+  border-radius: var(--radius);
+  padding: 2rem;
+  text-align: center;
+  text-decoration: none;
+  color: var(--color-text);
+  box-shadow: var(--shadow);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.featureCard:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  color: var(--color-text);
+}
+
+.featureIcon {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.featureCard h3 {
+  margin-bottom: 0.5rem;
+  color: var(--color-primary);
+}
+
+.featureCard p {
+  font-size: 0.9375rem;
+  color: var(--color-text-light);
+  line-height: 1.6;
+}
+
+.aboutSection {
+  background: var(--color-bg-warm);
+}
+
+.about {
+  max-width: 700px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.about h2 {
+  color: var(--color-primary-dark);
+  margin-bottom: 1.25rem;
+}
+
+.about p {
+  color: var(--color-text-light);
+  line-height: 1.8;
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 768px) {
+  .heroTitle {
+    font-size: 2.5rem;
+  }
+
+  .hero {
+    padding: 4rem 1.5rem;
+  }
+}
