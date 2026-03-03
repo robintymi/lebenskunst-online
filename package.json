@@ -4,21 +4,20 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev",
-    "build": "cross-env NODE_OPTIONS=--no-deprecation next build",
-    "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
     "lint": "next lint",
     "generate:types": "payload generate:types",
-    "payload": "cross-env NODE_OPTIONS=--no-deprecation payload"
+    "payload": "payload"
   },
   "dependencies": {
     "@payloadcms/db-mongodb": "^3.0.0",
     "@payloadcms/next": "^3.0.0",
     "@payloadcms/richtext-lexical": "^3.0.0",
-    "@payloadcms/storage-local": "^3.0.0",
     "@payloadcms/ui": "^3.0.0",
     "cross-env": "^7.0.3",
-    "next": "^15.1.0",
+    "next": "^15.4.11",
     "payload": "^3.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

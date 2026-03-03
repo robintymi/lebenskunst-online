@@ -19,7 +19,7 @@ export default function FrontendLayout({ children }: { children: React.ReactNode
       <body>
         <CartProvider>
           <Header />
-          <main style={{ minHeight: `calc(100vh - var(--header-height) - 200px)` }}>
+          <main style={{ minHeight: `calc(100vh - var(--header-height) - 200px)`, position: 'relative', zIndex: 1 }}>
             {children}
           </main>
           <Footer />

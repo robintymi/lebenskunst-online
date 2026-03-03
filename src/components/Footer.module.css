@@ -1,6 +1,5 @@
 .footer {
-  background: var(--color-text);
-  color: var(--color-bg-warm);
+  background: linear-gradient(180deg, transparent 0%, rgba(190, 70, 90, 0.05) 100%);
   padding: 3rem 0 0;
 }
 
@@ -20,20 +19,34 @@
 
 .logo {
   font-family: var(--font-heading);
-  font-size: 1.5rem;
-  color: var(--color-white);
+  font-size: 1.75rem;
+  color: var(--color-primary);
   margin-bottom: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.logoIcon {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #BE465A 0%, #D4707A 100%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
 }
 
 .tagline {
   font-style: italic;
   color: var(--color-secondary);
   margin-bottom: 0.75rem;
-  font-size: 0.875rem;
+  font-size: 1rem;
 }
 
 .description {
-  font-size: 0.875rem;
+  font-size: 1rem;
   color: var(--color-text-muted);
   line-height: 1.6;
 }
@@ -51,29 +64,31 @@
 
 .column h4 {
   font-family: var(--font-heading);
-  color: var(--color-white);
-  font-size: 1rem;
+  color: var(--color-primary);
+  font-size: 1.125rem;
   margin-bottom: 0.25rem;
 }
 
 .column a {
   color: var(--color-text-muted);
-  font-size: 0.875rem;
+  font-size: 1rem;
   text-decoration: none;
-  transition: color 0.2s;
+  transition: opacity 0.2s;
 }
 
 .column a:hover {
-  color: var(--color-secondary);
+  color: var(--color-primary);
+  opacity: 0.8;
 }
 
 .bottom {
   max-width: var(--max-width);
   margin: 2rem auto 0;
   padding: 1.25rem 1.5rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  font-size: 0.8125rem;
+  border-top: 1px solid rgba(212, 112, 122, 0.15);
+  font-size: 0.9375rem;
   color: var(--color-text-muted);
+  text-align: center;
 }
 
 @media (max-width: 768px) {

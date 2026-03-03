@@ -1,6 +1,5 @@
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
-import { localStorageAdapter } from '@payloadcms/storage-local'
 import path from 'path'
 import { buildConfig } from 'payload'
 import sharp from 'sharp'
@@ -34,14 +33,5 @@ export default buildConfig({
     url: process.env.MONGODB_URI || '',
   }),
   sharp,
-  plugins: [
-    localStorageAdapter({
-      collections: {
-        media: true,
-      },
-      generateFileURL: ({ filename }) => {
-        return `/media/${filename}`
-      },
-    }),
-  ],
+  plugins: [],
 })

@@ -15,8 +15,8 @@ type Args = {
 
 const serverFunction: ServerFunctionClient = async function (args) {
   'use server'
-  const { default: serverFunctionHandler } = await import('@payloadcms/next/utilities')
-  return serverFunctionHandler({ ...args, config, importMap })
+  const { handleServerFunctions } = await import('@payloadcms/next/layouts')
+  return handleServerFunctions({ ...args, config, importMap })
 }
 
 const Layout = ({ children }: Args) => (

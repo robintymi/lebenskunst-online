@@ -4,7 +4,8 @@
   gap: 1.25rem;
   margin-bottom: 2rem;
   padding: 1.5rem;
-  background: var(--color-white);
+  background: linear-gradient(180deg, #FFFFFF 0%, #FFF8F8 100%);
+  border: 1px solid rgba(212, 112, 122, 0.2);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
 }
@@ -16,7 +17,7 @@
 }
 
 .filterLabel {
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--color-text-muted);
@@ -31,12 +32,12 @@
 }
 
 .filterBtn {
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 1.125rem;
   border: 1.5px solid var(--color-border);
   border-radius: 999px;
   background: transparent;
   font-family: var(--font-body);
-  font-size: 0.8125rem;
+  font-size: 0.9375rem;
   font-weight: 500;
   color: var(--color-text-light);
   cursor: pointer;
@@ -49,8 +50,8 @@
 }
 
 .filterBtn.active {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
+  background: linear-gradient(135deg, #BE465A 0%, #D4707A 100%);
+  border-color: transparent;
   color: white;
 }
 
@@ -62,12 +63,12 @@
 }
 
 .subBtn {
-  padding: 0.375rem 0.75rem;
+  padding: 0.375rem 0.875rem;
   border: 1px solid var(--color-border);
   border-radius: 999px;
   background: transparent;
   font-family: var(--font-body);
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   color: var(--color-text-muted);
   cursor: pointer;
   transition: all 0.2s;
@@ -79,7 +80,7 @@
 }
 
 .subBtn.active {
-  background: var(--color-bg-warm);
+  background: rgba(190, 70, 90, 0.1);
   border-color: var(--color-primary);
   color: var(--color-primary);
 }
