@@ -47,21 +47,50 @@ export const Users: CollectionConfig = {
       type: 'text',
     },
     {
-      name: 'bookedEvents',
-      label: 'Gebuchte Veranstaltungen',
+      name: 'purchasedItems',
+      label: 'Gekaufte Items',
       type: 'relationship',
-      relationTo: 'events',
+      relationTo: 'shop-items',
       hasMany: true,
       admin: {
-        description: 'Veranstaltungen, die dieses Mitglied gebucht hat',
+        description: 'Alle gekauften/gebuchten Shop-Items',
       },
     },
     {
-      name: 'purchasedProducts',
-      label: 'Gekaufte Produkte',
+      name: 'purchasedBundles',
+      label: 'Gekaufte Bundles',
       type: 'relationship',
-      relationTo: 'products',
+      relationTo: 'bundles',
       hasMany: true,
+    },
+    {
+      name: 'trainingAccess',
+      label: 'Trainings-Zugang',
+      type: 'array',
+      admin: {
+        description: 'Aktive Einzeltrainings mit Ablaufdatum',
+        readOnly: true,
+      },
+      fields: [
+        {
+          name: 'training',
+          type: 'relationship',
+          relationTo: 'shop-items',
+          required: true,
+        },
+        {
+          name: 'startDate',
+          label: 'Startdatum',
+          type: 'date',
+          required: true,
+        },
+        {
+          name: 'endDate',
+          label: 'Enddatum',
+          type: 'date',
+          required: true,
+        },
+      ],
     },
   ],
 }

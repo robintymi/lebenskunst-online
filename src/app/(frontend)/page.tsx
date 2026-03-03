@@ -10,15 +10,15 @@ export default function HomePage() {
           <p className={styles.heroSubtitle}>Willkommen bei</p>
           <h1 className={styles.heroTitle}>Lebenskunst</h1>
           <p className={styles.heroText}>
-            Begib dich auf eine Reise zu dir selbst — durch Embodiment, Energiearbeit,
-            Frauenkreise, Kunsttherapie, Meditation und Breathwork.
+            Begib dich auf eine Reise zu dir selbst — durch Seminare, Workshops, Einzeltrainings,
+            Podcast und vieles mehr.
           </p>
           <div className={styles.heroCta}>
-            <Link href="/events" className="btn btn-primary">
-              Veranstaltungen entdecken
+            <Link href="/shop" className="btn btn-primary">
+              Zum Shop
             </Link>
-            <Link href="/shop" className="btn btn-secondary">
-              Kunstshop besuchen
+            <Link href="/podcast" className="btn btn-secondary">
+              Podcast entdecken
             </Link>
           </div>
         </div>
@@ -31,20 +31,38 @@ export default function HomePage() {
           <div className={styles.features}>
             {[
               {
-                title: 'Veranstaltungen',
-                desc: 'Workshops, Frauenkreise, Breathwork-Sessions und mehr — live und online.',
+                title: 'Seminare & Workshops',
+                desc: 'Seminare, Workshops und Vorträge — live und online. Buche direkt deinen Platz.',
                 icon: '🌿',
-                href: '/events',
+                href: '/shop?typ=seminar',
               },
               {
-                title: 'Kunstshop',
-                desc: 'Einzigartige Kunstgegenstände aus Kunsttherapie und kreativem Schaffen.',
-                icon: '🎨',
-                href: '/shop',
+                title: 'Einzeltrainings',
+                desc: 'Mehrteilige Trainings über 4-8 Wochen für nachhaltige Veränderung.',
+                icon: '🧘',
+                href: '/shop?typ=einzeltraining',
+              },
+              {
+                title: 'Video & Audio',
+                desc: 'Videomaterial, Audiomaterial und Begleitmaterial für dein Selbststudium.',
+                icon: '🎧',
+                href: '/shop?typ=video',
+              },
+              {
+                title: 'Themenbundles',
+                desc: 'Spare mit gebündelten Paketen zu Themen wie Abhängigkeiten oder Bewusstseinsarchitektur.',
+                icon: '📦',
+                href: '/shop?ansicht=bundles',
+              },
+              {
+                title: 'Podcast',
+                desc: 'Impulse und Gespräche für dein persönliches Wachstum.',
+                icon: '🎙️',
+                href: '/podcast',
               },
               {
                 title: 'Mitgliederbereich',
-                desc: 'Exklusive Inhalte, gebuchte Events und dein persönliches Dashboard.',
+                desc: 'Dein persönliches Dashboard mit gebuchten Inhalten und Trainings.',
                 icon: '✨',
                 href: '/mitglieder',
               },
@@ -66,14 +84,13 @@ export default function HomePage() {
             <div>
               <h2>Über Lebenskunst</h2>
               <p>
-                Lebenskunst ist ein Raum für persönliches Wachstum und kreative Entfaltung. Wir
-                bieten Veranstaltungen und Kunstgegenstände, die dich auf deinem Weg begleiten und
-                inspirieren.
+                Lebenskunst ist ein Raum für persönliches Wachstum und tiefe Transformation. Wir
+                bieten Seminare, Einzeltrainings und digitale Materialien, die dich auf deinem Weg
+                begleiten und inspirieren.
               </p>
               <p>
-                Ob du an einem Frauenkreis teilnimmst, Breathwork erlebst oder ein einzigartiges
-                Kunstwerk für dein Zuhause findest — bei Lebenskunst findest du, was deine Seele
-                berührt.
+                Ob du an einem Workshop teilnimmst, ein Einzeltraining absolvierst oder unseren
+                Podcast hörst — bei Lebenskunst findest du, was deine Seele berührt.
               </p>
             </div>
           </div>

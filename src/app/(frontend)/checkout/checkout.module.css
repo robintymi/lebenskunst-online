@@ -71,6 +71,59 @@
   color: var(--color-primary);
 }
 
+.paymentOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.paymentOption {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.paymentOption:hover {
+  border-color: var(--color-primary-light);
+}
+
+.paymentActive {
+  border-color: var(--color-primary);
+  background: var(--color-bg-warm);
+}
+
+.paymentOption input {
+  accent-color: var(--color-primary);
+}
+
+.paymentOption div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.paymentOption strong {
+  font-size: 0.9375rem;
+}
+
+.paymentOption span {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+}
+
+.installmentSummary {
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--color-accent);
+  margin-bottom: 0.75rem;
+  font-weight: 500;
+}
+
 @media (max-width: 768px) {
   .layout {
     grid-template-columns: 1fr;

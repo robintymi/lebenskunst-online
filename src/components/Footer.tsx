@@ -9,15 +9,15 @@ export default function Footer() {
           <h3 className={styles.logo}>Lebenskunst</h3>
           <p className={styles.tagline}>Deine Reise zu dir selbst</p>
           <p className={styles.description}>
-            Embodiment, Energiearbeit, Frauenkreise, Kunsttherapie, Meditation und Breathwork.
+            Seminare, Workshops, Einzeltrainings, Podcast und mehr für dein persönliches Wachstum.
           </p>
         </div>
 
         <div className={styles.links}>
           <div className={styles.column}>
             <h4>Entdecken</h4>
-            <Link href="/events">Veranstaltungen</Link>
-            <Link href="/shop">Kunstshop</Link>
+            <Link href="/shop">Shop</Link>
+            <Link href="/podcast">Podcast</Link>
             <Link href="/mitglieder">Mitgliederbereich</Link>
           </div>
           <div className={styles.column}>

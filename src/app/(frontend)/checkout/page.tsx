@@ -7,8 +7,9 @@ import Link from 'next/link'
 import styles from './checkout.module.css'
 
 export default function CheckoutPage() {
-  const { items, totalPrice, clearCart } = useCart()
+  const { items, totalPrice, clearCart, hasInstallmentItems } = useCart()
   const [step, setStep] = useState<'form' | 'processing' | 'success'>('form')
+  const [paymentType, setPaymentType] = useState<'full' | 'installment'>('full')
   const [formData, setFormData] = useState({
     email: '',
     firstName: '',
@@ -19,7 +20,7 @@ export default function CheckoutPage() {
     zip: '',
   })
 
-  const hasProducts = items.some((item) => item.type === 'product')
+  const hasPhysicalProducts = items.some((item) => item.itemType === 'buch')
 
   if (items.length === 0 && step !== 'success') {
     return (
@@ -27,8 +28,8 @@ export default function CheckoutPage() {
         <div className="container" style={{ textAlign: 'center' }}>
           <h1 style={{ marginBottom: '1rem' }}>Kasse</h1>
           <p style={{ color: 'var(--color-text-muted)' }}>Dein Warenkorb ist leer.</p>
-          <Link href="/events" className="btn btn-primary" style={{ marginTop: '1rem' }}>
-            Veranstaltungen entdecken
+          <Link href="/shop" className="btn btn-primary" style={{ marginTop: '1rem' }}>
+            Zum Shop
           </Link>
         </div>
       </section>
@@ -61,13 +62,12 @@ export default function CheckoutPage() {
       const res = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items, customer: formData }),
+        body: JSON.stringify({ items, customer: formData, paymentType }),
       })
 
       if (res.ok) {
         const data = await res.json()
         if (data.url) {
-          // Redirect to Stripe Checkout
           window.location.href = data.url
         } else {
           clearCart()
@@ -86,6 +86,12 @@ export default function CheckoutPage() {
   const updateField = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
   }
+
+  // Calculate installment info
+  const installmentItem = items.find((i) => i.installmentEnabled && i.installmentCount)
+  const installmentMonthly = installmentItem
+    ? totalPrice / (installmentItem.installmentCount || 1)
+    : 0
 
   return (
     <section className="section">
@@ -139,7 +145,7 @@ export default function CheckoutPage() {
               />
             </div>
 
-            {hasProducts && (
+            {hasPhysicalProducts && (
               <>
                 <h2 style={{ marginTop: '1.5rem' }}>Lieferadresse</h2>
                 <div className={styles.field}>
@@ -176,6 +182,43 @@ export default function CheckoutPage() {
                 </div>
               </>
             )}
+
+            {/* Zahlungsart */}
+            {hasInstallmentItems && (
+              <>
+                <h2 style={{ marginTop: '1.5rem' }}>Zahlungsart</h2>
+                <div className={styles.paymentOptions}>
+                  <label className={`${styles.paymentOption} ${paymentType === 'full' ? styles.paymentActive : ''}`}>
+                    <input
+                      type="radio"
+                      name="paymentType"
+                      value="full"
+                      checked={paymentType === 'full'}
+                      onChange={() => setPaymentType('full')}
+                    />
+                    <div>
+                      <strong>Einmalzahlung</strong>
+                      <span>{formatPrice(totalPrice)}</span>
+                    </div>
+                  </label>
+                  <label className={`${styles.paymentOption} ${paymentType === 'installment' ? styles.paymentActive : ''}`}>
+                    <input
+                      type="radio"
+                      name="paymentType"
+                      value="installment"
+                      checked={paymentType === 'installment'}
+                      onChange={() => setPaymentType('installment')}
+                    />
+                    <div>
+                      <strong>Ratenzahlung</strong>
+                      <span>
+                        {installmentItem?.installmentCount}x {formatPrice(installmentMonthly)} / Monat
+                      </span>
+                    </div>
+                  </label>
+                </div>
+              </>
+            )}
           </div>
 
           <div className={styles.orderSummary}>
@@ -192,13 +235,22 @@ export default function CheckoutPage() {
               <strong>Gesamt</strong>
               <strong className="price">{formatPrice(totalPrice)}</strong>
             </div>
+            {paymentType === 'installment' && installmentItem && (
+              <div className={styles.installmentSummary}>
+                {installmentItem.installmentCount}x {formatPrice(installmentMonthly)} / Monat
+              </div>
+            )}
             <button
               type="submit"
               className="btn btn-accent"
               style={{ width: '100%' }}
               disabled={step === 'processing'}
             >
-              {step === 'processing' ? 'Wird verarbeitet...' : `${formatPrice(totalPrice)} bezahlen`}
+              {step === 'processing'
+                ? 'Wird verarbeitet...'
+                : paymentType === 'installment'
+                  ? `${formatPrice(installmentMonthly)} / Monat starten`
+                  : `${formatPrice(totalPrice)} bezahlen`}
             </button>
             <p className={styles.legalNote}>
               Mit dem Kauf stimmst du unseren{' '}

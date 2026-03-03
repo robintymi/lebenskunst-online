@@ -1,0 +1,179 @@
+.hero {
+  background: linear-gradient(135deg, var(--color-text) 0%, var(--color-primary-dark) 100%);
+  padding: 5rem 1.5rem;
+  text-align: center;
+  color: var(--color-bg);
+}
+
+.heroTitle {
+  font-size: 3rem;
+  color: var(--color-white);
+  margin-bottom: 1rem;
+}
+
+.heroText {
+  font-size: 1.125rem;
+  color: var(--color-secondary);
+  max-width: 600px;
+  margin: 0 auto 2rem;
+  line-height: 1.7;
+}
+
+.platforms {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.sectionTitle {
+  color: var(--color-primary-dark);
+  margin-bottom: 2rem;
+}
+
+.episodeList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.episode {
+  display: flex;
+  gap: 1.5rem;
+  background: var(--color-white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1.5rem;
+  transition: box-shadow 0.2s;
+}
+
+.episode:hover {
+  box-shadow: var(--shadow-lg);
+}
+
+.episodeImage {
+  width: 120px;
+  height: 120px;
+  border-radius: var(--radius);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.episodeImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.episodeContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.episodeMeta {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.episodeNumber {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.duration {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.episodeTitle {
+  font-size: 1.25rem;
+  color: var(--color-primary-dark);
+}
+
+.episodeDesc {
+  font-size: 0.875rem;
+  color: var(--color-text-light);
+  line-height: 1.6;
+}
+
+.episodeActions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.platformLink {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-primary);
+  text-decoration: none;
+  padding: 0.25rem 0.75rem;
+  border: 1px solid var(--color-primary);
+  border-radius: 999px;
+  transition: all 0.2s;
+}
+
+.platformLink:hover {
+  background: var(--color-primary);
+  color: white;
+}
+
+.audioPlayer {
+  height: 32px;
+  max-width: 300px;
+}
+
+.relatedItems {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  margin-top: 0.25rem;
+}
+
+.relatedLink {
+  color: var(--color-accent);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.relatedLink:hover {
+  text-decoration: underline;
+}
+
+.empty {
+  text-align: center;
+  padding: 4rem 0;
+  color: var(--color-text-muted);
+}
+
+.empty p {
+  margin-bottom: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .heroTitle {
+    font-size: 2rem;
+  }
+
+  .hero {
+    padding: 3rem 1.5rem;
+  }
+
+  .episode {
+    flex-direction: column;
+  }
+
+  .episodeImage {
+    width: 100%;
+    height: 200px;
+  }
+}

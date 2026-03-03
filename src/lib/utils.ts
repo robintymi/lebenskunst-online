@@ -23,13 +23,28 @@ export function formatDateShort(date: string): string {
   }).format(new Date(date))
 }
 
-export const eventTypeLabels: Record<string, string> = {
-  embodiment: 'Embodiment',
-  energiearbeit: 'Energiearbeit',
-  frauenkreis: 'Frauenkreis',
-  kunsttherapie: 'Kunsttherapie',
-  meditation: 'Meditation',
-  breathwork: 'Breathwork',
+export const itemTypeLabels: Record<string, string> = {
+  seminar: 'Seminar',
   workshop: 'Workshop',
-  sonstiges: 'Sonstiges',
+  vortrag: 'Vortrag',
+  einzeltraining: 'Einzeltraining',
+  video: 'Videomaterial',
+  audio: 'Audiomaterial',
+  begleitmaterial: 'Begleitmaterial',
+  buch: 'Buch',
+}
+
+export const itemTypeGroups: Record<string, string[]> = {
+  'Veranstaltungen': ['seminar', 'workshop', 'vortrag'],
+  'Digitale Inhalte': ['video', 'audio', 'begleitmaterial'],
+  'Trainings': ['einzeltraining'],
+  'Bücher': ['buch'],
+}
+
+export function isEventType(itemType: string): boolean {
+  return ['seminar', 'workshop', 'vortrag'].includes(itemType)
+}
+
+export function isDigitalType(itemType: string): boolean {
+  return ['video', 'audio', 'begleitmaterial', 'einzeltraining'].includes(itemType)
 }

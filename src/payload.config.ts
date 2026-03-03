@@ -7,8 +7,9 @@ import sharp from 'sharp'
 import { fileURLToPath } from 'url'
 
 import { Users } from './collections/Users'
-import { Events } from './collections/Events'
-import { Products } from './collections/Products'
+import { ShopItems } from './collections/ShopItems'
+import { Bundles } from './collections/Bundles'
+import { Podcasts } from './collections/Podcasts'
 import { Media } from './collections/Media'
 import { Orders } from './collections/Orders'
 import { Categories } from './collections/Categories'
@@ -23,7 +24,7 @@ export default buildConfig({
       titleSuffix: '- Lebenskunst Admin',
     },
   },
-  collections: [Users, Events, Products, Media, Orders, Categories],
+  collections: [Users, ShopItems, Bundles, Podcasts, Media, Orders, Categories],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {

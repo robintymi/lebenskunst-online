@@ -4,7 +4,9 @@ export const Categories: CollectionConfig = {
   slug: 'categories',
   admin: {
     useAsTitle: 'name',
-    group: 'Verwaltung',
+    group: 'Shop',
+    description: 'Themen-Kategorien zum Filtern (z.B. Abhängigkeiten, Bewusstseinsarchitektur)',
+    defaultColumns: ['name', 'slug'],
   },
   access: {
     read: () => true,
@@ -18,6 +20,9 @@ export const Categories: CollectionConfig = {
       label: 'Kategoriename',
       type: 'text',
       required: true,
+      admin: {
+        description: 'z.B. Abhängigkeiten, Bewusstseinsarchitektur, Diskohärenzmodell',
+      },
     },
     {
       name: 'slug',
@@ -26,19 +31,25 @@ export const Categories: CollectionConfig = {
       unique: true,
     },
     {
-      name: 'type',
-      label: 'Typ',
-      type: 'select',
-      required: true,
-      options: [
-        { label: 'Veranstaltung', value: 'event' },
-        { label: 'Produkt', value: 'product' },
-      ],
-    },
-    {
       name: 'description',
       label: 'Beschreibung',
       type: 'textarea',
+    },
+    {
+      name: 'image',
+      label: 'Kategoriebild',
+      type: 'upload',
+      relationTo: 'media',
+    },
+    {
+      name: 'sortOrder',
+      label: 'Sortierung',
+      type: 'number',
+      defaultValue: 0,
+      admin: {
+        position: 'sidebar',
+        description: 'Niedrigere Zahl = weiter oben',
+      },
     },
   ],
 }

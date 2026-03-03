@@ -4,9 +4,9 @@ export const Orders: CollectionConfig = {
   slug: 'orders',
   admin: {
     useAsTitle: 'orderNumber',
-    group: 'Shops',
+    group: 'Shop',
     description: 'Alle Bestellungen und Buchungen',
-    defaultColumns: ['orderNumber', 'customer', 'total', 'status', 'createdAt'],
+    defaultColumns: ['orderNumber', 'customer', 'total', 'paymentType', 'status', 'createdAt'],
   },
   access: {
     read: ({ req: { user } }) => {
@@ -45,27 +45,27 @@ export const Orders: CollectionConfig = {
           label: 'Typ',
           type: 'select',
           options: [
-            { label: 'Veranstaltung', value: 'event' },
-            { label: 'Produkt', value: 'product' },
+            { label: 'Shop-Item', value: 'shop-item' },
+            { label: 'Bundle', value: 'bundle' },
           ],
           required: true,
         },
         {
-          name: 'event',
-          label: 'Veranstaltung',
+          name: 'shopItem',
+          label: 'Shop-Item',
           type: 'relationship',
-          relationTo: 'events',
+          relationTo: 'shop-items',
           admin: {
-            condition: (_, siblingData) => siblingData?.itemType === 'event',
+            condition: (_, siblingData) => siblingData?.itemType === 'shop-item',
           },
         },
         {
-          name: 'product',
-          label: 'Produkt',
+          name: 'bundle',
+          label: 'Bundle',
           type: 'relationship',
-          relationTo: 'products',
+          relationTo: 'bundles',
           admin: {
-            condition: (_, siblingData) => siblingData?.itemType === 'product',
+            condition: (_, siblingData) => siblingData?.itemType === 'bundle',
           },
         },
         {
@@ -92,6 +92,32 @@ export const Orders: CollectionConfig = {
       admin: { readOnly: true },
     },
     {
+      name: 'paymentType',
+      label: 'Zahlungsart',
+      type: 'select',
+      required: true,
+      defaultValue: 'full',
+      options: [
+        { label: 'Einmalzahlung', value: 'full' },
+        { label: 'Ratenzahlung', value: 'installment' },
+      ],
+      admin: { position: 'sidebar' },
+    },
+    {
+      name: 'installmentDetails',
+      label: 'Ratenzahlungsdetails',
+      type: 'group',
+      admin: {
+        condition: (data) => data?.paymentType === 'installment',
+      },
+      fields: [
+        { name: 'totalInstallments', label: 'Anzahl Raten', type: 'number' },
+        { name: 'amountPerInstallment', label: 'Betrag pro Rate (€)', type: 'number' },
+        { name: 'paidInstallments', label: 'Bezahlte Raten', type: 'number', defaultValue: 0 },
+        { name: 'nextPaymentDate', label: 'Nächste Zahlung', type: 'date' },
+      ],
+    },
+    {
       name: 'status',
       type: 'select',
       required: true,
@@ -99,6 +125,7 @@ export const Orders: CollectionConfig = {
       options: [
         { label: 'Ausstehend', value: 'pending' },
         { label: 'Bezahlt', value: 'paid' },
+        { label: 'Ratenzahlung aktiv', value: 'installment_active' },
         { label: 'Storniert', value: 'cancelled' },
         { label: 'Erstattet', value: 'refunded' },
       ],
@@ -108,18 +135,23 @@ export const Orders: CollectionConfig = {
       name: 'stripePaymentIntentId',
       label: 'Stripe Payment Intent',
       type: 'text',
+      admin: { position: 'sidebar', readOnly: true },
+    },
+    {
+      name: 'stripeSubscriptionId',
+      label: 'Stripe Subscription (Raten)',
+      type: 'text',
       admin: {
         position: 'sidebar',
         readOnly: true,
+        condition: (data) => data?.paymentType === 'installment',
       },
     },
     {
       name: 'shippingAddress',
       label: 'Lieferadresse',
       type: 'group',
-      admin: {
-        description: 'Nur für Produktbestellungen',
-      },
+      admin: { description: 'Nur für physische Produkte (Bücher etc.)' },
       fields: [
         { name: 'street', label: 'Straße', type: 'text' },
         { name: 'city', label: 'Stadt', type: 'text' },

@@ -8,8 +8,8 @@ import styles from './Header.module.css'
 
 const navLinks = [
   { href: '/', label: 'Home' },
-  { href: '/events', label: 'Veranstaltungen' },
-  { href: '/shop', label: 'Kunstshop' },
+  { href: '/shop', label: 'Shop' },
+  { href: '/podcast', label: 'Podcast' },
   { href: '/mitglieder', label: 'Mitgliederbereich' },
 ]
 

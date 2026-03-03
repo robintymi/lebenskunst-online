@@ -1,7 +1,7 @@
 'use client'
 
 import { useCart } from '@/lib/cart-context'
-import { formatPrice } from '@/lib/utils'
+import { formatPrice, itemTypeLabels, isEventType } from '@/lib/utils'
 import Link from 'next/link'
 import styles from './warenkorb.module.css'
 
@@ -16,14 +16,9 @@ export default function CartPage() {
           <p style={{ color: 'var(--color-text-muted)', marginBottom: '2rem' }}>
             Dein Warenkorb ist leer.
           </p>
-          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-            <Link href="/events" className="btn btn-primary">
-              Veranstaltungen entdecken
-            </Link>
-            <Link href="/shop" className="btn btn-secondary">
-              Zum Kunstshop
-            </Link>
-          </div>
+          <Link href="/shop" className="btn btn-primary">
+            Zum Shop
+          </Link>
         </div>
       </section>
     )
@@ -36,48 +31,61 @@ export default function CartPage() {
 
         <div className={styles.layout}>
           <div className={styles.items}>
-            {items.map((item) => (
-              <div key={item.id} className={styles.item}>
-                {item.image && (
-                  <div className={styles.itemImage}>
-                    <img src={item.image} alt={item.name} />
-                  </div>
-                )}
-                <div className={styles.itemInfo}>
-                  <h3 className={styles.itemName}>
-                    <Link
-                      href={item.type === 'event' ? `/events/${item.slug}` : `/shop/${item.slug}`}
-                    >
-                      {item.name}
-                    </Link>
-                  </h3>
-                  <span className={`badge ${item.type === 'event' ? 'badge-event' : 'badge-product'}`}>
-                    {item.type === 'event' ? 'Veranstaltung' : 'Produkt'}
-                  </span>
-                </div>
-                <div className={styles.itemQuantity}>
-                  {item.type === 'product' ? (
-                    <div className={styles.quantityControls}>
-                      <button onClick={() => updateQuantity(item.id, item.quantity - 1)}>-</button>
-                      <span>{item.quantity}</span>
-                      <button onClick={() => updateQuantity(item.id, item.quantity + 1)}>+</button>
+            {items.map((item) => {
+              const isSingle =
+                item.type === 'bundle' ||
+                isEventType(item.itemType || '') ||
+                item.itemType === 'einzeltraining'
+
+              return (
+                <div key={item.id} className={styles.item}>
+                  {item.image && (
+                    <div className={styles.itemImage}>
+                      <img src={item.image} alt={item.name} />
                     </div>
-                  ) : (
-                    <span className={styles.singleQty}>1x</span>
                   )}
+                  <div className={styles.itemInfo}>
+                    <h3 className={styles.itemName}>
+                      <Link
+                        href={
+                          item.type === 'bundle'
+                            ? `/shop/bundle/${item.slug}`
+                            : `/shop/${item.slug}`
+                        }
+                      >
+                        {item.name}
+                      </Link>
+                    </h3>
+                    <span className="badge badge-event">
+                      {item.type === 'bundle'
+                        ? 'Bundle'
+                        : itemTypeLabels[item.itemType || ''] || 'Produkt'}
+                    </span>
+                  </div>
+                  <div className={styles.itemQuantity}>
+                    {!isSingle ? (
+                      <div className={styles.quantityControls}>
+                        <button onClick={() => updateQuantity(item.id, item.quantity - 1)}>-</button>
+                        <span>{item.quantity}</span>
+                        <button onClick={() => updateQuantity(item.id, item.quantity + 1)}>+</button>
+                      </div>
+                    ) : (
+                      <span className={styles.singleQty}>1x</span>
+                    )}
+                  </div>
+                  <div className={styles.itemPrice}>
+                    <span className="price">{formatPrice(item.price * item.quantity)}</span>
+                  </div>
+                  <button
+                    className={styles.removeBtn}
+                    onClick={() => removeItem(item.id)}
+                    aria-label="Entfernen"
+                  >
+                    &times;
+                  </button>
                 </div>
-                <div className={styles.itemPrice}>
-                  <span className="price">{formatPrice(item.price * item.quantity)}</span>
-                </div>
-                <button
-                  className={styles.removeBtn}
-                  onClick={() => removeItem(item.id)}
-                  aria-label="Entfernen"
-                >
-                  &times;
-                </button>
-              </div>
-            ))}
+              )
+            })}
           </div>
 
           <div className={styles.summary}>

@@ -2,16 +2,19 @@
 
 import { createContext, useContext, useState, useCallback, type ReactNode } from 'react'
 
-export type CartItemType = 'event' | 'product'
+export type CartItemType = 'shop-item' | 'bundle'
 
 export interface CartItem {
   id: string
   type: CartItemType
+  itemType?: string // seminar, workshop, video, audio, buch etc.
   name: string
   price: number
   quantity: number
   image?: string
   slug: string
+  installmentEnabled?: boolean
+  installmentCount?: number
 }
 
 interface CartContextType {
@@ -22,6 +25,7 @@ interface CartContextType {
   clearCart: () => void
   totalItems: number
   totalPrice: number
+  hasInstallmentItems: boolean
 }
 
 const CartContext = createContext<CartContextType | null>(null)
@@ -33,8 +37,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setItems((prev) => {
       const existing = prev.find((item) => item.id === newItem.id)
       if (existing) {
-        // Events can only be booked once
-        if (newItem.type === 'event') return prev
+        // Events, trainings and bundles can only be added once
+        const singleTypes = ['seminar', 'workshop', 'vortrag', 'einzeltraining']
+        if (newItem.type === 'bundle' || singleTypes.includes(newItem.itemType || '')) {
+          return prev
+        }
         return prev.map((item) =>
           item.id === newItem.id ? { ...item, quantity: item.quantity + 1 } : item,
         )
@@ -59,10 +66,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0)
   const totalPrice = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
+  const hasInstallmentItems = items.some((item) => item.installmentEnabled)
 
   return (
     <CartContext.Provider
-      value={{ items, addItem, removeItem, updateQuantity, clearCart, totalItems, totalPrice }}
+      value={{ items, addItem, removeItem, updateQuantity, clearCart, totalItems, totalPrice, hasInstallmentItems }}
     >
       {children}
     </CartContext.Provider>
