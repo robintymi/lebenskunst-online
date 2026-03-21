@@ -1,32 +1,36 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 import { useCart } from '@/lib/cart-context'
+import { useAuth } from '@/lib/auth-context'
 import styles from './Header.module.css'
 
 const navLinks = [
   { href: '/', label: 'Home' },
   { href: '/shop', label: 'Shop' },
   { href: '/podcast', label: 'Podcast' },
-  { href: '/mitglieder', label: 'Mitgliederbereich' },
 ]
 
 export default function Header() {
   const pathname = usePathname()
   const { totalItems } = useCart()
+  const { user, isLoggedIn, isLoading } = useAuth()
   const [menuOpen, setMenuOpen] = useState(false)
 
   return (
     <header className={styles.header}>
       <div className={styles.inner}>
         <Link href="/" className={styles.logo}>
-          <span className={styles.logoIcon}>
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-            </svg>
-          </span>
+          <Image
+            src="/images/logo.png"
+            alt="Lebenskunst"
+            width={44}
+            height={44}
+            className={styles.logoImage}
+          />
           <span className={styles.logoText}>Lebenskunst</span>
         </Link>
 
@@ -41,6 +45,13 @@ export default function Header() {
               {link.label}
             </Link>
           ))}
+          <Link
+            href={isLoggedIn ? '/mitglieder/dashboard' : '/mitglieder'}
+            className={`${styles.navLink} ${pathname.startsWith('/mitglieder') ? styles.active : ''}`}
+            onClick={() => setMenuOpen(false)}
+          >
+            {isLoading ? 'Mitgliederbereich' : isLoggedIn ? (user?.firstName || 'Mein Konto') : 'Anmelden'}
+          </Link>
         </nav>
 
         <div className={styles.actions}>

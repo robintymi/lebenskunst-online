@@ -1,6 +1,6 @@
 .authCard {
-  background: linear-gradient(180deg, #FFFFFF 0%, #FFF8F8 100%);
-  border: 1px solid rgba(212, 112, 122, 0.2);
+  background: linear-gradient(180deg, #FFFFFF 0%, #FAFAFE 100%);
+  border: 1px solid rgba(155, 109, 183, 0.2);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   padding: 2.5rem;
@@ -99,8 +99,8 @@
 }
 
 .dashboardCard {
-  background: linear-gradient(180deg, #FFFFFF 0%, #FFF8F8 100%);
-  border: 1px solid rgba(212, 112, 122, 0.15);
+  background: linear-gradient(180deg, #FFFFFF 0%, #FAFAFE 100%);
+  border: 1px solid rgba(155, 109, 183, 0.15);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   padding: 1.5rem;

@@ -12,6 +12,9 @@ import { Podcasts } from './collections/Podcasts'
 import { Media } from './collections/Media'
 import { Orders } from './collections/Orders'
 import { Categories } from './collections/Categories'
+import { ContentFiles } from './collections/ContentFiles'
+import { SiteSettings } from './collections/SiteSettings'
+import { Reviews } from './collections/Reviews'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -23,7 +26,7 @@ export default buildConfig({
       titleSuffix: '- Lebenskunst Admin',
     },
   },
-  collections: [Users, ShopItems, Bundles, Podcasts, Media, Orders, Categories],
+  collections: [Users, ShopItems, Bundles, Podcasts, Media, ContentFiles, Orders, Categories, Reviews],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
@@ -33,5 +36,6 @@ export default buildConfig({
     url: process.env.MONGODB_URI || '',
   }),
   sharp,
+  globals: [SiteSettings],
   plugins: [],
 })

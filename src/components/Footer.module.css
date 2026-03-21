@@ -1,5 +1,5 @@
 .footer {
-  background: linear-gradient(180deg, transparent 0%, rgba(190, 70, 90, 0.05) 100%);
+  background: linear-gradient(180deg, transparent 0%, rgba(107, 76, 154, 0.04) 100%);
   padding: 3rem 0 0;
 }
 
@@ -27,15 +27,8 @@
   gap: 0.5rem;
 }
 
-.logoIcon {
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #BE465A 0%, #D4707A 100%);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
+.logoImage {
+  border-radius: 6px;
 }
 
 .tagline {
@@ -49,6 +42,30 @@
   font-size: 1rem;
   color: var(--color-text-muted);
   line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.social {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.socialLink {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(107, 76, 154, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+  transition: all 0.2s;
+}
+
+.socialLink:hover {
+  background: linear-gradient(135deg, #6B4C9A 0%, #9B6DB7 100%);
+  color: white;
+  transform: translateY(-2px);
 }
 
 .links {
@@ -85,7 +102,7 @@
   max-width: var(--max-width);
   margin: 2rem auto 0;
   padding: 1.25rem 1.5rem;
-  border-top: 1px solid rgba(212, 112, 122, 0.15);
+  border-top: 1px solid rgba(107, 76, 154, 0.1);
   font-size: 0.9375rem;
   color: var(--color-text-muted);
   text-align: center;

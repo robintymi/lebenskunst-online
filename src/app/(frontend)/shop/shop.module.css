@@ -1,5 +1,5 @@
 .pageHeader {
-  background: linear-gradient(180deg, transparent 0%, rgba(190, 70, 90, 0.05) 100%);
+  background: linear-gradient(180deg, transparent 0%, rgba(107, 76, 154, 0.05) 100%);
   padding: 3.5rem 0;
 }
 
@@ -20,9 +20,9 @@
 }
 
 .card {
-  background: linear-gradient(180deg, #FFFFFF 0%, #FFF8F8 100%);
+  background: linear-gradient(180deg, #FFFFFF 0%, #FAFAFE 100%);
   border-radius: var(--radius);
-  border: 1px solid rgba(212, 112, 122, 0.2);
+  border: 1px solid rgba(155, 109, 183, 0.2);
   box-shadow: var(--shadow);
   overflow: hidden;
   text-decoration: none;

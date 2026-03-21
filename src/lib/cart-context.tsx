@@ -1,6 +1,8 @@
 'use client'
 
-import { createContext, useContext, useState, useCallback, type ReactNode } from 'react'
+import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from 'react'
+
+const CART_STORAGE_KEY = 'lebenskunst-cart'
 
 export type CartItemType = 'shop-item' | 'bundle'
 
@@ -30,15 +32,47 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | null>(null)
 
+function loadCartFromStorage(): CartItem[] {
+  if (typeof window === 'undefined') return []
+  try {
+    const stored = localStorage.getItem(CART_STORAGE_KEY)
+    return stored ? JSON.parse(stored) : []
+  } catch {
+    return []
+  }
+}
+
+function saveCartToStorage(items: CartItem[]) {
+  try {
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items))
+  } catch {
+    // localStorage not available
+  }
+}
+
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([])
+  const [isHydrated, setIsHydrated] = useState(false)
+
+  // Load cart from localStorage on mount
+  useEffect(() => {
+    setItems(loadCartFromStorage())
+    setIsHydrated(true)
+  }, [])
+
+  // Persist to localStorage on change (only after hydration)
+  useEffect(() => {
+    if (isHydrated) {
+      saveCartToStorage(items)
+    }
+  }, [items, isHydrated])
 
   const addItem = useCallback((newItem: Omit<CartItem, 'quantity'>) => {
     setItems((prev) => {
       const existing = prev.find((item) => item.id === newItem.id)
       if (existing) {
         // Events, trainings and bundles can only be added once
-        const singleTypes = ['seminar', 'workshop', 'vortrag', 'einzeltraining']
+        const singleTypes = ['seminar', 'workshop', 'vortrag', 'einzeltraining', 'kunst']
         if (newItem.type === 'bundle' || singleTypes.includes(newItem.itemType || '')) {
           return prev
         }
@@ -62,7 +96,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setItems((prev) => prev.map((item) => (item.id === id ? { ...item, quantity } : item)))
   }, [])
 
-  const clearCart = useCallback(() => setItems([]), [])
+  const clearCart = useCallback(() => {
+    setItems([])
+    try { localStorage.removeItem(CART_STORAGE_KEY) } catch { /* noop */ }
+  }, [])
 
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0)
   const totalPrice = items.reduce((sum, item) => sum + item.price * item.quantity, 0)

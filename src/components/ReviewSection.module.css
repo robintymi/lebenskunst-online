@@ -1,0 +1,338 @@
+/* ReviewSection */
+.section {
+  padding: 4rem 0;
+  background: linear-gradient(180deg, transparent 0%, rgba(107, 76, 154, 0.04) 50%, transparent 100%);
+}
+
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.subtitle {
+  font-size: 0.9375rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--color-secondary);
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.title {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: var(--color-primary-dark);
+}
+
+.summary {
+  text-align: center;
+  margin-bottom: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.summaryStars {
+  color: #E8567F;
+  font-size: 1.25rem;
+  letter-spacing: 0.1em;
+}
+
+.summaryText {
+  font-size: 1rem;
+  color: var(--color-text-muted);
+}
+
+/* Review Grid */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+/* Review Card */
+.card {
+  background: linear-gradient(180deg, #FFFFFF 0%, #FAFAFE 100%);
+  border: 1px solid rgba(107, 76, 154, 0.1);
+  border-radius: var(--radius);
+  padding: 2rem;
+  transition: all 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow);
+}
+
+.cardStars {
+  color: #E8567F;
+  font-size: 1.125rem;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.75rem;
+}
+
+.cardText {
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  color: var(--color-text);
+  font-style: italic;
+  margin-bottom: 1rem;
+}
+
+.cardAuthor {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.cardAuthorName {
+  color: var(--color-primary-dark);
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.cardAuthorContext {
+  color: var(--color-text-muted);
+  font-size: 0.8125rem;
+}
+
+.cardDate {
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+/* Empty State */
+.empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--color-text-muted);
+  font-size: 1.0625rem;
+}
+
+/* Write Review Button */
+.writeButtonWrapper {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+/* Form Card */
+.formCard {
+  background: linear-gradient(180deg, #FFFFFF 0%, #FAFAFE 100%);
+  border: 1px solid rgba(107, 76, 154, 0.1);
+  border-radius: var(--radius);
+  padding: 2.5rem;
+  margin-bottom: 2.5rem;
+  max-width: 640px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.formTitle {
+  font-family: var(--font-heading);
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--color-primary-dark);
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.formGroup {
+  margin-bottom: 1.25rem;
+}
+
+.formLabel {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+  font-family: var(--font-body);
+  margin-bottom: 0.5rem;
+}
+
+.formInput {
+  width: 100%;
+  padding: 0.875rem 1.125rem;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  background: var(--color-white);
+  transition: border-color 0.2s;
+}
+
+.formInput:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(107, 76, 154, 0.1);
+}
+
+.formTextarea {
+  width: 100%;
+  padding: 0.875rem 1.125rem;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  background: var(--color-white);
+  transition: border-color 0.2s;
+  resize: vertical;
+  min-height: 120px;
+}
+
+.formTextarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(107, 76, 154, 0.1);
+}
+
+.charCount {
+  text-align: right;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  margin-top: 0.25rem;
+}
+
+/* Star Rating Input */
+.starRating {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.starButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem;
+  font-size: 1.5rem;
+  line-height: 1;
+  transition: transform 0.15s;
+  color: #ddd;
+}
+
+.starButton:hover {
+  transform: scale(1.2);
+}
+
+.starButtonFilled {
+  color: #E8567F;
+}
+
+/* Form Actions */
+.formActions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+.cancelButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.875rem 2rem;
+  border: 1.5px solid var(--color-border);
+  border-radius: 999px;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  background: transparent;
+  color: var(--color-text-muted);
+  transition: all 0.2s;
+}
+
+.cancelButton:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.submitButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.875rem 2rem;
+  border: none;
+  border-radius: 999px;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  background: linear-gradient(135deg, #6B4C9A 0%, #9B6DB7 100%);
+  color: var(--color-white);
+  box-shadow: 0 4px 16px rgba(107, 76, 154, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.submitButton:hover {
+  box-shadow: 0 8px 24px rgba(107, 76, 154, 0.4);
+  transform: translateY(-2px);
+}
+
+.submitButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Messages */
+.successMessage {
+  text-align: center;
+  padding: 1.25rem;
+  background: rgba(91, 140, 90, 0.1);
+  border: 1px solid rgba(91, 140, 90, 0.2);
+  border-radius: var(--radius);
+  color: var(--color-success);
+  font-weight: 500;
+  margin-bottom: 2rem;
+}
+
+.errorMessage {
+  text-align: center;
+  padding: 1rem;
+  background: rgba(199, 80, 80, 0.1);
+  border: 1px solid rgba(199, 80, 80, 0.2);
+  border-radius: var(--radius);
+  color: var(--color-error);
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+/* Loading State */
+.loading {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--color-text-muted);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .section {
+    padding: 2.5rem 0;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .formCard {
+    padding: 1.5rem;
+  }
+
+  .formActions {
+    flex-direction: column;
+  }
+
+  .summary {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}

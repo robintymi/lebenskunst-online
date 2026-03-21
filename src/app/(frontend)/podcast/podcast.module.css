@@ -1,5 +1,5 @@
 .hero {
-  background: linear-gradient(135deg, #8B3A47 0%, #BE465A 100%);
+  background: linear-gradient(135deg, #2D1B4E 0%, #6B4C9A 100%);
   padding: 5rem 1.5rem;
   text-align: center;
   color: var(--color-bg);
@@ -39,8 +39,8 @@
 .episode {
   display: flex;
   gap: 1.5rem;
-  background: linear-gradient(180deg, #FFFFFF 0%, #FFF8F8 100%);
-  border: 1px solid rgba(212, 112, 122, 0.2);
+  background: linear-gradient(180deg, #FFFFFF 0%, #FAFAFE 100%);
+  border: 1px solid rgba(155, 109, 183, 0.2);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   padding: 1.5rem;
@@ -122,7 +122,7 @@
 }
 
 .platformLink:hover {
-  background: linear-gradient(135deg, #BE465A 0%, #D4707A 100%);
+  background: linear-gradient(135deg, #6B4C9A 0%, #9B6DB7 100%);
   border-color: transparent;
   color: white;
 }

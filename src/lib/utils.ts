@@ -32,6 +32,7 @@ export const itemTypeLabels: Record<string, string> = {
   audio: 'Audiomaterial',
   begleitmaterial: 'Begleitmaterial',
   buch: 'Buch',
+  kunst: 'Kunstwerk',
 }
 
 export const itemTypeGroups: Record<string, string[]> = {
@@ -39,6 +40,7 @@ export const itemTypeGroups: Record<string, string[]> = {
   'Digitale Inhalte': ['video', 'audio', 'begleitmaterial'],
   'Trainings': ['einzeltraining'],
   'Bücher': ['buch'],
+  'Kunst': ['kunst'],
 }
 
 export function isEventType(itemType: string): boolean {

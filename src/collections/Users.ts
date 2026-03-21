@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { sendWelcomeEmail } from '@/lib/email'
 
 export const Users: CollectionConfig = {
   slug: 'users',
@@ -8,7 +9,11 @@ export const Users: CollectionConfig = {
     group: 'Verwaltung',
   },
   access: {
-    read: () => true,
+    read: ({ req: { user } }) => {
+      if (!user) return false
+      if (user.role === 'admin') return true
+      return { id: { equals: user.id } }
+    },
     create: () => true,
     update: ({ req: { user } }) => {
       if (!user) return false
@@ -93,4 +98,20 @@ export const Users: CollectionConfig = {
       ],
     },
   ],
+  hooks: {
+    afterChange: [
+      async ({ doc, operation }) => {
+        if (operation === 'create' && doc.role === 'member') {
+          try {
+            await sendWelcomeEmail({
+              firstName: doc.firstName || 'Mitglied',
+              email: doc.email,
+            })
+          } catch (err) {
+            console.error('Failed to send welcome email:', err)
+          }
+        }
+      },
+    ],
+  },
 }

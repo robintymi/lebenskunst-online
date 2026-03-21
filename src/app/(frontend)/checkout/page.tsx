@@ -1,14 +1,19 @@
 'use client'
 
 import { useCart } from '@/lib/cart-context'
+import { useAuth } from '@/lib/auth-context'
 import { formatPrice } from '@/lib/utils'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import styles from './checkout.module.css'
 
 export default function CheckoutPage() {
   const { items, totalPrice, clearCart, hasInstallmentItems } = useCart()
+  const { user, isLoggedIn, isLoading: authLoading } = useAuth()
+  const searchParams = useSearchParams()
   const [step, setStep] = useState<'form' | 'processing' | 'success'>('form')
+  const [error, setError] = useState('')
   const [paymentType, setPaymentType] = useState<'full' | 'installment'>('full')
   const [formData, setFormData] = useState({
     email: '',
@@ -20,9 +25,69 @@ export default function CheckoutPage() {
     zip: '',
   })
 
+  // Handle Stripe return with success param
+  useEffect(() => {
+    if (searchParams.get('success') === 'true') {
+      clearCart()
+      setStep('success')
+    }
+  }, [searchParams, clearCart])
+
+  // Pre-fill form with user data
+  useEffect(() => {
+    if (user) {
+      setFormData((prev) => ({
+        ...prev,
+        email: user.email || prev.email,
+        firstName: user.firstName || prev.firstName,
+        lastName: user.lastName || prev.lastName,
+        phone: user.phone || prev.phone,
+      }))
+    }
+  }, [user])
+
   const hasPhysicalProducts = items.some((item) => item.itemType === 'buch')
 
-  if (items.length === 0 && step !== 'success') {
+  if (authLoading) {
+    return (
+      <section className="section">
+        <div className="container" style={{ textAlign: 'center' }}>
+          <p style={{ color: 'var(--color-text-muted)' }}>Wird geladen...</p>
+        </div>
+      </section>
+    )
+  }
+
+  if (step === 'success') {
+    return (
+      <section className="section">
+        <div className="container" style={{ textAlign: 'center', maxWidth: '600px' }}>
+          <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" strokeWidth="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+              <polyline points="22 4 12 14.01 9 11.01" />
+            </svg>
+          </div>
+          <h1 style={{ color: 'var(--color-success)', marginBottom: '1rem' }}>
+            Bestellung erfolgreich!
+          </h1>
+          <p style={{ marginBottom: '2rem', color: 'var(--color-text-light)' }}>
+            Vielen Dank für deine Bestellung. Du erhältst in Kürze eine Bestätigung per E-Mail.
+          </p>
+          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <Link href="/mitglieder/dashboard" className="btn btn-primary">
+              Zu meinen Inhalten
+            </Link>
+            <Link href="/shop" className="btn btn-secondary">
+              Weiter stöbern
+            </Link>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  if (items.length === 0) {
     return (
       <section className="section">
         <div className="container" style={{ textAlign: 'center' }}>
@@ -36,18 +101,24 @@ export default function CheckoutPage() {
     )
   }
 
-  if (step === 'success') {
+  // Require login before checkout
+  if (!isLoggedIn) {
     return (
       <section className="section">
-        <div className="container" style={{ textAlign: 'center', maxWidth: '600px' }}>
-          <h1 style={{ color: 'var(--color-success)', marginBottom: '1rem' }}>
-            Bestellung erfolgreich!
-          </h1>
-          <p style={{ marginBottom: '2rem', color: 'var(--color-text-light)' }}>
-            Vielen Dank für deine Bestellung. Du erhältst eine Bestätigung per E-Mail.
+        <div className="container" style={{ textAlign: 'center', maxWidth: '500px' }}>
+          <h1 style={{ marginBottom: '1rem' }}>Anmelden</h1>
+          <p style={{ color: 'var(--color-text-muted)', marginBottom: '2rem' }}>
+            Bitte melde dich an oder registriere dich, um deine Bestellung abzuschließen.
           </p>
-          <Link href="/" className="btn btn-primary">
-            Zurück zur Startseite
+          <Link
+            href={`/mitglieder?redirect=/checkout`}
+            className="btn btn-primary"
+            style={{ marginRight: '1rem' }}
+          >
+            Anmelden
+          </Link>
+          <Link href="/warenkorb" className="btn btn-secondary">
+            Zurück zum Warenkorb
           </Link>
         </div>
       </section>
@@ -57,29 +128,32 @@ export default function CheckoutPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setStep('processing')
+    setError('')
 
     try {
       const res = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items, customer: formData, paymentType }),
+        credentials: 'include',
+        body: JSON.stringify({
+          items,
+          customer: formData,
+          paymentType,
+          userId: user?.id,
+        }),
       })
 
-      if (res.ok) {
-        const data = await res.json()
-        if (data.url) {
-          window.location.href = data.url
-        } else {
-          clearCart()
-          setStep('success')
-        }
+      const data = await res.json()
+
+      if (res.ok && data.url) {
+        window.location.href = data.url
       } else {
         setStep('form')
-        alert('Es gab einen Fehler. Bitte versuche es erneut.')
+        setError(data.error || 'Es gab einen Fehler. Bitte versuche es erneut.')
       }
     } catch {
       setStep('form')
-      alert('Es gab einen Fehler. Bitte versuche es erneut.')
+      setError('Verbindungsfehler. Bitte versuche es erneut.')
     }
   }
 
@@ -97,6 +171,19 @@ export default function CheckoutPage() {
     <section className="section">
       <div className="container">
         <h1 style={{ marginBottom: '2rem' }}>Kasse</h1>
+
+        {error && (
+          <div style={{
+            background: '#fdf2f2',
+            color: 'var(--color-error)',
+            padding: '0.75rem 1rem',
+            borderRadius: 'var(--radius)',
+            marginBottom: '1.5rem',
+            textAlign: 'center',
+          }}>
+            {error}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className={styles.layout}>
           <div className={styles.formSection}>
@@ -165,6 +252,8 @@ export default function CheckoutPage() {
                       id="zip"
                       className="input"
                       required
+                      pattern="[0-9]{5}"
+                      title="Bitte gib eine gültige PLZ ein (5 Ziffern)"
                       value={formData.zip}
                       onChange={(e) => updateField('zip', e.target.value)}
                     />

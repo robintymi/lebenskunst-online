@@ -45,6 +45,7 @@ export const ShopItems: CollectionConfig = {
         { label: 'Audiomaterial', value: 'audio' },
         { label: 'Begleitmaterial', value: 'begleitmaterial' },
         { label: 'Buch', value: 'buch' },
+        { label: 'Kunstwerk', value: 'kunst' },
       ],
       admin: {
         position: 'sidebar',
@@ -326,6 +327,13 @@ export const ShopItems: CollectionConfig = {
           type: 'text',
           admin: { description: 'Link zu einer kostenlosen Vorschau (optional)' },
         },
+        {
+          name: 'contentFile',
+          label: 'Inhaltsdatei',
+          type: 'upload',
+          relationTo: 'content-files' as any,
+          admin: { description: 'Die eigentliche Video-/Audio-/PDF-Datei (nur für Käufer zugänglich)' },
+        },
       ],
     },
 
@@ -350,6 +358,44 @@ export const ShopItems: CollectionConfig = {
           min: 0,
           defaultValue: 0,
           admin: { description: '0 = Kostenloser Versand' },
+        },
+      ],
+    },
+
+    // === KUNSTWERK-FELDER ===
+    {
+      name: 'kunstDetails',
+      label: 'Kunstwerk-Details',
+      type: 'group',
+      admin: {
+        condition: (data) => data?.itemType === 'kunst',
+        description: 'Nur für Kunstwerke',
+      },
+      fields: [
+        { name: 'medium', label: 'Medium / Technik', type: 'text', admin: { description: 'z.B. Acryl auf Leinwand, Aquarell, Mischtechnik' } },
+        { name: 'dimensions', label: 'Maße', type: 'text', admin: { description: 'z.B. 60 x 80 cm' } },
+        { name: 'year', label: 'Entstehungsjahr', type: 'number', min: 1900, max: 2100 },
+        { name: 'isUnikat', label: 'Unikat', type: 'checkbox', defaultValue: true, admin: { description: 'Kunstwerke sind standardmäßig Unikate (Stückzahl 1)' } },
+        {
+          name: 'videoUrl',
+          label: 'Video zum Kunstwerk',
+          type: 'text',
+          admin: { description: 'Optional: Link zu einem Video über das Kunstwerk oder den Entstehungsprozess' },
+        },
+        {
+          name: 'videoFile',
+          label: 'Video-Datei',
+          type: 'upload',
+          relationTo: 'content-files' as any,
+          admin: { description: 'Optional: Video-Datei direkt hochladen' },
+        },
+        {
+          name: 'shippingCost',
+          label: 'Versandkosten (€)',
+          type: 'number',
+          min: 0,
+          defaultValue: 0,
+          admin: { description: '0 = Kostenloser Versand oder Abholung' },
         },
       ],
     },

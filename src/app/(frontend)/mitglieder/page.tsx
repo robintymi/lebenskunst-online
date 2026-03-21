@@ -1,15 +1,28 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { useAuth } from '@/lib/auth-context'
 import styles from './mitglieder.module.css'
 
-type View = 'login' | 'register' | 'dashboard'
+type View = 'login' | 'register'
 
 export default function MitgliederPage() {
+  const { isLoggedIn, isLoading, login, register } = useAuth()
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const redirectTo = searchParams.get('redirect') || '/mitglieder/dashboard'
+
   const [view, setView] = useState<View>('login')
-  const [user, setUser] = useState<any>(null)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+
+  // If already logged in, redirect
+  useEffect(() => {
+    if (!isLoading && isLoggedIn) {
+      router.push(redirectTo)
+    }
+  }, [isLoggedIn, isLoading, router, redirectTo])
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -17,29 +30,17 @@ export default function MitgliederPage() {
     setLoading(true)
 
     const form = new FormData(e.currentTarget)
-    try {
-      const res = await fetch('/api/users/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: form.get('email'),
-          password: form.get('password'),
-        }),
-        credentials: 'include',
-      })
+    const result = await login(
+      form.get('email') as string,
+      form.get('password') as string,
+    )
 
-      if (res.ok) {
-        const data = await res.json()
-        setUser(data.user)
-        setView('dashboard')
-      } else {
-        setError('E-Mail oder Passwort falsch.')
-      }
-    } catch {
-      setError('Verbindungsfehler. Bitte versuche es erneut.')
-    } finally {
-      setLoading(false)
+    if (result.success) {
+      router.push(redirectTo)
+    } else {
+      setError(result.error || 'Anmeldung fehlgeschlagen.')
     }
+    setLoading(false)
   }
 
   const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -57,114 +58,41 @@ export default function MitgliederPage() {
       return
     }
 
-    try {
-      const res = await fetch('/api/users', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: form.get('email'),
-          password,
-          firstName: form.get('firstName'),
-          lastName: form.get('lastName'),
-          role: 'member',
-        }),
-      })
-
-      if (res.ok) {
-        // Auto-login after registration
-        const loginRes = await fetch('/api/users/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email: form.get('email'),
-            password,
-          }),
-          credentials: 'include',
-        })
-        if (loginRes.ok) {
-          const data = await loginRes.json()
-          setUser(data.user)
-          setView('dashboard')
-        }
-      } else {
-        const data = await res.json()
-        setError(data.errors?.[0]?.message || 'Registrierung fehlgeschlagen.')
-      }
-    } catch {
-      setError('Verbindungsfehler. Bitte versuche es erneut.')
-    } finally {
+    if (password.length < 8) {
+      setError('Das Passwort muss mindestens 8 Zeichen lang sein.')
       setLoading(false)
+      return
     }
+
+    const result = await register({
+      email: form.get('email') as string,
+      password,
+      firstName: form.get('firstName') as string,
+      lastName: form.get('lastName') as string,
+    })
+
+    if (result.success) {
+      router.push(redirectTo)
+    } else {
+      setError(result.error || 'Registrierung fehlgeschlagen.')
+    }
+    setLoading(false)
   }
 
-  const handleLogout = async () => {
-    await fetch('/api/users/logout', { method: 'POST', credentials: 'include' })
-    setUser(null)
-    setView('login')
-  }
-
-  // Dashboard view
-  if (view === 'dashboard' && user) {
+  if (isLoading) {
     return (
       <section className="section">
-        <div className="container" style={{ maxWidth: '800px' }}>
-          <div className={styles.dashboardHeader}>
-            <div>
-              <h1>Hallo, {user.firstName || user.email}!</h1>
-              <p className={styles.subtitle}>Willkommen in deinem Mitgliederbereich.</p>
-            </div>
-            <button onClick={handleLogout} className="btn btn-secondary">
-              Abmelden
-            </button>
-          </div>
-
-          <div className={styles.dashboardGrid}>
-            <div className={styles.dashboardCard}>
-              <h3>Meine Veranstaltungen</h3>
-              <p>Hier findest du deine gebuchten Veranstaltungen.</p>
-              {user.bookedEvents?.length > 0 ? (
-                <ul className={styles.eventList}>
-                  {user.bookedEvents.map((event: any) => (
-                    <li key={typeof event === 'string' ? event : event.id}>
-                      {typeof event === 'string' ? event : event.title}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className={styles.emptyState}>Noch keine Veranstaltungen gebucht.</p>
-              )}
-            </div>
-
-            <div className={styles.dashboardCard}>
-              <h3>Meine Bestellungen</h3>
-              <p>Übersicht deiner Einkäufe im Kunstshop.</p>
-              <p className={styles.emptyState}>Noch keine Bestellungen vorhanden.</p>
-            </div>
-
-            <div className={styles.dashboardCard}>
-              <h3>Mein Profil</h3>
-              <div className={styles.profileInfo}>
-                <div>
-                  <strong>E-Mail</strong>
-                  <span>{user.email}</span>
-                </div>
-                {user.firstName && (
-                  <div>
-                    <strong>Name</strong>
-                    <span>
-                      {user.firstName} {user.lastName}
-                    </span>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
+        <div className="container" style={{ textAlign: 'center' }}>
+          <p style={{ color: 'var(--color-text-muted)' }}>Wird geladen...</p>
         </div>
       </section>
     )
   }
 
-  // Login/Register views
+  if (isLoggedIn) {
+    return null // Will redirect via useEffect
+  }
+
   return (
     <section className="section">
       <div className="container" style={{ maxWidth: '480px' }}>
@@ -213,6 +141,9 @@ export default function MitgliederPage() {
               <div className={styles.field}>
                 <label htmlFor="regPassword">Passwort</label>
                 <input id="regPassword" name="password" type="password" className="input" required minLength={8} />
+                <small style={{ color: 'var(--color-text-muted)', fontSize: '0.8125rem' }}>
+                  Mindestens 8 Zeichen
+                </small>
               </div>
               <div className={styles.field}>
                 <label htmlFor="confirmPassword">Passwort bestätigen</label>

@@ -4,8 +4,8 @@
   gap: 1.25rem;
   margin-bottom: 2rem;
   padding: 1.5rem;
-  background: linear-gradient(180deg, #FFFFFF 0%, #FFF8F8 100%);
-  border: 1px solid rgba(212, 112, 122, 0.2);
+  background: linear-gradient(180deg, #FFFFFF 0%, #FAFAFE 100%);
+  border: 1px solid rgba(155, 109, 183, 0.2);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
 }
@@ -50,7 +50,7 @@
 }
 
 .filterBtn.active {
-  background: linear-gradient(135deg, #BE465A 0%, #D4707A 100%);
+  background: linear-gradient(135deg, #6B4C9A 0%, #9B6DB7 100%);
   border-color: transparent;
   color: white;
 }
@@ -80,7 +80,7 @@
 }
 
 .subBtn.active {
-  background: rgba(190, 70, 90, 0.1);
+  background: rgba(107, 76, 154, 0.1);
   border-color: var(--color-primary);
   color: var(--color-primary);
 }

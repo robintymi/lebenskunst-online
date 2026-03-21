@@ -132,6 +132,12 @@ export const Orders: CollectionConfig = {
       admin: { position: 'sidebar' },
     },
     {
+      name: 'stripeSessionId',
+      label: 'Stripe Session ID',
+      type: 'text',
+      admin: { position: 'sidebar', readOnly: true },
+    },
+    {
       name: 'stripePaymentIntentId',
       label: 'Stripe Payment Intent',
       type: 'text',

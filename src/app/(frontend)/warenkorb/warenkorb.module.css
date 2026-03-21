@@ -15,8 +15,8 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  background: linear-gradient(180deg, #FFFFFF 0%, #FFF8F8 100%);
-  border: 1px solid rgba(212, 112, 122, 0.15);
+  background: linear-gradient(180deg, #FFFFFF 0%, #FAFAFE 100%);
+  border: 1px solid rgba(155, 109, 183, 0.15);
   padding: 1rem;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
@@ -68,7 +68,7 @@
 .quantityControls button {
   width: 32px;
   height: 32px;
-  border: 1px solid rgba(212, 112, 122, 0.3);
+  border: 1px solid rgba(155, 109, 183, 0.3);
   border-radius: 50%;
   background: var(--color-bg);
   cursor: pointer;
@@ -107,8 +107,8 @@
 }
 
 .summary {
-  background: linear-gradient(180deg, #FFFFFF 0%, #FFF8F8 100%);
-  border: 1px solid rgba(212, 112, 122, 0.15);
+  background: linear-gradient(180deg, #FFFFFF 0%, #FAFAFE 100%);
+  border: 1px solid rgba(155, 109, 183, 0.15);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   padding: 1.5rem;

@@ -64,10 +64,10 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
   gap: 1rem;
-  background: rgba(190, 70, 90, 0.05);
+  background: rgba(107, 76, 154, 0.05);
   padding: 1.5rem;
   border-radius: var(--radius);
-  border: 1px solid rgba(212, 112, 122, 0.15);
+  border: 1px solid rgba(155, 109, 183, 0.15);
 }
 
 .infoItem {
@@ -137,8 +137,8 @@
   display: flex;
   gap: 1rem;
   padding: 1rem;
-  background: rgba(190, 70, 90, 0.05);
-  border: 1px solid rgba(212, 112, 122, 0.15);
+  background: rgba(107, 76, 154, 0.05);
+  border: 1px solid rgba(155, 109, 183, 0.15);
   border-radius: var(--radius);
 }
 

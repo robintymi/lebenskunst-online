@@ -1,7 +1,27 @@
 import Link from 'next/link'
+import Image from 'next/image'
+import { getPayload } from 'payload'
+import config from '@payload-config'
 import styles from './page.module.css'
+import ReviewSection from '@/components/ReviewSection'
 
-export default function HomePage() {
+export const dynamic = 'force-dynamic'
+
+export default async function HomePage() {
+  let siteSettings: any = null
+  try {
+    const payload = await getPayload({ config })
+    siteSettings = await payload.findGlobal({ slug: 'site-settings' as any })
+  } catch {
+    // Settings not yet created, use defaults
+  }
+
+  const heroImageUrl = siteSettings?.heroImage?.url || siteSettings?.heroImage?.sizes?.hero?.url || null
+  const heroTitle = siteSettings?.heroTitle || 'Lebenskunst'
+  const heroSubtitle = siteSettings?.heroSubtitle || 'Ich begleite Menschen auf dem Weg zu mehr Bewusstsein, Lebendigkeit und authentischem Selbstausdruck. Denn wahre Erfüllung entsteht nicht im Außen, sondern im Innen. Dort beginnt das Leben.'
+  const quoteText = siteSettings?.quoteText || 'Selbstausdruck ist der Tanz der Seele — und vielleicht genau das, wonach wir alle suchen.'
+  const testimonials = siteSettings?.testimonials || []
+
   return (
     <>
       {/* Decorative Background Orbs */}
@@ -15,61 +35,105 @@ export default function HomePage() {
       <section className={styles.hero}>
         <div className={styles.heroGrid}>
           <div className={styles.heroContent}>
-            <p className={styles.heroSubtitle}>Willkommen bei</p>
-            <h1 className={styles.heroTitle}>Lebenskunst</h1>
-            <p className={styles.heroText}>
-              Raum für Weiblichkeit, Kreativität und tiefe Verbindung. Ein Ort, an dem du ankommen
-              darfst — so wie du bist.
-            </p>
+            <p className={styles.heroSubtitle}>Bewusstsein &middot; Lebendigkeit &middot; Selbstausdruck</p>
+            <h1 className={styles.heroTitle}>{heroTitle}</h1>
+            <p className={styles.heroText}>{heroSubtitle}</p>
             <div className={styles.heroCta}>
               <Link href="/shop" className="btn btn-primary">
-                Entdecke mehr
+                Angebote entdecken
               </Link>
               <Link href="/podcast" className="btn btn-secondary">
-                Podcast entdecken
+                Podcast hören
               </Link>
             </div>
           </div>
           <div className={styles.heroVisual}>
-            <div className={styles.lotusWrapper}>
-              <svg width="384" height="384" viewBox="0 0 400 400" fill="none">
-                <circle cx="200" cy="200" r="180" fill="url(#grad1)" opacity="0.3" />
-                <circle cx="200" cy="200" r="140" fill="url(#grad2)" opacity="0.5" />
-                <circle cx="200" cy="200" r="100" fill="url(#grad3)" opacity="0.7" />
-                <g transform="translate(200, 200)">
-                  <ellipse cx="0" cy="-50" rx="25" ry="50" fill="#D4707A" opacity="0.8" transform="rotate(0)" />
-                  <ellipse cx="0" cy="-50" rx="25" ry="50" fill="#BE465A" opacity="0.7" transform="rotate(45)" />
-                  <ellipse cx="0" cy="-50" rx="25" ry="50" fill="#D4707A" opacity="0.8" transform="rotate(90)" />
-                  <ellipse cx="0" cy="-50" rx="25" ry="50" fill="#BE465A" opacity="0.7" transform="rotate(135)" />
-                  <ellipse cx="0" cy="-50" rx="25" ry="50" fill="#D4707A" opacity="0.8" transform="rotate(180)" />
-                  <ellipse cx="0" cy="-50" rx="25" ry="50" fill="#BE465A" opacity="0.7" transform="rotate(225)" />
-                  <ellipse cx="0" cy="-50" rx="25" ry="50" fill="#D4707A" opacity="0.8" transform="rotate(270)" />
-                  <ellipse cx="0" cy="-50" rx="25" ry="50" fill="#BE465A" opacity="0.7" transform="rotate(315)" />
-                  <circle cx="0" cy="0" r="30" fill="#FFF5F5" />
-                  <circle cx="0" cy="0" r="20" fill="#D4707A" />
-                </g>
-                <defs>
-                  <radialGradient id="grad1" cx="50%" cy="50%" r="50%">
-                    <stop offset="0%" style={{ stopColor: '#D4707A', stopOpacity: 0.5 }} />
-                    <stop offset="100%" style={{ stopColor: '#FFF5F5', stopOpacity: 0 }} />
-                  </radialGradient>
-                  <radialGradient id="grad2" cx="50%" cy="50%" r="50%">
-                    <stop offset="0%" style={{ stopColor: '#BE465A', stopOpacity: 0.4 }} />
-                    <stop offset="100%" style={{ stopColor: '#D4707A', stopOpacity: 0.1 }} />
-                  </radialGradient>
-                  <radialGradient id="grad3" cx="50%" cy="50%" r="50%">
-                    <stop offset="0%" style={{ stopColor: '#FFF5F5', stopOpacity: 0.9 }} />
-                    <stop offset="100%" style={{ stopColor: '#D4707A', stopOpacity: 0.3 }} />
-                  </radialGradient>
-                </defs>
-              </svg>
+            <div className={styles.heroImageWrapper}>
+              {heroImageUrl ? (
+                <Image
+                  src={heroImageUrl}
+                  alt="Susanne Sturm — Lebenskunst"
+                  fill
+                  style={{ objectFit: 'cover' }}
+                  priority
+                />
+              ) : (
+                <Image
+                  src="/images/susanne.jpg"
+                  alt="Susanne Sturm — Lebenskunst"
+                  fill
+                  style={{ objectFit: 'cover' }}
+                  priority
+                />
+              )}
             </div>
           </div>
         </div>
       </section>
 
+      {/* Trust Bar */}
+      <section className={styles.trustBar}>
+        <div className="container">
+          <div className={styles.trustItems}>
+            <div className={styles.trustItem}>
+              <span className={styles.trustNumber}>10+</span>
+              <span className={styles.trustLabel}>Jahre Erfahrung</span>
+            </div>
+            <div className={styles.trustDivider} />
+            <div className={styles.trustItem}>
+              <span className={styles.trustNumber}>500+</span>
+              <span className={styles.trustLabel}>Begleitete Menschen</span>
+            </div>
+            <div className={styles.trustDivider} />
+            <div className={styles.trustItem}>
+              <span className={styles.trustNumber}>Live & Online</span>
+              <span className={styles.trustLabel}>Flexibel teilnehmen</span>
+            </div>
+            <div className={styles.trustDivider} />
+            <div className={styles.trustItem}>
+              <span className={styles.trustNumber}>Ratenzahlung</span>
+              <span className={styles.trustLabel}>Bequem in Raten zahlen</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Introduction — Susanne's story */}
+      <section className={`section ${styles.introSection}`}>
+        <div className="container">
+          <div className={styles.introContent}>
+            <h2>Willkommen — schön, dass du da bist</h2>
+            <p>
+              Mein Herzensanliegen ist es, dich darin zu unterstützen, dich selbst wieder zu spüren —
+              jenseits des ständigen Tuns, um etwas zu erreichen, zu gefallen oder eine Reaktion zu bekommen.
+            </p>
+            <p>
+              In meinen Trainings geht es um die Rückkehr zu dir selbst — um den Moment, in dem du nicht
+              mehr funktionierst, sondern fühlst. Wir erforschen gemeinsam, wie du dein trainiertes
+              Antwortverhalten erkennst, loslässt und lernst, wieder aus dem Inneren heraus zu handeln —
+              mit Genuss, Präsenz und Freude.
+            </p>
+            <div className={styles.introHighlight}>
+              Ich glaube, wir haben in dieser lauten, schnellen Welt oft vergessen, was es heißt,
+              wirklich da zu sein. Wir reagieren mehr, als wir leben. Wir schauen mehr nach außen, als
+              nach innen. Und genau da möchte ich ansetzen — damit wir wieder spüren, wer wir sind.
+            </div>
+            <p>
+              Geprägt von schwierigen Lebensphasen — einer herausfordernden Kindheit, intensiven
+              Partnerschaften und einem tiefen Burnout — durfte ich erfahren, wie es ist, wenn das
+              Leben stillsteht. Erst durch Bewusstseinstraining, Breathwork und die Arbeit mit meinem
+              Körper fand ich zurück zu mir selbst, zu meiner Lebendigkeit und meinem inneren Frieden.
+            </p>
+            <p>
+              Heute möchte ich dieses Wissen, diese Erfahrung und diese Tiefe weitergeben — an Menschen,
+              die sich nach echter Verbindung, Ausdruck und Sinn sehnen.
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* Features Section */}
-      <section className="section" style={{ background: 'linear-gradient(180deg, transparent 0%, rgba(190, 70, 90, 0.05) 50%, transparent 100%)' }}>
+      <section className="section">
         <div className="container">
           <p className={styles.sectionSubtitle}>Gemeinsam wachsen</p>
           <h2 className={styles.sectionTitle}>Was dich erwartet</h2>
@@ -77,27 +141,27 @@ export default function HomePage() {
             {[
               {
                 title: 'Seminare & Workshops',
-                desc: 'Seminare, Workshops und Vorträge — live und online. Buche direkt deinen Platz.',
+                desc: 'Live und online — gemeinsam in die Tiefe gehen. Buche direkt deinen Platz.',
                 icon: '🌿',
-                href: '/shop?typ=seminar',
+                href: '/shop',
               },
               {
                 title: 'Einzeltrainings',
-                desc: 'Mehrteilige Trainings über 4-8 Wochen für nachhaltige Veränderung.',
-                icon: '🧘',
-                href: '/shop?typ=einzeltraining',
+                desc: 'Mehrteilige Trainings über mehrere Wochen für nachhaltige Veränderung.',
+                icon: '🧭',
+                href: '/shop',
               },
               {
                 title: 'Video & Audio',
-                desc: 'Videomaterial, Audiomaterial und Begleitmaterial für dein Selbststudium.',
+                desc: 'Materialien für dein Selbststudium — in deinem Tempo, wann du bereit bist.',
                 icon: '🎧',
-                href: '/shop?typ=video',
+                href: '/shop',
               },
               {
                 title: 'Themenbundles',
-                desc: 'Spare mit gebündelten Paketen zu Themen wie Abhängigkeiten oder Bewusstseinsarchitektur.',
+                desc: 'Gebündelte Pakete zu Themen wie Abhängigkeiten oder Bewusstseinsarchitektur.',
                 icon: '📦',
-                href: '/shop?ansicht=bundles',
+                href: '/shop',
               },
               {
                 title: 'Podcast',
@@ -108,7 +172,7 @@ export default function HomePage() {
               {
                 title: 'Mitgliederbereich',
                 desc: 'Dein persönliches Dashboard mit gebuchten Inhalten und Trainings.',
-                icon: '✨',
+                icon: '🔑',
                 href: '/mitglieder',
               },
             ].map((feature) => (
@@ -124,37 +188,42 @@ export default function HomePage() {
 
       {/* Quote Section */}
       <section className={styles.quoteSection}>
-        <svg width="64" height="64" viewBox="0 0 24 24" fill="#BE465A" opacity="0.3" style={{ margin: '0 auto 2rem', display: 'block' }}>
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="var(--color-primary)" opacity="0.2" style={{ margin: '0 auto 1.5rem', display: 'block' }}>
           <path d="M6 17h3l2-4V7H5v6h3zm8 0h3l2-4V7h-6v6h3z" />
         </svg>
         <blockquote className={styles.quoteText}>
-          &ldquo;Die größte Kunst ist es, sich selbst treu zu bleiben und dabei immer wieder neu zu erblühen.&rdquo;
+          &ldquo;{quoteText}&rdquo;
         </blockquote>
         <div className={styles.quoteAuthor}>
-          <div className={styles.quoteAvatar} />
+          <div className={styles.quoteAvatar}>
+            <Image
+              src="/images/susanne.jpg"
+              alt="Susanne"
+              width={48}
+              height={48}
+              style={{ objectFit: 'cover', borderRadius: '50%' }}
+            />
+          </div>
           <div style={{ textAlign: 'left' }}>
-            <p className={styles.quoteAuthorName}>Lebenskunst</p>
-            <p className={styles.quoteAuthorRole}>Gründerin & Künstlerin</p>
+            <p className={styles.quoteAuthorName}>Susanne Sturm</p>
+            <p className={styles.quoteAuthorRole}>Gründerin, Lebenskunst</p>
           </div>
         </div>
       </section>
 
-      {/* About Section */}
-      <section className={`section ${styles.aboutSection}`}>
+      {/* Reviews / Social Proof */}
+      <ReviewSection />
+
+      {/* CTA Section */}
+      <section className={styles.ctaSection}>
         <div className="container">
-          <div className={styles.about}>
-            <div>
-              <h2>Über Lebenskunst</h2>
-              <p>
-                Lebenskunst ist ein Raum für persönliches Wachstum und tiefe Transformation. Wir
-                bieten Seminare, Einzeltrainings und digitale Materialien, die dich auf deinem Weg
-                begleiten und inspirieren.
-              </p>
-              <p>
-                Ob du an einem Workshop teilnimmst, ein Einzeltraining absolvierst oder unseren
-                Podcast hörst — bei Lebenskunst findest du, was deine Seele berührt.
-              </p>
-            </div>
+          <h2>Bereit für den ersten Schritt?</h2>
+          <p>
+            Schau dich im Shop um oder melde dich an, um Zugang zu deinen gebuchten Inhalten zu erhalten.
+          </p>
+          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <Link href="/shop" className="btn btn-primary">Zum Shop</Link>
+            <Link href="/mitglieder" className="btn btn-secondary">Konto erstellen</Link>
           </div>
         </div>
       </section>

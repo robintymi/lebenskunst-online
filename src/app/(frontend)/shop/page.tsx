@@ -159,9 +159,16 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
                   )}
                   <div className={styles.content}>
                     <div className={styles.meta}>
-                      <span className="badge badge-event">
-                        {itemTypeLabels[item.itemType] || item.itemType}
-                      </span>
+                      {item.itemType !== 'kunst' && (
+                        <span className="badge badge-event">
+                          {itemTypeLabels[item.itemType] || item.itemType}
+                        </span>
+                      )}
+                      {item.itemType === 'kunst' && item.categories?.length > 0 && (
+                        <span className="badge badge-product">
+                          {typeof item.categories[0] === 'string' ? '' : (item.categories[0] as any).name}
+                        </span>
+                      )}
                       {isEventType(item.itemType) && item.eventDetails?.isOnline && (
                         <span className={styles.online}>Online</span>
                       )}
