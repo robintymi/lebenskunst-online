@@ -37,9 +37,9 @@ export const itemTypeLabels: Record<string, string> = {
 
 export const itemTypeGroups: Record<string, string[]> = {
   'Veranstaltungen': ['seminar', 'workshop', 'vortrag'],
-  'Digitale Inhalte': ['video', 'audio', 'begleitmaterial'],
-  'Trainings': ['einzeltraining'],
-  'Bücher': ['buch'],
+  'Videomaterial': ['video'],
+  'Audiomaterial': ['audio', 'begleitmaterial'],
+  'Einzelne Objekte': ['buch', 'einzeltraining'],
   'Kunst': ['kunst'],
 }
 

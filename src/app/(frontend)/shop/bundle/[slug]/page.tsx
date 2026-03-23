@@ -16,9 +16,30 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     where: { slug: { equals: slug } },
     limit: 1,
   })
-  const bundle = docs[0]
+  const bundle = docs[0] as any
   if (!bundle) return { title: 'Nicht gefunden' }
-  return { title: bundle.name, description: (bundle as any).shortDescription || '' }
+
+  const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
+  const image = bundle.image && typeof bundle.image !== 'string' ? bundle.image : null
+  const imageUrl = image ? `${serverUrl}${image.sizes?.hero?.url || image.url}` : undefined
+
+  return {
+    title: bundle.name,
+    description: bundle.shortDescription || '',
+    openGraph: {
+      type: 'website',
+      title: bundle.name,
+      description: bundle.shortDescription || '',
+      url: `${serverUrl}/shop/bundle/${slug}`,
+      ...(imageUrl ? { images: [{ url: imageUrl, alt: image?.alt || bundle.name }] } : {}),
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: bundle.name,
+      description: bundle.shortDescription || '',
+      ...(imageUrl ? { images: [imageUrl] } : {}),
+    },
+  }
 }
 
 export default async function BundleDetailPage({ params }: Props) {

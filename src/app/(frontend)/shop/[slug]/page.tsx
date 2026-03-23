@@ -15,9 +15,30 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     where: { slug: { equals: slug } },
     limit: 1,
   })
-  const item = docs[0]
+  const item = docs[0] as any
   if (!item) return { title: 'Nicht gefunden' }
-  return { title: item.title, description: (item as any).shortDescription || '' }
+
+  const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
+  const image = item.image && typeof item.image !== 'string' ? item.image : null
+  const imageUrl = image ? `${serverUrl}${image.sizes?.hero?.url || image.url}` : undefined
+
+  return {
+    title: item.title,
+    description: item.shortDescription || '',
+    openGraph: {
+      type: 'website',
+      title: item.title,
+      description: item.shortDescription || '',
+      url: `${serverUrl}/shop/${slug}`,
+      ...(imageUrl ? { images: [{ url: imageUrl, alt: image?.alt || item.title }] } : {}),
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: item.title,
+      description: item.shortDescription || '',
+      ...(imageUrl ? { images: [imageUrl] } : {}),
+    },
+  }
 }
 
 export default async function ShopItemDetailPage({ params }: Props) {
@@ -42,8 +63,69 @@ export default async function ShopItemDetailPage({ params }: Props) {
     ? Math.max(0, item.eventDetails.maxParticipants - (item.eventDetails.currentParticipants || 0))
     : null
 
+  // Build JSON-LD structured data
+  const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
+  const imageUrl = mainImage ? `${serverUrl}${mainImage.sizes?.hero?.url || mainImage.url}` : undefined
+
+  const baseJsonLd = {
+    '@context': 'https://schema.org',
+    name: item.title,
+    description: item.shortDescription || '',
+    ...(imageUrl ? { image: imageUrl } : {}),
+    url: `${serverUrl}/shop/${item.slug}`,
+  }
+
+  const jsonLd = isEvent
+    ? {
+        ...baseJsonLd,
+        '@type': 'Event',
+        startDate: item.eventDetails?.date || undefined,
+        endDate: item.eventDetails?.endDate || item.eventDetails?.date || undefined,
+        eventAttendanceMode: item.eventDetails?.isOnline
+          ? 'https://schema.org/OnlineEventAttendanceMode'
+          : 'https://schema.org/OfflineEventAttendanceMode',
+        location: item.eventDetails?.isOnline
+          ? { '@type': 'VirtualLocation', url: serverUrl }
+          : {
+              '@type': 'Place',
+              name: item.eventDetails?.locationName || '',
+              address: item.eventDetails?.locationAddress || '',
+            },
+        offers: {
+          '@type': 'Offer',
+          price: pricing.isFree ? 0 : (pricing.price || 0),
+          priceCurrency: 'EUR',
+          availability: spotsLeft === 0
+            ? 'https://schema.org/SoldOut'
+            : 'https://schema.org/InStock',
+          url: `${serverUrl}/shop/${item.slug}`,
+        },
+        organizer: {
+          '@type': 'Organization',
+          name: 'Lebenskunst',
+          url: serverUrl,
+        },
+      }
+    : {
+        ...baseJsonLd,
+        '@type': 'Product',
+        offers: {
+          '@type': 'Offer',
+          price: pricing.isFree ? 0 : (pricing.price || 0),
+          priceCurrency: 'EUR',
+          availability: item.status === 'sold_out'
+            ? 'https://schema.org/SoldOut'
+            : 'https://schema.org/InStock',
+          url: `${serverUrl}/shop/${item.slug}`,
+        },
+      }
+
   return (
     <section className="section">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div className={`container ${styles.layout}`}>
         {/* Image */}
         <div className={styles.imageCol}>

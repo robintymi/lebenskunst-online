@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '@/lib/auth-context'
 import styles from './mitglieder.module.css'
 
-type View = 'login' | 'register'
+type View = 'login' | 'register' | 'forgot-password'
 
 export default function MitgliederPage() {
   const { isLoggedIn, isLoading, login, register } = useAuth()
@@ -16,6 +16,8 @@ export default function MitgliederPage() {
   const [view, setView] = useState<View>('login')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [acceptedTerms, setAcceptedTerms] = useState(false)
+  const [forgotSent, setForgotSent] = useState(false)
 
   // If already logged in, redirect
   useEffect(() => {
@@ -64,6 +66,12 @@ export default function MitgliederPage() {
       return
     }
 
+    if (!acceptedTerms) {
+      setError('Bitte akzeptiere die Datenschutzerklärung und AGB.')
+      setLoading(false)
+      return
+    }
+
     const result = await register({
       email: form.get('email') as string,
       password,
@@ -76,6 +84,28 @@ export default function MitgliederPage() {
     } else {
       setError(result.error || 'Registrierung fehlgeschlagen.')
     }
+    setLoading(false)
+  }
+
+  const handleForgotPassword = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setError('')
+    setLoading(true)
+
+    const form = new FormData(e.currentTarget)
+    const email = form.get('email') as string
+
+    try {
+      await fetch('/api/users/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      })
+    } catch {
+      // Silently catch — always show the same message
+    }
+
+    setForgotSent(true)
     setLoading(false)
   }
 
@@ -98,12 +128,14 @@ export default function MitgliederPage() {
       <div className="container" style={{ maxWidth: '480px' }}>
         <div className={styles.authCard}>
           <h1 className={styles.authTitle}>
-            {view === 'login' ? 'Anmelden' : 'Registrieren'}
+            {view === 'login' ? 'Anmelden' : view === 'register' ? 'Registrieren' : 'Passwort vergessen'}
           </h1>
           <p className={styles.authSubtitle}>
             {view === 'login'
               ? 'Melde dich an, um auf deinen Mitgliederbereich zuzugreifen.'
-              : 'Erstelle ein Konto, um Veranstaltungen zu buchen und einzukaufen.'}
+              : view === 'register'
+                ? 'Erstelle ein Konto, um Veranstaltungen zu buchen und einzukaufen.'
+                : 'Gib deine E-Mail-Adresse ein und wir senden dir einen Link zum Zurücksetzen.'}
           </p>
 
           {error && <p className={styles.error}>{error}</p>}
@@ -118,11 +150,16 @@ export default function MitgliederPage() {
                 <label htmlFor="password">Passwort</label>
                 <input id="password" name="password" type="password" className="input" required />
               </div>
+              <p className={styles.forgotLink}>
+                <button type="button" onClick={() => { setView('forgot-password'); setError(''); setForgotSent(false) }}>
+                  Passwort vergessen?
+                </button>
+              </p>
               <button type="submit" className="btn btn-primary" style={{ width: '100%' }} disabled={loading}>
                 {loading ? 'Wird angemeldet...' : 'Anmelden'}
               </button>
             </form>
-          ) : (
+          ) : view === 'register' ? (
             <form onSubmit={handleRegister} className={styles.form}>
               <div className={styles.fieldRow}>
                 <div className={styles.field}>
@@ -149,10 +186,48 @@ export default function MitgliederPage() {
                 <label htmlFor="confirmPassword">Passwort bestätigen</label>
                 <input id="confirmPassword" name="confirmPassword" type="password" className="input" required minLength={8} />
               </div>
+              <div className={styles.field}>
+                <label style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', cursor: 'pointer', fontWeight: 400 }}>
+                  <input
+                    type="checkbox"
+                    checked={acceptedTerms}
+                    onChange={(e) => setAcceptedTerms(e.target.checked)}
+                    style={{ marginTop: '0.25rem', accentColor: 'var(--color-primary)' }}
+                  />
+                  <span style={{ fontSize: '0.9rem', color: 'var(--color-text-muted)' }}>
+                    Ich akzeptiere die{' '}
+                    <a href="/datenschutz" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-primary)', textDecoration: 'underline' }}>
+                      Datenschutzerklärung
+                    </a>{' '}
+                    und{' '}
+                    <a href="/agb" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-primary)', textDecoration: 'underline' }}>
+                      AGB
+                    </a>
+                  </span>
+                </label>
+              </div>
               <button type="submit" className="btn btn-primary" style={{ width: '100%' }} disabled={loading}>
                 {loading ? 'Wird registriert...' : 'Registrieren'}
               </button>
             </form>
+          ) : (
+            <>
+              {forgotSent ? (
+                <div className={styles.successMessage}>
+                  <p>Falls ein Konto mit dieser E-Mail existiert, erhältst du einen Link zum Zurücksetzen.</p>
+                </div>
+              ) : (
+                <form onSubmit={handleForgotPassword} className={styles.form}>
+                  <div className={styles.field}>
+                    <label htmlFor="forgotEmail">E-Mail</label>
+                    <input id="forgotEmail" name="email" type="email" className="input" required />
+                  </div>
+                  <button type="submit" className="btn btn-primary" style={{ width: '100%' }} disabled={loading}>
+                    {loading ? 'Wird gesendet...' : 'Link senden'}
+                  </button>
+                </form>
+              )}
+            </>
           )}
 
           <p className={styles.switchView}>
@@ -163,11 +238,17 @@ export default function MitgliederPage() {
                   Jetzt registrieren
                 </button>
               </>
-            ) : (
+            ) : view === 'register' ? (
               <>
                 Bereits ein Konto?{' '}
                 <button onClick={() => { setView('login'); setError('') }}>
                   Anmelden
+                </button>
+              </>
+            ) : (
+              <>
+                <button onClick={() => { setView('login'); setError(''); setForgotSent(false) }}>
+                  Zurück zur Anmeldung
                 </button>
               </>
             )}

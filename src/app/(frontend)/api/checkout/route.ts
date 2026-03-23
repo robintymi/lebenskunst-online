@@ -4,7 +4,7 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-  apiVersion: '2025-02-24.acacia',
+  apiVersion: '2026-02-25.clover',
 })
 
 interface CheckoutItem {
@@ -75,8 +75,13 @@ export async function POST(req: NextRequest) {
         if (['seminar', 'workshop', 'vortrag'].includes(dbItem.itemType)) {
           const max = dbItem.eventDetails?.maxParticipants
           const current = dbItem.eventDetails?.currentParticipants || 0
-          if (max && current >= max) {
-            throw new Error(`${dbItem.title} ist leider ausgebucht`)
+          if (max && current + item.quantity > max) {
+            const remaining = max - current
+            throw new Error(
+              remaining <= 0
+                ? `${dbItem.title} ist leider ausgebucht`
+                : `${dbItem.title}: Nur noch ${remaining} Plätze verfügbar (${item.quantity} angefragt)`,
+            )
           }
         }
 

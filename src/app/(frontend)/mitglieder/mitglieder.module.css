@@ -53,6 +53,36 @@
   text-align: center;
 }
 
+.forgotLink {
+  text-align: right;
+  margin-top: -0.5rem;
+  margin-bottom: 1rem;
+}
+
+.forgotLink button {
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0;
+}
+
+.forgotLink button:hover {
+  text-decoration: underline;
+}
+
+.successMessage {
+  text-align: center;
+  padding: 1.5rem 1rem;
+  background: rgba(91, 140, 90, 0.08);
+  border: 1px solid rgba(91, 140, 90, 0.2);
+  border-radius: var(--radius);
+  color: var(--color-text-light);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
 .switchView {
   text-align: center;
   margin-top: 1.25rem;

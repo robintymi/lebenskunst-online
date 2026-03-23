@@ -70,6 +70,7 @@ export default function Footer() {
 
       <div className={styles.bottom}>
         <p>&copy; {new Date().getFullYear()} Lebenskunst — Susanne Sturm. Mit Herz gemacht.</p>
+        <Link href="/admin" className={styles.adminLink}>Admin</Link>
       </div>
     </footer>
   )

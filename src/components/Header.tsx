@@ -10,6 +10,7 @@ import styles from './Header.module.css'
 
 const navLinks = [
   { href: '/', label: 'Home' },
+  { href: '/leistungen', label: 'Meine Leistungen' },
   { href: '/shop', label: 'Shop' },
   { href: '/podcast', label: 'Podcast' },
 ]

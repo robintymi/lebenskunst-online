@@ -74,22 +74,28 @@ export default function ShopFilters({ categories }: Props) {
         })}
       </div>
 
-      {/* Themen-Kategorien */}
+      {/* Themenbundles */}
       {categories.length > 0 && (
         <div className={styles.filterGroup}>
-          <h4 className={styles.filterLabel}>Thema</h4>
+          <h4 className={styles.filterLabel}>Themenbundles</h4>
           <div className={styles.filterButtons}>
             <button
-              className={`${styles.filterBtn} ${!activeCategory ? styles.active : ''}`}
-              onClick={() => setFilter('kategorie', '')}
+              className={`${styles.filterBtn} ${!activeCategory && !activeView ? styles.active : ''}`}
+              onClick={() => {
+                setFilter('kategorie', '')
+                setFilter('ansicht', '')
+              }}
             >
-              Alle Themen
+              Alle
             </button>
             {categories.map((cat) => (
               <button
                 key={cat.id}
                 className={`${styles.filterBtn} ${activeCategory === cat.slug ? styles.active : ''}`}
-                onClick={() => setFilter('kategorie', cat.slug)}
+                onClick={() => {
+                  setFilter('ansicht', 'bundles')
+                  setFilter('kategorie', cat.slug)
+                }}
               >
                 {cat.name}
               </button>
@@ -97,25 +103,6 @@ export default function ShopFilters({ categories }: Props) {
           </div>
         </div>
       )}
-
-      {/* Ansicht: Einzeln oder Bundles */}
-      <div className={styles.filterGroup}>
-        <h4 className={styles.filterLabel}>Ansicht</h4>
-        <div className={styles.filterButtons}>
-          <button
-            className={`${styles.filterBtn} ${!activeView ? styles.active : ''}`}
-            onClick={() => setFilter('ansicht', '')}
-          >
-            Einzelne Items
-          </button>
-          <button
-            className={`${styles.filterBtn} ${activeView === 'bundles' ? styles.active : ''}`}
-            onClick={() => setFilter('ansicht', 'bundles')}
-          >
-            Themenbundles
-          </button>
-        </div>
-      </div>
     </div>
   )
 }

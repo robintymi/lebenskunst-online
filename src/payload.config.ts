@@ -1,5 +1,7 @@
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
+import nodemailer from 'nodemailer'
 import path from 'path'
 import { buildConfig } from 'payload'
 import sharp from 'sharp'
@@ -25,6 +27,9 @@ export default buildConfig({
     meta: {
       titleSuffix: '- Lebenskunst Admin',
     },
+    components: {
+      beforeNavLinks: ['@/components/admin/WebsiteLink'],
+    },
   },
   collections: [Users, ShopItems, Bundles, Podcasts, Media, ContentFiles, Orders, Categories, Reviews],
   editor: lexicalEditor(),
@@ -38,4 +43,19 @@ export default buildConfig({
   sharp,
   globals: [SiteSettings],
   plugins: [],
+  email: process.env.RESEND_API_KEY
+    ? nodemailerAdapter({
+        defaultFromAddress: 'noreply@lebenskunstonline.de',
+        defaultFromName: 'Lebenskunst',
+        transport: nodemailer.createTransport({
+          host: 'smtp.resend.com',
+          port: 465,
+          secure: true,
+          auth: {
+            user: 'resend',
+            pass: process.env.RESEND_API_KEY,
+          },
+        }),
+      })
+    : undefined,
 })

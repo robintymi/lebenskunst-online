@@ -1,7 +1,29 @@
 import type { CollectionConfig } from 'payload'
 
+function generateSlug(title: string): string {
+  return title
+    .toLowerCase()
+    .replace(/ä/g, 'ae')
+    .replace(/ö/g, 'oe')
+    .replace(/ü/g, 'ue')
+    .replace(/ß/g, 'ss')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
+}
+
 export const ShopItems: CollectionConfig = {
   slug: 'shop-items',
+  hooks: {
+    beforeValidate: [
+      ({ data }) => {
+        if (data && !data.slug && data.title) {
+          data.slug = generateSlug(data.title)
+        }
+        return data
+      },
+    ],
+  },
   admin: {
     useAsTitle: 'title',
     group: 'Shop',

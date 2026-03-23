@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import '@/styles/globals.css'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
+import CookieBanner from '@/components/CookieBanner'
 import { CartProvider } from '@/lib/cart-context'
 import { AuthProvider } from '@/lib/auth-context'
 
@@ -19,6 +20,13 @@ export const metadata: Metadata = {
     siteName: 'Lebenskunst',
     title: 'Lebenskunst - Deine Reise zu dir selbst',
     description: 'Seminare, Workshops, Einzeltrainings, Podcast und mehr für dein persönliches Wachstum.',
+    url: process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    site: '',
+    title: 'Lebenskunst - Deine Reise zu dir selbst',
+    description: 'Seminare, Workshops, Einzeltrainings, Podcast und mehr für dein persönliches Wachstum.',
   },
 }
 
@@ -33,6 +41,7 @@ export default function FrontendLayout({ children }: { children: React.ReactNode
               {children}
             </main>
             <Footer />
+            <CookieBanner />
           </CartProvider>
         </AuthProvider>
       </body>

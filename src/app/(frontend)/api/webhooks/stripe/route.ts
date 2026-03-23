@@ -7,12 +7,17 @@ import { sendOrderConfirmation, sendInstallmentPaymentConfirmation } from '@/lib
 export const runtime = 'nodejs'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-  apiVersion: '2025-02-24.acacia',
+  apiVersion: '2026-02-25.clover',
 })
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || ''
 
 export async function POST(req: NextRequest) {
+  if (!webhookSecret) {
+    console.error('Stripe webhook secret is not configured')
+    return NextResponse.json({ error: 'Webhook secret not configured' }, { status: 500 })
+  }
+
   const rawBody = await req.text()
   const sig = req.headers.get('stripe-signature')
 
@@ -219,7 +224,7 @@ async function handleCheckoutCompleted(payload: any, session: Stripe.Checkout.Se
  * Increments paidInstallments. Cancels subscription when all installments are paid.
  */
 async function handleInvoicePaid(payload: any, invoice: Stripe.Invoice) {
-  const subscriptionId = invoice.subscription as string
+  const subscriptionId = invoice.parent?.subscription_details?.subscription as string | undefined
   if (!subscriptionId) return
 
   // Skip the first invoice (already handled by checkout.session.completed)
@@ -290,7 +295,7 @@ async function handleInvoicePaid(payload: any, invoice: Stripe.Invoice) {
  * Handles failed installment payment.
  */
 async function handleInvoiceFailed(payload: any, invoice: Stripe.Invoice) {
-  const subscriptionId = invoice.subscription as string
+  const subscriptionId = invoice.parent?.subscription_details?.subscription as string | undefined
   if (!subscriptionId) return
 
   const orders = await payload.find({

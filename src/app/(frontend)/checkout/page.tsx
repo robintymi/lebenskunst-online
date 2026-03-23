@@ -15,6 +15,8 @@ export default function CheckoutPage() {
   const [step, setStep] = useState<'form' | 'processing' | 'success'>('form')
   const [error, setError] = useState('')
   const [paymentType, setPaymentType] = useState<'full' | 'installment'>('full')
+  const [agbAccepted, setAgbAccepted] = useState(false)
+  const [datenschutzAccepted, setDatenschutzAccepted] = useState(false)
   const [formData, setFormData] = useState({
     email: '',
     firstName: '',
@@ -329,11 +331,38 @@ export default function CheckoutPage() {
                 {installmentItem.installmentCount}x {formatPrice(installmentMonthly)} / Monat
               </div>
             )}
+            <div className={styles.checkboxGroup}>
+              <label className={styles.checkboxLabel}>
+                <input
+                  type="checkbox"
+                  checked={agbAccepted}
+                  onChange={(e) => setAgbAccepted(e.target.checked)}
+                  className={styles.checkbox}
+                />
+                <span>
+                  Ich akzeptiere die{' '}
+                  <Link href="/agb" target="_blank">AGB</Link>
+                </span>
+              </label>
+              <label className={styles.checkboxLabel}>
+                <input
+                  type="checkbox"
+                  checked={datenschutzAccepted}
+                  onChange={(e) => setDatenschutzAccepted(e.target.checked)}
+                  className={styles.checkbox}
+                />
+                <span>
+                  Ich habe die{' '}
+                  <Link href="/datenschutz" target="_blank">Datenschutzerklärung</Link>{' '}
+                  gelesen
+                </span>
+              </label>
+            </div>
             <button
               type="submit"
               className="btn btn-accent"
               style={{ width: '100%' }}
-              disabled={step === 'processing'}
+              disabled={step === 'processing' || !agbAccepted || !datenschutzAccepted}
             >
               {step === 'processing'
                 ? 'Wird verarbeitet...'
@@ -341,11 +370,6 @@ export default function CheckoutPage() {
                   ? `${formatPrice(installmentMonthly)} / Monat starten`
                   : `${formatPrice(totalPrice)} bezahlen`}
             </button>
-            <p className={styles.legalNote}>
-              Mit dem Kauf stimmst du unseren{' '}
-              <Link href="/agb">AGB</Link> und{' '}
-              <Link href="/datenschutz">Datenschutzbestimmungen</Link> zu.
-            </p>
           </div>
         </form>
       </div>

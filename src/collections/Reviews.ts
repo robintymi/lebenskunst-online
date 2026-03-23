@@ -48,7 +48,7 @@ export const Reviews: CollectionConfig = {
       name: 'approved',
       label: 'Freigegeben',
       type: 'checkbox',
-      defaultValue: true,
+      defaultValue: false,
       admin: {
         position: 'sidebar',
         description: 'Nur freigegebene Bewertungen werden auf der Startseite angezeigt. Susanne kann hier Bewertungen ausblenden.',
