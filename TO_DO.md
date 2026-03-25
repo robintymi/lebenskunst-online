@@ -1,40 +1,94 @@
-# TO-DO
+# TO-DO – Lebenskunst Online
 
-## ❓ Offene Fragen – Antwort von Susanne holen
+---
 
-- [ ] **Kleinunternehmerregelung (§ 19 UStG):** Ist Susanne Kleinunternehmerin?
-  - Wenn JA (Jahresumsatz unter ~22.000 €): Rechnungen dürfen **keine MwSt** ausweisen → Rechnungsvorlage muss angepasst werden
+## 🔴 Blocker – Seite darf NICHT live gehen ohne das
+
+- [ ] **Kleinunternehmerregelung (§ 19 UStG) klären** – Antwort von Susanne holen
+  - Wenn JA (Jahresumsatz unter ~22.000 €): Rechnungen dürfen **keine MwSt** ausweisen → Rechnungsvorlage anpassen
   - Wenn NEIN (umsatzsteuerpflichtig): aktuelle Rechnung mit 19% MwSt ist korrekt
-  - **Ohne diese Info darf die Seite nicht live gehen** – falscher MwSt-Ausweis ist ein rechtliches Problem
+  - Falscher MwSt-Ausweis = Steuerproblem
 
-## 💳 Stripe – noch ausstehend
+- [ ] **Steuernummer ins Impressum eintragen**
+  - Impressum → "Steuerliche Angaben" → Steuernummer vom Finanzamt eintragen
+  - Gesetzliche Pflicht nach § 5 TMG
 
-- [ ] Stripe-Konto erstellen → [stripe.com](https://stripe.com)
-- [ ] API-Keys in Serverumgebungsvariablen eintragen:
-  - `STRIPE_SECRET_KEY=sk_live_...`
-  - `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_...`
-- [ ] Nach Deployment: Stripe Webhook registrieren
+---
+
+## 🟡 Wichtig – vor Go-Live erledigen
+
+### 💳 Stripe
+- [x] Stripe-Keys bereits eingetragen
+- [ ] Nach Deployment: **Stripe Webhook registrieren**
   - stripe.com → Developers → Webhooks → "Add endpoint"
   - URL: `https://lebenskunstonline.de/api/webhooks/stripe`
-  - Event: `checkout.session.completed`, `invoice.paid`, `invoice.payment_failed`, `customer.subscription.deleted`
+  - Events: `checkout.session.completed`, `invoice.paid`, `invoice.payment_failed`, `customer.subscription.deleted`
   - `STRIPE_WEBHOOK_SECRET=whsec_...` in Serverumgebungsvariablen eintragen
 
-## 📧 Resend – Domain verifizieren
-
+### 📧 Resend – Domain verifizieren (sonst landen Mails im Spam)
 - [ ] resend.com → **Domains** → "Add Domain" → `lebenskunstonline.de` eintragen
-- [ ] DNS-Einträge beim Hoster (Hostinger) setzen
-- [ ] Danach `FROM_EMAIL=buchung@lebenskunstonline.de` in den Serverumgebungsvariablen setzen
+- [ ] DNS-Einträge bei Hostinger setzen
+- [ ] Danach `FROM_EMAIL=buchung@lebenskunstonline.de` in Serverumgebungsvariablen setzen
 
-## 🚀 Deployment – Hostinger KVM 1
-
+### 🚀 Deployment – Hostinger KVM 1
 - [ ] Hostinger KVM 1 kaufen + Ubuntu auswählen
 - [ ] Server einrichten (Claude Code hilft Schritt für Schritt)
-- [ ] Domain auf Server zeigen lassen
+- [ ] Domain `lebenskunstonline.de` auf Server zeigen lassen
 - [ ] Alle Umgebungsvariablen auf Server eintragen
-- [ ] SSL-Zertifikat via Certbot einrichten
+- [ ] SSL-Zertifikat via Certbot einrichten (automatisch in setup-server.sh)
 
-## 🖼️ Inhalte
+---
 
-- [ ] Produktbilder in `/public/images/` hochladen
-- [ ] Logo (`logo.png`) und Susanne-Bild (`susanne.jpg`) in `/public/images/` hochladen
-- [ ] Impressum: Susannes vollständige Adresse prüfen (ist sie korrekt?)
+## 🖼️ Inhalte & Medien
+- [x] Einige Produktbilder bereits hochgeladen
+- [ ] Restliche Produktbilder in `/public/images/` hochladen
+- [ ] Logo (`logo.png`) in `/public/images/` prüfen/hochladen
+- [ ] Susanne-Foto (`susanne.jpg`) in `/public/images/` prüfen/hochladen
+- [ ] Impressum: Adresse nochmal prüfen – ist sie korrekt? (Schweriner Straße 44, 15757 Halbe)
+
+---
+
+## ✅ Erledigt (Übersicht was alles gebaut wurde)
+
+### Kritische Bugs
+- [x] Falsche Stripe API-Version → alle Zahlungen hätten fehlgeschlagen
+- [x] Falscher Raten-Webhook-Pfad → Rate 2+ wäre nie abgebucht worden
+- [x] Bundle-Käufe ohne Zugangsvergabe → Käufer hätten keinen Zugang bekommen
+- [x] Seed-Endpoint offen in Produktion → Sicherheitslücke
+- [x] Passwort-Änderung ohne Verifikation des alten Passworts
+- [x] Content-Ordner fehlte im Dockerfile → Datei-Uploads hätten fehlgeschlagen
+
+### Neue Features
+- [x] Rechnungsgenerierung (druckbares HTML, MwSt-Aufschlüsselung, downloadbar)
+- [x] Rabattcodes (Prozent/Festbetrag, Verfallsdatum, Max-Nutzungen)
+- [x] Versandstatus für physische Produkte (Sendungsnummer, Versanddatum)
+- [x] CSV-Export aller Bestellungen mit Datumsfilter (für Steuerberater)
+- [x] Admin-Dashboard mit Live-Statistiken (Einnahmen, Events, Zahlungsfehler)
+- [x] Event-Absage mit automatischer Mail an alle Buchenden
+- [x] Manuelle Zugangsverwaltung im Admin (User-Zugang geben/entziehen)
+- [x] Kundenkontakt direkt aus dem Admin
+- [x] Passwort-vergessen Flow
+- [x] Warenkorb-Persistenz (bleibt nach Browser-Schließen erhalten)
+- [x] Shop-Suche mit Suchfeld
+- [x] "Bereits gekauft" Badge im Shop
+- [x] Ausgebucht-Overlay auf vollen Events
+- [x] Direkter Link zu Inhalten nach Zahlung
+- [x] Ratenzahlung-Berechnung bei mehreren Artikeln korrigiert
+- [x] Zahlungsfehler-Mail an Kunden bei gescheiterter Rate
+- [x] "X von Y Raten bezahlt" Anzeige in Bestellungen
+
+### Rechtliches
+- [x] Impressum (§ 5 TMG)
+- [x] Datenschutzerklärung (Hostinger, MongoDB, Stripe, Resend eingetragen)
+- [x] AGB (Widerrufsrecht für digital/Events/physisch)
+- [x] Widerrufsrecht-Pflichtcheckbox im Checkout (gesetzlich vorgeschrieben)
+- [x] Alle Seiten im Footer verlinkt
+
+### Technisches
+- [x] 404 und 500-Fehlerseiten mit Lebenskunst-Design
+- [x] Sitemap.xml + robots.txt für SEO
+- [x] Bessere Fehlermeldungen statt stiller Fehler im Dashboard
+- [x] Passwort-Änderung prüft jetzt altes Passwort
+- [x] Reviews erfordern jetzt manuelle Freigabe durch Susanne
+- [x] Seed-Endpoint in Produktion gesperrt
+- [x] MongoDB ohne Auth-Problem in docker-compose dokumentiert
