@@ -27,9 +27,16 @@ export default function DatenschutzPage() {
         <section className={styles.section}>
           <h2>2. Hosting & Infrastruktur</h2>
           <p>
-            Diese Website wird auf einem virtuellen privaten Server (VPS) eines europäischen
-            Hosting-Anbieters betrieben. Alle Daten werden ausschließlich auf Servern innerhalb
-            der EU gespeichert. Es wird kein Website-Baukasten von Drittanbietern verwendet.
+            Diese Website wird auf einem virtuellen privaten Server (VPS) von Hostinger
+            (UAB Hostinger, Švitrigailos g. 34, Vilnius 03230, Litauen) betrieben.
+            Hostinger ist ein EU-Anbieter; die Server befinden sich innerhalb der EU.
+            Es wird kein Website-Baukasten von Drittanbietern verwendet.
+          </p>
+          <p>
+            Weitere Informationen:{' '}
+            <a href="https://www.hostinger.de/datenschutz" target="_blank" rel="noopener noreferrer">
+              hostinger.de/datenschutz
+            </a>
           </p>
           <p>Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse)</p>
         </section>
