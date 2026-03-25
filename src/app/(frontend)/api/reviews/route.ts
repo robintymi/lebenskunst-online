@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
         text: text.trim(),
         rating: Math.round(rating),
         context: context?.trim() || undefined,
-        approved: true,
+        approved: false,
       },
     })
 

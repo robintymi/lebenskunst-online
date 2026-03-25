@@ -33,7 +33,10 @@ export default buildConfig({
   },
   collections: [Users, ShopItems, Bundles, Podcasts, Media, ContentFiles, Orders, Categories, Reviews],
   editor: lexicalEditor(),
-  secret: process.env.PAYLOAD_SECRET || '',
+  secret: (() => {
+    if (!process.env.PAYLOAD_SECRET) throw new Error('PAYLOAD_SECRET environment variable is not set')
+    return process.env.PAYLOAD_SECRET
+  })(),
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },

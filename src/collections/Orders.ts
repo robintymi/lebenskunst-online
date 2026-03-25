@@ -14,7 +14,7 @@ export const Orders: CollectionConfig = {
       if (user.role === 'admin') return true
       return { customer: { equals: user.id } }
     },
-    create: ({ req: { user } }) => Boolean(user),
+    create: ({ req: { user } }) => Boolean(user?.role === 'admin'),
     update: ({ req: { user } }) => Boolean(user?.role === 'admin'),
     delete: ({ req: { user } }) => Boolean(user?.role === 'admin'),
   },

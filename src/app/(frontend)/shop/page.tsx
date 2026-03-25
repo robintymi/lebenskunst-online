@@ -35,7 +35,7 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
   if (activeType) {
     // Check if it's a group filter or specific type
     const groupTypes = Object.values(itemTypeGroups).find((types) => types.includes(activeType))
-    if (groupTypes && groupTypes[0] === activeType && groupTypes.length > 1) {
+    if (groupTypes && groupTypes.length > 1) {
       where.itemType = { in: groupTypes }
     } else {
       where.itemType = { equals: activeType }

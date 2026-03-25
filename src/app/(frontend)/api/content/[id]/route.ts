@@ -20,10 +20,10 @@ export async function GET(
     return NextResponse.json({ error: 'Nicht angemeldet' }, { status: 401 })
   }
 
-  // Fetch the shop item
+  // Fetch the shop item with depth:1 to populate contentFile relationship
   let item: any
   try {
-    item = await payload.findByID({ collection: 'shop-items', id })
+    item = await payload.findByID({ collection: 'shop-items', id, depth: 1 })
   } catch {
     return NextResponse.json({ error: 'Inhalt nicht gefunden' }, { status: 404 })
   }
@@ -69,7 +69,8 @@ export async function GET(
   }
 
   // Return content information (the actual file serving is done by Nginx X-Accel-Redirect in production)
-  const contentUrl = item.digitalDetails?.previewUrl || null
+  const contentUrl = item.digitalDetails?.contentFile?.url || null
+  const previewUrl = item.digitalDetails?.previewUrl || null
   const format = item.digitalDetails?.format || 'unknown'
 
   return NextResponse.json({
@@ -77,6 +78,7 @@ export async function GET(
     title: item.title,
     format,
     contentUrl,
+    previewUrl,
     message: 'Zugang gewährt',
   })
 }
