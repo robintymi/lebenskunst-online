@@ -32,6 +32,17 @@ export default function ImpressumPage() {
         </section>
 
         <section className={styles.section}>
+          <h2>Steuerliche Angaben</h2>
+          <p>
+            Steuernummer: [Von Finanzamt mitteilen lassen und hier eintragen]<br />
+            <em style={{ fontSize: '13px', color: '#aaa' }}>
+              (Hinweis an Betreiberin: Steuernummer oder USt-IdNr. ist laut § 5 TMG
+              Pflichtangabe für gewerbliche Anbieter — bitte vor Go-Live eintragen)
+            </em>
+          </p>
+        </section>
+
+        <section className={styles.section}>
           <h2>Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV</h2>
           <p>
             Susanne Sturm<br />

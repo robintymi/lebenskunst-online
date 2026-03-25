@@ -17,6 +17,7 @@ export default function CheckoutPage() {
   const [paymentType, setPaymentType] = useState<'full' | 'installment'>('full')
   const [agbAccepted, setAgbAccepted] = useState(false)
   const [datenschutzAccepted, setDatenschutzAccepted] = useState(false)
+  const [widerrufsAccepted, setWiderrufsAccepted] = useState(false)
   const [formData, setFormData] = useState({
     email: '',
     firstName: '',
@@ -331,10 +332,21 @@ export default function CheckoutPage() {
                 {installmentItem.installmentCount}x {formatPrice(installmentMonthly)} / Monat
               </div>
             )}
-            <p className={styles.widerrufshinweis}>
-              <strong>Hinweis zu digitalen Produkten:</strong> Bei sofort verfügbaren digitalen Inhalten
-              erlischt das Widerrufsrecht mit Beginn des Downloads. Ich stimme dem ausdrücklich zu.
-            </p>
+            <div className={styles.checkboxGroup}>
+              <label className={styles.checkboxLabel}>
+                <input
+                  type="checkbox"
+                  checked={widerrufsAccepted}
+                  onChange={(e) => setWiderrufsAccepted(e.target.checked)}
+                  className={styles.checkbox}
+                  required
+                />
+                <span>
+                  Ich stimme ausdrücklich zu, dass die Bereitstellung digitaler Inhalte sofort
+                  beginnt und ich damit mein Widerrufsrecht verliere.
+                </span>
+              </label>
+            </div>
             <div className={styles.checkboxGroup}>
               <label className={styles.checkboxLabel}>
                 <input
@@ -366,7 +378,7 @@ export default function CheckoutPage() {
               type="submit"
               className="btn btn-accent"
               style={{ width: '100%' }}
-              disabled={step === 'processing' || !agbAccepted || !datenschutzAccepted}
+              disabled={step === 'processing' || !agbAccepted || !datenschutzAccepted || !widerrufsAccepted}
             >
               {step === 'processing'
                 ? 'Wird verarbeitet...'

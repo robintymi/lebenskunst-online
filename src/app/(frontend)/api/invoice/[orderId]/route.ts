@@ -120,9 +120,10 @@ export async function GET(
     <div class="address-block" style="text-align:right">
       <h3>Anbieter</h3>
       <p>
-        Susanne [Nachname]<br>
+        Susanne Sturm<br>
         Lebenskunst Online<br>
-        [Straße, PLZ Ort]<br>
+        Schweriner Straße 44<br>
+        15757 Halbe<br>
         Deutschland
       </p>
     </div>
@@ -155,6 +156,10 @@ export async function GET(
         ? `Ratenzahlung — ${order.installmentDetails?.paidInstallments || 0} von ${order.installmentDetails?.totalInstallments || '?'} Raten bezahlt`
         : `Einmalzahlung — ${order.status === 'paid' ? 'Bezahlt' : 'Ausstehend'}`
       }
+    </p>
+    <p style="margin-top:8px;font-size:12px;color:#888;">
+      Hinweis: Gemäß § 19 UStG wird keine Umsatzsteuer berechnet (sofern Kleinunternehmerregelung gilt) —
+      bitte vor dem Go-Live prüfen und diese Zeile oder die MwSt.-Zeilen entsprechend anpassen.
     </p>
   </div>
 

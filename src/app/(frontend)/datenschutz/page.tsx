@@ -82,7 +82,19 @@ export default function DatenschutzPage() {
         </section>
 
         <section className={styles.section}>
-          <h2>6. Cookies</h2>
+          <h2>6. Datenbankdienst – MongoDB</h2>
+          <p>
+            Zur Speicherung von Nutzer- und Bestelldaten verwenden wir MongoDB als
+            Datenbankdienst. Die Datenbank wird auf dem Hostinger-Server (siehe Abschnitt 2)
+            betrieben und verarbeitet keine Daten außerhalb dieses Servers. Es findet keine
+            Übermittlung an MongoDB Inc. oder Dritte statt, da wir die Open-Source-Software
+            selbst betreiben.
+          </p>
+          <p>Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO</p>
+        </section>
+
+        <section className={styles.section}>
+          <h2>7. Cookies</h2>
           <p>
             Diese Website verwendet ausschließlich technisch notwendige Cookies
             (Session-Cookie für den Login, Warenkorb-Cookie). Es werden keine
@@ -93,7 +105,7 @@ export default function DatenschutzPage() {
         </section>
 
         <section className={styles.section}>
-          <h2>7. Datenspeicherung & Löschung</h2>
+          <h2>8. Datenspeicherung & Löschung</h2>
           <p>
             Personenbezogene Daten werden nur so lange gespeichert, wie es für die
             jeweiligen Zwecke erforderlich ist oder gesetzliche Aufbewahrungsfristen
@@ -103,7 +115,7 @@ export default function DatenschutzPage() {
         </section>
 
         <section className={styles.section}>
-          <h2>8. Ihre Rechte</h2>
+          <h2>9. Ihre Rechte</h2>
           <p>Sie haben das Recht auf:</p>
           <p>
             Auskunft (Art. 15 DSGVO) · Berichtigung (Art. 16 DSGVO) · Löschung (Art. 17 DSGVO) ·
@@ -113,6 +125,11 @@ export default function DatenschutzPage() {
           </p>
           <p>
             Für Anfragen wenden Sie sich an: joseline148@aol.com
+          </p>
+          <p style={{ marginTop: '12px' }}>
+            Um Ihre Rechte auszuüben (z.B. Datenlöschung, Auskunft), senden Sie bitte eine
+            E-Mail an <a href="mailto:joseline148@aol.com">joseline148@aol.com</a>.
+            Wir bearbeiten Anfragen innerhalb von 30 Tagen.
           </p>
         </section>
       </div>

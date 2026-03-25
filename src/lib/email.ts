@@ -248,6 +248,48 @@ interface EventCancellationEmailData {
   cancellationReason?: string
 }
 
+export async function sendPaymentFailureNotification(
+  customerEmail: string,
+  customerName: string,
+  orderNumber: string,
+  attemptNumber: number,
+): Promise<void> {
+  if (!resend) {
+    devLog('Zahlung fehlgeschlagen', customerEmail, `Zahlung fehlgeschlagen – Bestellung ${orderNumber}`)
+    return
+  }
+
+  const content = `
+    <h2 style="color:#BE465A;margin-bottom:8px;">Zahlung fehlgeschlagen</h2>
+    <p style="margin-bottom:16px;">Hallo ${customerName},</p>
+    <p style="margin-bottom:16px;">
+      Leider konnte deine Ratenzahlung für Bestellung <strong>${orderNumber}</strong>
+      nicht eingezogen werden (Versuch ${attemptNumber}).
+    </p>
+    <p style="margin-bottom:16px;">
+      Bitte stelle sicher, dass deine Zahlungsmethode gültig ist und ausreichend gedeckt ist.
+      Stripe wird die Zahlung automatisch erneut versuchen.
+    </p>
+    <p style="margin-bottom:16px;">
+      Bei Fragen melde dich bitte unter
+      <a href="mailto:joseline148@aol.com" style="color:#BE465A;">joseline148@aol.com</a>.
+    </p>
+    <p>Mit herzlichen Grüßen,<br/>Susanne</p>
+  `
+  const html = baseTemplate(content)
+
+  try {
+    await resend.emails.send({
+      from: FROM_EMAIL,
+      to: customerEmail,
+      subject: `Zahlung fehlgeschlagen – Bestellung ${orderNumber}`,
+      html,
+    })
+  } catch (error) {
+    console.error('Failed to send payment failure notification:', error)
+  }
+}
+
 export async function sendEventCancellation(data: EventCancellationEmailData): Promise<void> {
   const { customerName, customerEmail, eventTitle, orderNumber, cancellationReason } = data
 

@@ -358,6 +358,24 @@ async function handleInvoiceFailed(payload: any, invoice: Stripe.Invoice) {
   })
 
   console.error(`Payment failed (attempt ${failedAttempts}) for order ${order.orderNumber}`)
+
+  // Notify customer about payment failure
+  try {
+    const customer = typeof order.customer === 'string'
+      ? await payload.findByID({ collection: 'users', id: order.customer })
+      : order.customer
+    if (customer?.email) {
+      const { sendPaymentFailureNotification } = await import('@/lib/email')
+      await sendPaymentFailureNotification(
+        customer.email,
+        customer.firstName || customer.email,
+        order.orderNumber,
+        failedAttempts,
+      )
+    }
+  } catch (emailErr) {
+    console.error('Failed to send payment failure email:', emailErr)
+  }
 }
 
 /**
