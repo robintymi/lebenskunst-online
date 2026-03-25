@@ -30,6 +30,11 @@ export default buildConfig({
     },
     components: {
       beforeNavLinks: ['@/components/admin/WebsiteLink'],
+      views: {
+        dashboard: {
+          Component: '@/components/admin/Dashboard',
+        },
+      },
     },
   },
   collections: [Users, ShopItems, Bundles, Podcasts, Media, ContentFiles, Orders, Categories, Reviews, Discounts],
