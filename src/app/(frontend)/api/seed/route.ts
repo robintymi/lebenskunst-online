@@ -236,6 +236,10 @@ async function uploadImage(payload: any, imagePath: string, altText: string) {
 }
 
 export async function POST() {
+  if (process.env.NODE_ENV === 'production') {
+    return NextResponse.json({ error: 'Seed ist in der Produktionsumgebung deaktiviert.' }, { status: 403 })
+  }
+
   try {
     const payload = await getPayload({ config })
 

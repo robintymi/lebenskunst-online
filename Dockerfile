@@ -31,9 +31,11 @@ COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 
-# Media upload directory
+# Media and content upload directories
 RUN mkdir -p /app/media && chown nextjs:nodejs /app/media
+RUN mkdir -p /app/content && chown nextjs:nodejs /app/content
 VOLUME /app/media
+VOLUME /app/content
 
 USER nextjs
 

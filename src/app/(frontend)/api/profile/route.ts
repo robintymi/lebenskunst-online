@@ -18,7 +18,21 @@ export async function PATCH(req: NextRequest) {
     if (body.firstName !== undefined) allowedFields.firstName = body.firstName
     if (body.lastName !== undefined) allowedFields.lastName = body.lastName
     if (body.phone !== undefined) allowedFields.phone = body.phone
-    if (body.password !== undefined) allowedFields.password = body.password
+
+    if (body.password !== undefined) {
+      if (!body.currentPassword) {
+        return NextResponse.json({ error: 'Aktuelles Passwort erforderlich.' }, { status: 400 })
+      }
+      try {
+        await payload.login({
+          collection: 'users',
+          data: { email: user.email, password: body.currentPassword },
+        })
+      } catch {
+        return NextResponse.json({ error: 'Das aktuelle Passwort ist falsch.' }, { status: 403 })
+      }
+      allowedFields.password = body.password
+    }
 
     const updated = await payload.update({
       collection: 'users',

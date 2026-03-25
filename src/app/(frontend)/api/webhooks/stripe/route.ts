@@ -6,9 +6,7 @@ import { sendOrderConfirmation, sendInstallmentPaymentConfirmation } from '@/lib
 
 export const runtime = 'nodejs'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-  apiVersion: '2026-02-25.clover',
-})
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '')
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || ''
 
@@ -84,10 +82,12 @@ async function handleCheckoutCompleted(payload: any, session: Stripe.Checkout.Se
     stripePaymentIntentId: session.payment_intent as string || undefined,
   }
 
+  const existingOrder = await payload.findByID({ collection: 'orders', id: orderId })
+
   if (paymentType === 'installment' && session.subscription) {
     updateData.stripeSubscriptionId = session.subscription as string
     updateData.installmentDetails = {
-      ...updateData.installmentDetails,
+      ...(existingOrder?.installmentDetails || {}),
       paidInstallments: 1,
       nextPaymentDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
     }
@@ -173,13 +173,52 @@ async function handleCheckoutCompleted(payload: any, session: Stripe.Checkout.Se
         newPurchasedBundles.push(bundleId)
       }
 
-      // Also add all items from the bundle to purchasedItems
+      // Also add all items from the bundle to purchasedItems and handle side effects
       try {
         const bundle = await payload.findByID({ collection: 'bundles', id: bundleId, depth: 0 }) as any
         for (const bundledItemId of bundle.items || []) {
           const id = typeof bundledItemId === 'string' ? bundledItemId : bundledItemId.id
           if (!newPurchasedItems.includes(id)) {
             newPurchasedItems.push(id)
+          }
+          // Process event/training side effects for bundle items
+          try {
+            const shopItem = await payload.findByID({ collection: 'shop-items', id }) as any
+            if (['seminar', 'workshop', 'vortrag'].includes(shopItem.itemType)) {
+              const currentParticipants = shopItem.eventDetails?.currentParticipants || 0
+              await payload.update({
+                collection: 'shop-items',
+                id,
+                data: {
+                  eventDetails: {
+                    ...shopItem.eventDetails,
+                    currentParticipants: currentParticipants + 1,
+                  },
+                  ...(shopItem.eventDetails?.maxParticipants &&
+                    currentParticipants + 1 >= shopItem.eventDetails.maxParticipants && {
+                      status: 'sold_out',
+                    }),
+                },
+              })
+            }
+            if (shopItem.itemType === 'einzeltraining' && shopItem.trainingDetails?.durationWeeks) {
+              const alreadyHasAccess = newTrainingAccess.some((ta: any) => {
+                const trainingId = typeof ta.training === 'string' ? ta.training : ta.training?.id
+                return trainingId === id
+              })
+              if (!alreadyHasAccess) {
+                const startDate = new Date()
+                const endDate = new Date()
+                endDate.setDate(endDate.getDate() + shopItem.trainingDetails.durationWeeks * 7)
+                newTrainingAccess.push({
+                  training: id,
+                  startDate: startDate.toISOString(),
+                  endDate: endDate.toISOString(),
+                })
+              }
+            }
+          } catch (err) {
+            console.error(`Failed to process bundle item ${id}:`, err)
           }
         }
       } catch (err) {
@@ -224,7 +263,7 @@ async function handleCheckoutCompleted(payload: any, session: Stripe.Checkout.Se
  * Increments paidInstallments. Cancels subscription when all installments are paid.
  */
 async function handleInvoicePaid(payload: any, invoice: Stripe.Invoice) {
-  const subscriptionId = invoice.parent?.subscription_details?.subscription as string | undefined
+  const subscriptionId = (invoice as any).subscription as string | undefined
   if (!subscriptionId) return
 
   // Skip the first invoice (already handled by checkout.session.completed)
@@ -295,7 +334,7 @@ async function handleInvoicePaid(payload: any, invoice: Stripe.Invoice) {
  * Handles failed installment payment.
  */
 async function handleInvoiceFailed(payload: any, invoice: Stripe.Invoice) {
-  const subscriptionId = invoice.parent?.subscription_details?.subscription as string | undefined
+  const subscriptionId = (invoice as any).subscription as string | undefined
   if (!subscriptionId) return
 
   const orders = await payload.find({

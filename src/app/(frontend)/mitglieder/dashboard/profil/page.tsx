@@ -77,7 +77,7 @@ export default function ProfilePage() {
     setPasswordLoading(true)
 
     try {
-      const res = await fetch(`/api/users/${user?.id}`, {
+      const res = await fetch(`/api/profile`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
