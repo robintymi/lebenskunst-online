@@ -19,8 +19,23 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
   const activeType = params.typ || ''
   const activeCategory = params.kategorie || ''
   const activeView = params.ansicht || ''
+  const activeSearch = params.suche || ''
 
   const payload = await getPayloadClient()
+
+  // Get current user's purchased items
+  let purchasedItemIds: string[] = []
+  let purchasedBundleIds: string[] = []
+  try {
+    const { headers } = await import('next/headers')
+    const headersList = await headers()
+    const { user } = await payload.auth({ headers: headersList })
+    if (user) {
+      const fullUser = await payload.findByID({ collection: 'users', id: user.id, depth: 0 }) as any
+      purchasedItemIds = (fullUser.purchasedItems || []).map((i: any) => typeof i === 'string' ? i : i.id)
+      purchasedBundleIds = (fullUser.purchasedBundles || []).map((i: any) => typeof i === 'string' ? i : i.id)
+    }
+  } catch { /* not logged in */ }
 
   // Fetch categories
   const { docs: categories } = await payload.find({
@@ -49,6 +64,13 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
     }
   }
 
+  if (activeSearch) {
+    where['or'] = [
+      { title: { like: activeSearch } },
+      { shortDescription: { like: activeSearch } },
+    ]
+  }
+
   // Fetch items or bundles
   if (activeView === 'bundles') {
     const { docs: bundles } = await payload.find({
@@ -69,7 +91,7 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
 
         <section className="section">
           <div className="container">
-            <ShopFilters categories={categories as any} />
+            <ShopFilters categories={categories as any} currentSearch={activeSearch} />
 
             {bundles.length === 0 ? (
               <div className={styles.empty}>
@@ -107,6 +129,9 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
                           oder {bundle.installmentCount}x Ratenzahlung möglich
                         </p>
                       )}
+                      {purchasedBundleIds.includes(bundle.id) && (
+                        <span className={styles.ownedBadge}>Bereits gekauft</span>
+                      )}
                     </div>
                   </Link>
                 ))}
@@ -137,7 +162,7 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
 
       <section className="section">
         <div className="container">
-          <ShopFilters categories={categories as any} />
+          <ShopFilters categories={categories as any} currentSearch={activeSearch} />
 
           {items.length === 0 ? (
             <div className={styles.empty}>
@@ -146,8 +171,16 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
             </div>
           ) : (
             <div className={styles.grid}>
-              {items.map((item: any) => (
-                <Link href={`/shop/${item.slug}`} key={item.id} className={styles.card}>
+              {items.map((item: any) => {
+                const isSoldOut =
+                  item.status === 'sold_out' ||
+                  (item.eventDetails?.maxParticipants > 0 &&
+                    item.eventDetails?.currentParticipants >= item.eventDetails?.maxParticipants)
+                return (
+                <Link href={`/shop/${item.slug}`} key={item.id} className={styles.card} style={{ position: 'relative' }}>
+                  {isSoldOut && (
+                    <span className={styles.soldOutOverlay}>Ausgebucht</span>
+                  )}
                   {item.image && typeof item.image !== 'string' && (
                     <div className={styles.imageWrapper}>
                       <img
@@ -196,7 +229,7 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
                           </>
                         )}
                       </div>
-                      {isEventType(item.itemType) && item.eventDetails?.maxParticipants && (
+                      {isEventType(item.itemType) && item.eventDetails?.maxParticipants && !isSoldOut && (
                         <span className={styles.spots}>
                           {Math.max(0, item.eventDetails.maxParticipants - (item.eventDetails.currentParticipants || 0))}{' '}
                           Plätze frei
@@ -208,9 +241,13 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
                         Ratenzahlung möglich
                       </p>
                     )}
+                    {purchasedItemIds.includes(item.id) && (
+                      <span className={styles.ownedBadge}>Bereits gekauft</span>
+                    )}
                   </div>
                 </Link>
-              ))}
+                )
+              })}
             </div>
           )}
         </div>

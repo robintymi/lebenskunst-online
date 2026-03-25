@@ -10,6 +10,22 @@
   box-shadow: var(--shadow);
 }
 
+.searchInput {
+  width: 100%;
+  padding: 10px 16px;
+  border: 1px solid rgba(190, 70, 90, 0.25);
+  border-radius: 999px;
+  font-size: 14px;
+  font-family: var(--font-body);
+  outline: none;
+  background: white;
+  box-sizing: border-box;
+}
+
+.searchInput:focus {
+  border-color: #BE465A;
+}
+
 .filterGroup {
   display: flex;
   flex-direction: column;

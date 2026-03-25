@@ -74,15 +74,18 @@ export default function CheckoutPage() {
           <h1 style={{ color: 'var(--color-success)', marginBottom: '1rem' }}>
             Bestellung erfolgreich!
           </h1>
-          <p style={{ marginBottom: '2rem', color: 'var(--color-text-light)' }}>
-            Vielen Dank für deine Bestellung. Du erhältst in Kürze eine Bestätigung per E-Mail.
+          <p style={{ marginBottom: '0.75rem', color: 'var(--color-text-light)' }}>
+            Vielen Dank für deine Bestellung. Deine Inhalte sind sofort verfügbar.
+          </p>
+          <p style={{ marginBottom: '2rem', fontSize: '0.9375rem', color: 'var(--color-text-muted)' }}>
+            Eine Bestellbestätigung wurde an deine E-Mail-Adresse gesendet.
           </p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link href="/mitglieder/dashboard" className="btn btn-primary">
-              Zu meinen Inhalten
+            <Link href="/mitglieder/dashboard/inhalte" className="btn btn-primary">
+              Jetzt zu meinen Inhalten
             </Link>
-            <Link href="/shop" className="btn btn-secondary">
-              Weiter stöbern
+            <Link href="/mitglieder/dashboard/bestellungen" className="btn btn-secondary">
+              Bestellung ansehen
             </Link>
           </div>
         </div>

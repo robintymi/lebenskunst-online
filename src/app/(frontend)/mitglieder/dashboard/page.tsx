@@ -8,6 +8,7 @@ import styles from './dashboard.module.css'
 export default function DashboardPage() {
   const { user } = useAuth()
   const [recentOrders, setRecentOrders] = useState<any[]>([])
+  const [error, setError] = useState('')
 
   useEffect(() => {
     if (!user?.id) return
@@ -16,7 +17,7 @@ export default function DashboardPage() {
     })
       .then((r) => r.json())
       .then((data) => setRecentOrders(data?.docs || []))
-      .catch(() => {})
+      .catch(() => setError('Bestellungen konnten nicht geladen werden.'))
   }, [user?.id])
 
   const purchasedCount = user?.purchasedItems?.length ?? 0
@@ -28,6 +29,12 @@ export default function DashboardPage() {
         <h1>Hallo, {user?.firstName || 'Mitglied'}!</h1>
         <p>Willkommen in deinem Mitgliederbereich.</p>
       </div>
+
+      {error && (
+        <p style={{ color: '#BE465A', fontSize: '14px', padding: '12px', background: '#fff0f2', borderRadius: '8px', marginBottom: '16px' }}>
+          {error}
+        </p>
+      )}
 
       <div className={styles.statsGrid}>
         <div className={styles.statCard}>

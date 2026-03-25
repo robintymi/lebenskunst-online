@@ -12,16 +12,22 @@ interface OrderItem {
   quantity: number
 }
 
+interface InstallmentDetails {
+  totalInstallments?: number
+  amountPerInstallment?: number
+  paidInstallments?: number
+  nextPaymentDate?: string
+}
+
 interface Order {
   id: string
   orderNumber: string
   status: 'paid' | 'pending' | 'installment_active' | 'cancelled' | 'refunded'
-  paymentType: 'one_time' | 'installment'
+  paymentType: 'full' | 'installment'
   total: number
   createdAt: string
   items: OrderItem[]
-  installmentsPaid?: number
-  installmentsTotal?: number
+  installmentDetails?: InstallmentDetails
 }
 
 const statusLabels: Record<string, string> = {
@@ -44,6 +50,7 @@ export default function OrdersPage() {
   const { user } = useAuth()
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
   useEffect(() => {
     if (!user?.id) return
@@ -59,7 +66,7 @@ export default function OrdersPage() {
           setOrders(data.docs || [])
         }
       } catch {
-        // Silently handle fetch errors
+        setError('Bestellungen konnten nicht geladen werden. Bitte versuche es später erneut.')
       } finally {
         setLoading(false)
       }
@@ -89,7 +96,13 @@ export default function OrdersPage() {
         <p>Deine Bestellhistorie im Überblick.</p>
       </div>
 
-      {orders.length === 0 ? (
+      {error && (
+        <p style={{ color: '#BE465A', fontSize: '14px', padding: '12px', background: '#fff0f2', borderRadius: '8px', marginBottom: '16px' }}>
+          {error}
+        </p>
+      )}
+
+      {orders.length === 0 && !error ? (
         <div className={styles.emptyState}>
           <h3>Noch keine Bestellungen</h3>
           <p>Du hast noch keine Bestellungen aufgegeben.</p>
@@ -110,21 +123,22 @@ export default function OrdersPage() {
             <div className={styles.orderMeta}>
               <span>{formatDateShort(order.createdAt)}</span>
               <span>{order.paymentType === 'installment' ? 'Ratenzahlung' : 'Einmalzahlung'}</span>
+
               <strong>{formatPrice(order.total)}</strong>
             </div>
 
-            {order.paymentType === 'installment' && order.installmentsTotal && (
+            {order.paymentType === 'installment' && order.installmentDetails?.totalInstallments && (
               <div style={{ marginTop: '0.75rem' }}>
                 <div className={styles.progressBar}>
                   <div
                     className={styles.progressFill}
                     style={{
-                      width: `${((order.installmentsPaid || 0) / order.installmentsTotal) * 100}%`,
+                      width: `${((order.installmentDetails.paidInstallments || 0) / order.installmentDetails.totalInstallments) * 100}%`,
                     }}
                   />
                 </div>
                 <span style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)' }}>
-                  {order.installmentsPaid || 0} von {order.installmentsTotal} Raten bezahlt
+                  Ratenzahlung: {order.installmentDetails.paidInstallments || 0} von {order.installmentDetails.totalInstallments} Raten bezahlt
                 </span>
               </div>
             )}

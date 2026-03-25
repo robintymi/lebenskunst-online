@@ -120,13 +120,15 @@ export async function POST(req: NextRequest) {
       unitPrice: item.price,
     }))
 
-    // Determine installment details
-    const installmentItem = paymentType === 'installment'
-      ? verifiedItems.find((i) => i.installmentEnabled && i.installmentCount)
-      : null
-    const installmentCount = installmentItem?.installmentCount || 1
-    const monthlyAmount = paymentType === 'installment'
-      ? Math.round(totalAmount / installmentCount)
+    // Determine installment details — use max installment count for most flexible terms
+    const installmentItems = paymentType === 'installment'
+      ? verifiedItems.filter((i) => i.installmentEnabled && i.installmentCount)
+      : []
+    const installmentCount = installmentItems.length > 0
+      ? Math.max(...installmentItems.map((i) => i.installmentCount || 1))
+      : 1
+    const monthlyAmount = paymentType === 'installment' && installmentCount > 1
+      ? Math.round((totalAmount / installmentCount) * 100) / 100
       : totalAmount
 
     // Create pending order in database BEFORE Stripe
@@ -250,7 +252,7 @@ export async function POST(req: NextRequest) {
     // PRODUCTION: Create Stripe session
     let session: Stripe.Checkout.Session
 
-    if (paymentType === 'installment' && installmentItem) {
+    if (paymentType === 'installment' && installmentItems.length > 0) {
       const product = await stripe.products.create({
         name: verifiedItems.length === 1
           ? verifiedItems[0].name

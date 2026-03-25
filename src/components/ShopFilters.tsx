@@ -1,6 +1,7 @@
 'use client'
 
 import { useRouter, useSearchParams } from 'next/navigation'
+import { useRef } from 'react'
 import { itemTypeLabels, itemTypeGroups } from '@/lib/utils'
 import styles from './ShopFilters.module.css'
 
@@ -12,11 +13,13 @@ interface Category {
 
 interface Props {
   categories: Category[]
+  currentSearch?: string
 }
 
-export default function ShopFilters({ categories }: Props) {
+export default function ShopFilters({ categories, currentSearch = '' }: Props) {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const activeType = searchParams.get('typ') || 'alle'
   const activeCategory = searchParams.get('kategorie') || ''
@@ -32,8 +35,29 @@ export default function ShopFilters({ categories }: Props) {
     router.push(`/shop?${params.toString()}`, { scroll: false })
   }
 
+  function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const value = e.target.value
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+    debounceRef.current = setTimeout(() => {
+      const params = new URLSearchParams(searchParams.toString())
+      if (value) {
+        params.set('suche', value)
+      } else {
+        params.delete('suche')
+      }
+      router.push(`/shop?${params.toString()}`, { scroll: false })
+    }, 400)
+  }
+
   return (
     <div className={styles.filters}>
+      <input
+        type="search"
+        placeholder="Suchen…"
+        defaultValue={currentSearch}
+        onChange={handleSearchChange}
+        className={styles.searchInput}
+      />
       {/* Typ-Filter */}
       <div className={styles.filterGroup}>
         <h4 className={styles.filterLabel}>Typ</h4>
