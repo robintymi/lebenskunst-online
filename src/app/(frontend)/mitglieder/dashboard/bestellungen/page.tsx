@@ -142,6 +142,17 @@ export default function OrdersPage() {
                 )
               })}
             </div>
+
+            {(order.status === 'paid' || order.status === 'installment_active') && (
+              <a
+                href={`/api/invoice/${order.id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.invoiceLink}
+              >
+                Rechnung anzeigen
+              </a>
+            )}
           </div>
         ))
       )}

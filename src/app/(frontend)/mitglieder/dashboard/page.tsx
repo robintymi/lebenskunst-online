@@ -1,11 +1,23 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@/lib/auth-context'
 import styles from './dashboard.module.css'
 
 export default function DashboardPage() {
   const { user } = useAuth()
+  const [recentOrders, setRecentOrders] = useState<any[]>([])
+
+  useEffect(() => {
+    if (!user?.id) return
+    fetch(`/api/orders?where[customer][equals]=${user.id}&sort=-createdAt&limit=3&depth=0`, {
+      credentials: 'include',
+    })
+      .then((r) => r.json())
+      .then((data) => setRecentOrders(data?.docs || []))
+      .catch(() => {})
+  }, [user?.id])
 
   const purchasedCount = user?.purchasedItems?.length ?? 0
   const trainingCount = user?.trainingAccess?.length ?? 0
@@ -74,6 +86,33 @@ export default function DashboardPage() {
           </div>
         </Link>
       </div>
+
+      {recentOrders.length > 0 && (
+        <div className={styles.recentOrders}>
+          <h2>Letzte Bestellungen</h2>
+          <div className={styles.recentOrdersList}>
+            {recentOrders.map((order: any) => (
+              <div key={order.id} className={styles.recentOrderItem}>
+                <div>
+                  <span className={styles.orderNumber}>{order.orderNumber}</span>
+                  <span className={styles.orderDate}>{new Date(order.createdAt).toLocaleDateString('de-DE')}</span>
+                </div>
+                <div className={styles.orderRight}>
+                  <span className={styles[`status_${order.status}`] || styles.statusBadge}>
+                    {order.status === 'paid' ? 'Bezahlt' : order.status === 'pending' ? 'Ausstehend' : order.status === 'installment_active' ? 'Ratenzahlung' : order.status}
+                  </span>
+                  <span className={styles.orderTotal}>€{(order.total || 0).toFixed(2).replace('.', ',')}</span>
+                  {(order.status === 'paid' || order.status === 'installment_active') && (
+                    <a href={`/api/invoice/${order.id}`} target="_blank" rel="noopener noreferrer" className={styles.invoiceLink}>
+                      Rechnung
+                    </a>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
