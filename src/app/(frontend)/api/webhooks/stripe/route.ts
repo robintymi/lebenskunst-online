@@ -238,6 +238,27 @@ async function handleCheckoutCompleted(payload: any, session: Stripe.Checkout.Se
     },
   })
 
+  // Increment discount usedCount if a discount was applied
+  if (order.discountCode) {
+    try {
+      const discountResult = await payload.find({
+        collection: 'discounts',
+        where: { code: { equals: order.discountCode } },
+        limit: 1,
+      })
+      const discount = discountResult.docs[0] as any
+      if (discount) {
+        await payload.update({
+          collection: 'discounts',
+          id: discount.id,
+          data: { usedCount: (discount.usedCount || 0) + 1 },
+        })
+      }
+    } catch (err) {
+      console.error('Failed to increment discount usedCount:', err)
+    }
+  }
+
   // Send order confirmation email
   try {
     await sendOrderConfirmation({

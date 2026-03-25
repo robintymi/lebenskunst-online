@@ -30,12 +30,13 @@ interface CheckoutBody {
   }
   paymentType: 'full' | 'installment'
   userId?: string
+  discountCode?: string
 }
 
 export async function POST(req: NextRequest) {
   try {
     const body: CheckoutBody = await req.json()
-    const { items, customer, paymentType, userId } = body
+    const { items, customer, paymentType, userId, discountCode } = body
 
     if (!items?.length) {
       return NextResponse.json({ error: 'Keine Artikel im Warenkorb' }, { status: 400 })
@@ -87,10 +88,35 @@ export async function POST(req: NextRequest) {
       }),
     )
 
-    const totalAmount = verifiedItems.reduce(
+    const subtotal = verifiedItems.reduce(
       (sum, item) => sum + item.price * item.quantity,
       0,
     )
+
+    // Validate and apply discount code server-side
+    let discountAmount = 0
+    let validatedDiscountCode: string | undefined
+
+    if (discountCode) {
+      const discountResult = await payload.find({
+        collection: 'discounts',
+        where: { code: { equals: discountCode.toUpperCase().trim() }, active: { equals: true } },
+        limit: 1,
+      })
+      const discount = discountResult.docs[0] as any
+      if (
+        discount &&
+        !(discount.expiresAt && new Date(discount.expiresAt) < new Date()) &&
+        !(discount.maxUses > 0 && discount.usedCount >= discount.maxUses)
+      ) {
+        discountAmount = discount.type === 'percentage'
+          ? Math.round(subtotal * (discount.value / 100) * 100) / 100
+          : Math.min(discount.value, subtotal)
+        validatedDiscountCode = discount.code
+      }
+    }
+
+    const totalAmount = Math.max(0, subtotal - discountAmount)
 
     // Resolve customer user ID
     let customerId = userId
@@ -156,6 +182,10 @@ export async function POST(req: NextRequest) {
               country: 'Deutschland',
             }
           : undefined,
+        ...(validatedDiscountCode && {
+          discountCode: validatedDiscountCode,
+          discountAmount,
+        }),
       },
     })
 

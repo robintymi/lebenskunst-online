@@ -48,6 +48,8 @@ export async function GET(
     `
   }).join('')
 
+  // VAT display: set INVOICE_SHOW_VAT=true in env if Susanne is NOT a Kleinunternehmerin (§19 UStG)
+  const showVat = process.env.INVOICE_SHOW_VAT === 'true'
   const netTotal = order.total / 1.19
   const vatAmount = order.total - netTotal
 
@@ -144,8 +146,10 @@ export async function GET(
   </table>
 
   <div class="totals">
+    ${showVat ? `
     <div class="totals-row"><span>Nettobetrag</span><span>€${netTotal.toFixed(2).replace('.', ',')}</span></div>
     <div class="totals-row"><span>MwSt. 19%</span><span>€${vatAmount.toFixed(2).replace('.', ',')}</span></div>
+    ` : ''}
     <div class="totals-row total"><span>Gesamtbetrag</span><span>€${order.total.toFixed(2).replace('.', ',')}</span></div>
   </div>
 
@@ -157,10 +161,7 @@ export async function GET(
         : `Einmalzahlung — ${order.status === 'paid' ? 'Bezahlt' : 'Ausstehend'}`
       }
     </p>
-    <p style="margin-top:8px;font-size:12px;color:#888;">
-      Hinweis: Gemäß § 19 UStG wird keine Umsatzsteuer berechnet (sofern Kleinunternehmerregelung gilt) —
-      bitte vor dem Go-Live prüfen und diese Zeile oder die MwSt.-Zeilen entsprechend anpassen.
-    </p>
+    ${!showVat ? `<p style="margin-top:8px;font-size:12px;color:#888;">Gemäß § 19 UStG wird keine Umsatzsteuer berechnet.</p>` : ''}
   </div>
 
   <div class="footer">

@@ -3,6 +3,7 @@
 import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from 'react'
 
 const CART_STORAGE_KEY = 'lebenskunst-cart'
+const DISCOUNT_STORAGE_KEY = 'lebenskunst-discount'
 
 export type CartItemType = 'shop-item' | 'bundle'
 
@@ -19,6 +20,13 @@ export interface CartItem {
   installmentCount?: number
 }
 
+export interface AppliedDiscount {
+  code: string
+  type: 'percentage' | 'fixed'
+  value: number
+  discountAmount: number
+}
+
 interface CartContextType {
   items: CartItem[]
   addItem: (item: Omit<CartItem, 'quantity'>) => void
@@ -28,6 +36,10 @@ interface CartContextType {
   totalItems: number
   totalPrice: number
   hasInstallmentItems: boolean
+  appliedDiscount: AppliedDiscount | null
+  applyDiscount: (discount: AppliedDiscount) => void
+  removeDiscount: () => void
+  finalPrice: number
 }
 
 const CartContext = createContext<CartContextType | null>(null)
@@ -53,10 +65,15 @@ function saveCartToStorage(items: CartItem[]) {
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([])
   const [isHydrated, setIsHydrated] = useState(false)
+  const [appliedDiscount, setAppliedDiscount] = useState<AppliedDiscount | null>(null)
 
-  // Load cart from localStorage on mount
+  // Load cart and discount from localStorage on mount
   useEffect(() => {
     setItems(loadCartFromStorage())
+    try {
+      const storedDiscount = localStorage.getItem(DISCOUNT_STORAGE_KEY)
+      if (storedDiscount) setAppliedDiscount(JSON.parse(storedDiscount))
+    } catch { /* noop */ }
     setIsHydrated(true)
   }, [])
 
@@ -98,16 +115,33 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const clearCart = useCallback(() => {
     setItems([])
-    try { localStorage.removeItem(CART_STORAGE_KEY) } catch { /* noop */ }
+    setAppliedDiscount(null)
+    try {
+      localStorage.removeItem(CART_STORAGE_KEY)
+      localStorage.removeItem(DISCOUNT_STORAGE_KEY)
+    } catch { /* noop */ }
+  }, [])
+
+  const applyDiscount = useCallback((discount: AppliedDiscount) => {
+    setAppliedDiscount(discount)
+    try { localStorage.setItem(DISCOUNT_STORAGE_KEY, JSON.stringify(discount)) } catch { /* noop */ }
+  }, [])
+
+  const removeDiscount = useCallback(() => {
+    setAppliedDiscount(null)
+    try { localStorage.removeItem(DISCOUNT_STORAGE_KEY) } catch { /* noop */ }
   }, [])
 
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0)
   const totalPrice = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
   const hasInstallmentItems = items.some((item) => item.installmentEnabled)
+  const finalPrice = appliedDiscount
+    ? Math.max(0, totalPrice - appliedDiscount.discountAmount)
+    : totalPrice
 
   return (
     <CartContext.Provider
-      value={{ items, addItem, removeItem, updateQuantity, clearCart, totalItems, totalPrice, hasInstallmentItems }}
+      value={{ items, addItem, removeItem, updateQuantity, clearCart, totalItems, totalPrice, hasInstallmentItems, appliedDiscount, applyDiscount, removeDiscount, finalPrice }}
     >
       {children}
     </CartContext.Provider>

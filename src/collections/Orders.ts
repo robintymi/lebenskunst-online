@@ -128,8 +128,21 @@ export const Orders: CollectionConfig = {
         { label: 'Ratenzahlung aktiv', value: 'installment_active' },
         { label: 'Storniert', value: 'cancelled' },
         { label: 'Erstattet', value: 'refunded' },
+        { label: 'Zahlung fehlgeschlagen', value: 'payment_failed' },
       ],
       admin: { position: 'sidebar' },
+    },
+    {
+      name: 'discountCode',
+      label: 'Verwendeter Rabattcode',
+      type: 'text',
+      admin: { position: 'sidebar', readOnly: true },
+    },
+    {
+      name: 'discountAmount',
+      label: 'Rabattbetrag (€)',
+      type: 'number',
+      admin: { position: 'sidebar', readOnly: true },
     },
     {
       name: 'stripeSessionId',

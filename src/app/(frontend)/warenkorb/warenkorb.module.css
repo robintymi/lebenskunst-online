@@ -137,6 +137,79 @@
   color: var(--color-text);
 }
 
+.discountInput {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.75rem 0;
+}
+
+.discountInput input {
+  flex: 1;
+  min-width: 0;
+}
+
+.applyBtn {
+  padding: 0.5rem 1rem;
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+
+.applyBtn:hover:not(:disabled) {
+  background: var(--color-primary-dark);
+}
+
+.applyBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.discountError {
+  width: 100%;
+  font-size: 0.8125rem;
+  color: var(--color-error);
+  margin: 0;
+}
+
+.discountApplied {
+  margin: 0.75rem 0;
+  padding: 0.75rem;
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+  border-radius: var(--radius);
+}
+
+.discountRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9375rem;
+  margin-bottom: 0.35rem;
+}
+
+.discountAmount {
+  color: #16a34a;
+  font-weight: 600;
+}
+
+.removeDiscount {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  padding: 0;
+  text-decoration: underline;
+}
+
+.removeDiscount:hover {
+  color: var(--color-error);
+}
+
 @media (max-width: 768px) {
   .layout {
     grid-template-columns: 1fr;

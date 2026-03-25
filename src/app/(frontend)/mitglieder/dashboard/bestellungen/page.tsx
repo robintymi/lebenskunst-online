@@ -7,7 +7,9 @@ import styles from '../dashboard.module.css'
 import { formatPrice, formatDateShort } from '@/lib/utils'
 
 interface OrderItem {
-  shopItem: { id: string; title: string } | string
+  itemType?: 'shop-item' | 'bundle'
+  shopItem: { id: string; title: string } | string | null
+  bundle?: { id: string; name: string } | string | null
   unitPrice: number
   quantity: number
 }
@@ -22,7 +24,7 @@ interface InstallmentDetails {
 interface Order {
   id: string
   orderNumber: string
-  status: 'paid' | 'pending' | 'installment_active' | 'cancelled' | 'refunded'
+  status: 'paid' | 'pending' | 'installment_active' | 'cancelled' | 'refunded' | 'payment_failed'
   paymentType: 'full' | 'installment'
   total: number
   createdAt: string
@@ -36,6 +38,7 @@ const statusLabels: Record<string, string> = {
   installment_active: 'Ratenzahlung aktiv',
   cancelled: 'Storniert',
   refunded: 'Erstattet',
+  payment_failed: 'Zahlung fehlgeschlagen',
 }
 
 const statusClasses: Record<string, string> = {
@@ -44,6 +47,7 @@ const statusClasses: Record<string, string> = {
   installment_active: styles.statusInstallment,
   cancelled: styles.statusCancelled,
   refunded: styles.statusCancelled,
+  payment_failed: styles.statusCancelled,
 }
 
 export default function OrdersPage() {
@@ -145,7 +149,10 @@ export default function OrdersPage() {
 
             <div style={{ marginTop: '1rem' }}>
               {order.items?.map((item, index) => {
-                const itemName = typeof item.shopItem === 'object' ? item.shopItem.title : 'Artikel'
+                const itemName =
+                  item.itemType === 'bundle'
+                    ? (typeof item.bundle === 'object' && item.bundle ? item.bundle.name : 'Bundle')
+                    : (typeof item.shopItem === 'object' && item.shopItem ? item.shopItem.title : 'Artikel')
                 return (
                   <div key={index} className={styles.orderItem}>
                     <span>{itemName}</span>

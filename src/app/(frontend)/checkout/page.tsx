@@ -9,7 +9,7 @@ import Link from 'next/link'
 import styles from './checkout.module.css'
 
 export default function CheckoutPage() {
-  const { items, totalPrice, clearCart, hasInstallmentItems } = useCart()
+  const { items, totalPrice, clearCart, hasInstallmentItems, appliedDiscount, finalPrice } = useCart()
   const { user, isLoggedIn, isLoading: authLoading } = useAuth()
   const searchParams = useSearchParams()
   const [step, setStep] = useState<'form' | 'processing' | 'success'>('form')
@@ -75,7 +75,7 @@ export default function CheckoutPage() {
             Bestellung erfolgreich!
           </h1>
           <p style={{ marginBottom: '0.75rem', color: 'var(--color-text-light)' }}>
-            Vielen Dank für deine Bestellung. Deine Inhalte sind sofort verfügbar.
+            Vielen Dank für deine Bestellung!
           </p>
           <p style={{ marginBottom: '2rem', fontSize: '0.9375rem', color: 'var(--color-text-muted)' }}>
             Eine Bestellbestätigung wurde an deine E-Mail-Adresse gesendet.
@@ -146,6 +146,7 @@ export default function CheckoutPage() {
           customer: formData,
           paymentType,
           userId: user?.id,
+          discountCode: appliedDiscount?.code,
         }),
       })
 
@@ -167,10 +168,14 @@ export default function CheckoutPage() {
     setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
-  // Calculate installment info
-  const installmentItem = items.find((i) => i.installmentEnabled && i.installmentCount)
+  // Calculate installment info — use max installmentCount across all eligible items (matches server logic)
+  const installmentItems = items.filter((i) => i.installmentEnabled && i.installmentCount)
+  const installmentCount = installmentItems.length > 0
+    ? Math.max(...installmentItems.map((i) => i.installmentCount || 1))
+    : 1
+  const installmentItem = installmentItems.length > 0 ? installmentItems[0] : null
   const installmentMonthly = installmentItem
-    ? totalPrice / (installmentItem.installmentCount || 1)
+    ? Math.round((finalPrice / installmentCount) * 100) / 100
     : 0
 
   return (
@@ -326,13 +331,19 @@ export default function CheckoutPage() {
                 <span>{formatPrice(item.price * item.quantity)}</span>
               </div>
             ))}
+            {appliedDiscount && (
+              <div className={styles.orderItem} style={{ color: '#16a34a' }}>
+                <span>Rabatt ({appliedDiscount.code})</span>
+                <span>−{formatPrice(appliedDiscount.discountAmount)}</span>
+              </div>
+            )}
             <div className={styles.orderTotal}>
               <strong>Gesamt</strong>
-              <strong className="price">{formatPrice(totalPrice)}</strong>
+              <strong className="price">{formatPrice(finalPrice)}</strong>
             </div>
             {paymentType === 'installment' && installmentItem && (
               <div className={styles.installmentSummary}>
-                {installmentItem.installmentCount}x {formatPrice(installmentMonthly)} / Monat
+                {installmentCount}x {formatPrice(installmentMonthly)} / Monat
               </div>
             )}
             <div className={styles.checkboxGroup}>
@@ -387,7 +398,7 @@ export default function CheckoutPage() {
                 ? 'Wird verarbeitet...'
                 : paymentType === 'installment'
                   ? `${formatPrice(installmentMonthly)} / Monat starten`
-                  : `${formatPrice(totalPrice)} bezahlen`}
+                  : `${formatPrice(finalPrice)} bezahlen`}
             </button>
           </div>
         </form>

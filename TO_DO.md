@@ -5,8 +5,8 @@
 ## 🔴 Blocker – Seite darf NICHT live gehen ohne das
 
 - [ ] **Kleinunternehmerregelung (§ 19 UStG) klären** – Antwort von Susanne holen
-  - Wenn JA (Jahresumsatz unter ~22.000 €): Rechnungen dürfen **keine MwSt** ausweisen → Rechnungsvorlage anpassen
-  - Wenn NEIN (umsatzsteuerpflichtig): aktuelle Rechnung mit 19% MwSt ist korrekt
+  - Wenn JA (Kleinunternehmerin): Serverumgebungsvariable **nicht setzen** → Rechnung zeigt automatisch "Gemäß § 19 UStG wird keine Umsatzsteuer berechnet"
+  - Wenn NEIN (umsatzsteuerpflichtig): `INVOICE_SHOW_VAT=true` in Serverumgebungsvariablen setzen → Rechnung zeigt dann 19% MwSt-Aufschlüsselung
   - Falscher MwSt-Ausweis = Steuerproblem
 
 - [ ] **Steuernummer ins Impressum eintragen**
@@ -57,6 +57,11 @@
 - [x] Seed-Endpoint offen in Produktion → Sicherheitslücke
 - [x] Passwort-Änderung ohne Verifikation des alten Passworts
 - [x] Content-Ordner fehlte im Dockerfile → Datei-Uploads hätten fehlgeschlagen
+- [x] `payment_failed` Status fehlte in Orders-Collection → Webhook hätte bei 2. Zahlungsfehler gecrasht
+- [x] Rabattcode-UI fehlte komplett (Endpoint war gebaut aber nie verwendbar)
+- [x] `usedCount` bei Rabattcodes wurde nie erhöht → Codes wären unbegrenzt nutzbar gewesen
+- [x] Bundle-Namen zeigten "Artikel" statt echtem Bundle-Namen in Bestellungen
+- [x] Rechnung zeigte immer 19% MwSt ohne Rücksicht auf Kleinunternehmerregelung
 
 ### Neue Features
 - [x] Rechnungsgenerierung (druckbares HTML, MwSt-Aufschlüsselung, downloadbar)
