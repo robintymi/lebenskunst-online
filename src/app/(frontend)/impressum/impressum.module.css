@@ -1,0 +1,48 @@
+.page {
+  padding: 80px 24px;
+  min-height: 60vh;
+}
+
+.container {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.container h1 {
+  font-size: 36px;
+  color: #BE465A;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  color: #888;
+  font-size: 14px;
+  margin-bottom: 48px;
+}
+
+.section {
+  margin-bottom: 36px;
+  padding-bottom: 36px;
+  border-bottom: 1px solid rgba(190, 70, 90, 0.12);
+}
+
+.section:last-child {
+  border-bottom: none;
+}
+
+.section h2 {
+  font-size: 18px;
+  color: #2d1b1b;
+  margin-bottom: 12px;
+}
+
+.section p {
+  font-size: 15px;
+  line-height: 1.8;
+  color: #555;
+}
+
+.section a {
+  color: #BE465A;
+  text-decoration: underline;
+}

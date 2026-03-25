@@ -346,8 +346,18 @@ async function handleInvoiceFailed(payload: any, invoice: Stripe.Invoice) {
   const order = orders.docs[0]
   if (!order) return
 
-  console.error(`Payment failed for order ${order.orderNumber} (subscription ${subscriptionId})`)
-  // Order stays in installment_active — Stripe will retry automatically
+  const failedAttempts = (order.paymentFailedCount || 0) + 1
+
+  await payload.update({
+    collection: 'orders',
+    id: order.id,
+    data: {
+      paymentFailedCount: failedAttempts,
+      ...(failedAttempts >= 2 && { status: 'payment_failed' }),
+    } as any,
+  })
+
+  console.error(`Payment failed (attempt ${failedAttempts}) for order ${order.orderNumber}`)
 }
 
 /**

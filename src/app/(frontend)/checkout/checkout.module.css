@@ -125,6 +125,20 @@
   font-weight: 500;
 }
 
+.widerrufshinweis {
+  font-size: 12px;
+  color: #888;
+  line-height: 1.6;
+  padding: 12px;
+  background: #f9f9f9;
+  border-radius: 6px;
+  margin-bottom: 12px;
+}
+
+.widerrufshinweis strong {
+  color: #555;
+}
+
 .checkboxGroup {
   display: flex;
   flex-direction: column;

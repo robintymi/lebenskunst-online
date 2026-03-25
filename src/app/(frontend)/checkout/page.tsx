@@ -331,6 +331,10 @@ export default function CheckoutPage() {
                 {installmentItem.installmentCount}x {formatPrice(installmentMonthly)} / Monat
               </div>
             )}
+            <p className={styles.widerrufshinweis}>
+              <strong>Hinweis zu digitalen Produkten:</strong> Bei sofort verfügbaren digitalen Inhalten
+              erlischt das Widerrufsrecht mit Beginn des Downloads. Ich stimme dem ausdrücklich zu.
+            </p>
             <div className={styles.checkboxGroup}>
               <label className={styles.checkboxLabel}>
                 <input

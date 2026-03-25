@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import Link from 'next/link'
 import { useAuth } from '@/lib/auth-context'
 import styles from './mitglieder.module.css'
 
@@ -151,9 +152,9 @@ export default function MitgliederPage() {
                 <input id="password" name="password" type="password" className="input" required />
               </div>
               <p className={styles.forgotLink}>
-                <button type="button" onClick={() => { setView('forgot-password'); setError(''); setForgotSent(false) }}>
+                <Link href="/passwort-vergessen">
                   Passwort vergessen?
-                </button>
+                </Link>
               </p>
               <button type="submit" className="btn btn-primary" style={{ width: '100%' }} disabled={loading}>
                 {loading ? 'Wird angemeldet...' : 'Anmelden'}
