@@ -34,8 +34,10 @@
 - [ ] Hostinger KVM 1 kaufen + Ubuntu auswählen
 - [ ] Server einrichten (Claude Code hilft Schritt für Schritt)
 - [ ] Domain `lebenskunstonline.de` auf Server zeigen lassen
-- [ ] Alle Umgebungsvariablen auf Server eintragen
+- [ ] `.env.example` als `.env` kopieren + alle Werte ausfüllen (siehe `.env.example`)
 - [ ] SSL-Zertifikat via Certbot einrichten (automatisch in setup-server.sh)
+- [ ] MongoDB-Backup einrichten: `chmod +x scripts/backup.sh` → Cron eintragen (täglich 3 Uhr)
+- [ ] Nach erstem erfolgreichen Monat: manuell `DELETE /api/admin/cleanup-orders` aufrufen (räumt abgebrochene Bestellungen auf)
 
 ---
 
@@ -62,6 +64,15 @@
 - [x] `usedCount` bei Rabattcodes wurde nie erhöht → Codes wären unbegrenzt nutzbar gewesen
 - [x] Bundle-Namen zeigten "Artikel" statt echtem Bundle-Namen in Bestellungen
 - [x] Rechnung zeigte immer 19% MwSt ohne Rücksicht auf Kleinunternehmerregelung
+- [x] Webhook-Idempotenz: gleicher Webhook doppelt → Event-Teilnehmer wäre 2x hochgezählt worden
+- [x] Inhalte-Seite: "Ansehen"-Link zeigte JSON statt Datei (Link → a-Tag + ?serve=1 Parameter)
+- [x] Content-Route: Unterstützt jetzt X-Accel-Redirect (Nginx, sicher) + Redirect-Fallback
+- [x] FROM_EMAIL war hardcoded – jetzt per Env-Variable konfigurierbar
+- [x] DSGVO Art. 17: Kunden können ihr Konto selbst löschen (mit Passwort-Bestätigung)
+- [x] .env.example vollständig (alle Variablen dokumentiert inkl. INVOICE_SHOW_VAT, FROM_EMAIL)
+- [x] MongoDB Backup-Skript (scripts/backup.sh) mit 14-Tage-Rotation
+- [x] Abgebrochene Bestellungen Cleanup-Route (DELETE /api/admin/cleanup-orders)
+- [x] Health-Check Route (/api/health) für Docker/Monitoring
 
 ### Neue Features
 - [x] Rechnungsgenerierung (druckbares HTML, MwSt-Aufschlüsselung, downloadbar)

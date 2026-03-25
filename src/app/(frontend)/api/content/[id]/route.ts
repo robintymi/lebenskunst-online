@@ -68,17 +68,42 @@ export async function GET(
     }
   }
 
-  // Return content information (the actual file serving is done by Nginx X-Accel-Redirect in production)
   const contentUrl = item.digitalDetails?.contentFile?.url || null
-  const previewUrl = item.digitalDetails?.previewUrl || null
   const format = item.digitalDetails?.format || 'unknown'
 
+  if (!contentUrl) {
+    return NextResponse.json({ error: 'Noch keine Datei hinterlegt' }, { status: 404 })
+  }
+
+  // ?serve=1 → deliver the file (used by browser links in the member area)
+  const { searchParams } = new URL(req.url)
+  if (searchParams.get('serve') === '1') {
+    // Use Nginx X-Accel-Redirect for files in the protected content volume
+    if (contentUrl.includes('/content/')) {
+      const filePath = contentUrl.replace(/^.*\/content\//, '')
+      const isDownload = ['begleitmaterial', 'pdf'].includes(format.toLowerCase())
+      return new NextResponse(null, {
+        status: 200,
+        headers: {
+          'X-Accel-Redirect': `/internal-content/${filePath}`,
+          'Content-Disposition': isDownload
+            ? `attachment; filename="${filePath.split('/').pop() || 'download'}"`
+            : 'inline',
+        },
+      })
+    }
+    // Fallback: redirect (auth was verified above; file is in publicly-served /media/)
+    const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
+    const absoluteUrl = contentUrl.startsWith('http') ? contentUrl : `${serverUrl}${contentUrl}`
+    return NextResponse.redirect(absoluteUrl)
+  }
+
+  // Default JSON response for programmatic / API use
   return NextResponse.json({
     access: true,
     title: item.title,
     format,
     contentUrl,
-    previewUrl,
     message: 'Zugang gewährt',
   })
 }

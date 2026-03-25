@@ -36,11 +36,11 @@ interface UserResponse {
 function getActionLabel(itemType: string): { label: string; href: (id: string) => string } | null {
   switch (itemType) {
     case 'video':
-      return { label: 'Ansehen', href: (id) => `/api/content/${id}` }
+      return { label: 'Ansehen', href: (id) => `/api/content/${id}?serve=1` }
     case 'audio':
-      return { label: 'Anhören', href: (id) => `/api/content/${id}` }
+      return { label: 'Anhören', href: (id) => `/api/content/${id}?serve=1` }
     case 'begleitmaterial':
-      return { label: 'Herunterladen', href: (id) => `/api/content/${id}` }
+      return { label: 'Herunterladen', href: (id) => `/api/content/${id}?serve=1` }
     default:
       return null
   }
@@ -172,13 +172,15 @@ export default function InhaltePage() {
                         <h4>{item.title}</h4>
 
                         {action && (
-                          <Link
+                          <a
                             href={action.href(item.id)}
+                            target="_blank"
+                            rel="noopener noreferrer"
                             className="btn btn-primary"
                             style={{ marginTop: '0.75rem', display: 'inline-block', fontSize: '0.875rem' }}
                           >
                             {action.label}
-                          </Link>
+                          </a>
                         )}
 
                         {isEvent && item.date && (

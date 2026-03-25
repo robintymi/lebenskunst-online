@@ -76,13 +76,19 @@ async function handleCheckoutCompleted(payload: any, session: Stripe.Checkout.Se
 
   const newStatus = paymentType === 'installment' ? 'installment_active' : 'paid'
 
+  const existingOrder = await payload.findByID({ collection: 'orders', id: orderId })
+
+  // Idempotency guard — if order is already fulfilled, skip to prevent double-processing
+  if (existingOrder?.status === 'paid' || existingOrder?.status === 'installment_active') {
+    console.log(`Webhook: Order ${orderId} already fulfilled (status: ${existingOrder.status}), skipping`)
+    return
+  }
+
   // Update order status
   const updateData: Record<string, any> = {
     status: newStatus,
     stripePaymentIntentId: session.payment_intent as string || undefined,
   }
-
-  const existingOrder = await payload.findByID({ collection: 'orders', id: orderId })
 
   if (paymentType === 'installment' && session.subscription) {
     updateData.stripeSubscriptionId = session.subscription as string

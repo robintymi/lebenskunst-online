@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@/lib/auth-context'
 import styles from '../dashboard.module.css'
@@ -8,6 +9,36 @@ import { formatPrice, formatDate, formatDateShort } from '@/lib/utils'
 
 export default function ProfilePage() {
   const { user, refreshUser } = useAuth()
+  const router = useRouter()
+  const [deletePassword, setDeletePassword] = useState('')
+  const [deleteConfirm, setDeleteConfirm] = useState(false)
+  const [deleteError, setDeleteError] = useState('')
+  const [deleteLoading, setDeleteLoading] = useState(false)
+
+  const handleDeleteAccount = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setDeleteError('')
+    setDeleteLoading(true)
+    try {
+      const res = await fetch('/api/profile/delete', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ password: deletePassword }),
+      })
+      const data = await res.json()
+      if (res.ok) {
+        await fetch('/api/users/logout', { method: 'POST', credentials: 'include' })
+        router.push('/?konto=geloescht')
+      } else {
+        setDeleteError(data.error || 'Fehler beim Löschen des Kontos')
+      }
+    } catch {
+      setDeleteError('Verbindungsfehler. Bitte versuche es erneut.')
+    } finally {
+      setDeleteLoading(false)
+    }
+  }
 
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
@@ -205,6 +236,60 @@ export default function ProfilePage() {
             {passwordLoading ? 'Wird geändert...' : 'Passwort ändern'}
           </button>
         </form>
+      </div>
+
+      <div className={styles.card} style={{ marginTop: '2rem', borderColor: 'rgba(190,70,90,0.2)' }}>
+        <h2 style={{ color: 'var(--color-error)' }}>Konto löschen</h2>
+        <p style={{ fontSize: '0.9375rem', color: 'var(--color-text-muted)', marginBottom: '1rem' }}>
+          Gemäß DSGVO Art. 17 hast du das Recht, dein Konto zu löschen. Alle deine Daten
+          werden unwiderruflich entfernt. Bestehende Bestellungen und Käufe bleiben für
+          steuerliche Zwecke erhalten (§ 147 AO, 10 Jahre).
+        </p>
+
+        {!deleteConfirm ? (
+          <button
+            className="btn"
+            style={{ background: 'none', border: '1px solid var(--color-error)', color: 'var(--color-error)' }}
+            onClick={() => setDeleteConfirm(true)}
+          >
+            Konto unwiderruflich löschen
+          </button>
+        ) : (
+          <form onSubmit={handleDeleteAccount} className={styles.profileForm}>
+            <p style={{ fontWeight: 600, color: 'var(--color-error)', marginBottom: '1rem' }}>
+              Bitte gib dein Passwort ein, um die Löschung zu bestätigen:
+            </p>
+            {deleteError && <div className={styles.errorMsg}>{deleteError}</div>}
+            <div className={styles.formField}>
+              <label>Passwort zur Bestätigung</label>
+              <input
+                type="password"
+                className="input"
+                value={deletePassword}
+                onChange={(e) => setDeletePassword(e.target.value)}
+                required
+                autoComplete="current-password"
+              />
+            </div>
+            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+              <button
+                type="submit"
+                className="btn"
+                style={{ background: 'var(--color-error)', color: 'white', border: 'none' }}
+                disabled={deleteLoading || !deletePassword}
+              >
+                {deleteLoading ? 'Wird gelöscht...' : 'Ja, Konto endgültig löschen'}
+              </button>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => { setDeleteConfirm(false); setDeletePassword(''); setDeleteError('') }}
+              >
+                Abbrechen
+              </button>
+            </div>
+          </form>
+        )}
       </div>
     </div>
   )
