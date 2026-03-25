@@ -23,6 +23,43 @@ export const ShopItems: CollectionConfig = {
         return data
       },
     ],
+    afterChange: [
+      async ({ doc, previousDoc, operation, req }: any) => {
+        if (operation !== 'update') return
+        const wasCancelled = !previousDoc?.cancellation?.isCancelled && doc?.cancellation?.isCancelled
+        if (!wasCancelled) return
+        if (!['seminar', 'workshop', 'vortrag'].includes(doc.itemType)) return
+        try {
+          const payload = req.payload
+          const orders = await payload.find({
+            collection: 'orders',
+            where: { status: { not_in: ['cancelled', 'refunded'] } },
+            depth: 1,
+            limit: 500,
+          })
+          const affectedOrders = orders.docs.filter((order: any) =>
+            (order.items || []).some((item: any) => {
+              const itemId = typeof item.shopItem === 'string' ? item.shopItem : item.shopItem?.id
+              return itemId === doc.id
+            })
+          )
+          const { sendEventCancellation } = await import('@/lib/email')
+          for (const order of affectedOrders) {
+            const customer = typeof order.customer === 'object' ? order.customer : null
+            if (!customer?.email) continue
+            await sendEventCancellation({
+              customerName: customer.firstName || customer.email,
+              customerEmail: customer.email,
+              eventTitle: doc.title,
+              orderNumber: order.orderNumber,
+              cancellationReason: doc.cancellation?.cancellationReason,
+            })
+          }
+        } catch (err) {
+          console.error('Failed to send event cancellation emails:', err)
+        }
+      },
+    ],
   },
   admin: {
     useAsTitle: 'title',
@@ -418,6 +455,31 @@ export const ShopItems: CollectionConfig = {
           min: 0,
           defaultValue: 0,
           admin: { description: '0 = Kostenloser Versand oder Abholung' },
+        },
+      ],
+    },
+
+    // === VERANSTALTUNGSABSAGE ===
+    {
+      name: 'cancellation',
+      label: 'Event absagen',
+      type: 'group',
+      admin: {
+        description: 'Nur für Events (Seminar, Workshop, Vortrag)',
+        condition: (data: any) => ['seminar', 'workshop', 'vortrag'].includes(data?.itemType),
+      },
+      fields: [
+        {
+          name: 'isCancelled',
+          label: 'Event absagen',
+          type: 'checkbox',
+          defaultValue: false,
+          admin: { description: '⚠️ Beim Speichern werden alle Buchenden automatisch per E-Mail benachrichtigt' },
+        },
+        {
+          name: 'cancellationReason',
+          label: 'Absagegrund (erscheint in der Benachrichtigungs-E-Mail)',
+          type: 'text',
         },
       ],
     },

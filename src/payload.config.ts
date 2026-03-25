@@ -17,6 +17,7 @@ import { Categories } from './collections/Categories'
 import { ContentFiles } from './collections/ContentFiles'
 import { SiteSettings } from './collections/SiteSettings'
 import { Reviews } from './collections/Reviews'
+import { Discounts } from './collections/Discounts'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -31,7 +32,7 @@ export default buildConfig({
       beforeNavLinks: ['@/components/admin/WebsiteLink'],
     },
   },
-  collections: [Users, ShopItems, Bundles, Podcasts, Media, ContentFiles, Orders, Categories, Reviews],
+  collections: [Users, ShopItems, Bundles, Podcasts, Media, ContentFiles, Orders, Categories, Reviews, Discounts],
   editor: lexicalEditor(),
   secret: (() => {
     if (!process.env.PAYLOAD_SECRET) throw new Error('PAYLOAD_SECRET environment variable is not set')

@@ -239,3 +239,46 @@ export async function sendEventReminder(data: EventReminderData) {
     console.error('Failed to send event reminder:', error)
   }
 }
+
+interface EventCancellationEmailData {
+  customerName: string
+  customerEmail: string
+  eventTitle: string
+  orderNumber: string
+  cancellationReason?: string
+}
+
+export async function sendEventCancellation(data: EventCancellationEmailData): Promise<void> {
+  const { customerName, customerEmail, eventTitle, orderNumber, cancellationReason } = data
+
+  if (!resend) {
+    devLog('Event-Absage', customerEmail, `Event abgesagt: ${eventTitle}`)
+    return
+  }
+
+  const content = `
+    <h2 style="color:#BE465A;margin-bottom:8px;">Event abgesagt: ${eventTitle}</h2>
+    <p style="margin-bottom:16px;">Hallo ${customerName},</p>
+    <p style="margin-bottom:16px;">leider müssen wir dir mitteilen, dass das folgende Event abgesagt wurde:</p>
+    <div style="background:#fff0f2;border-left:4px solid #BE465A;padding:16px;border-radius:4px;margin-bottom:16px;">
+      <strong>${eventTitle}</strong><br/>
+      Bestellnummer: ${orderNumber}
+      ${cancellationReason ? `<br/><br/>Grund: ${cancellationReason}` : ''}
+    </div>
+    <p style="margin-bottom:16px;">Du wirst selbstverständlich vollständig erstattet. Bitte melde dich bei uns, falls du Fragen hast.</p>
+    <p>Mit herzlichen Grüßen,<br/>Susanne</p>
+  `
+
+  const html = baseTemplate(content)
+
+  try {
+    await resend.emails.send({
+      from: FROM_EMAIL,
+      to: customerEmail,
+      subject: `Event abgesagt: ${eventTitle}`,
+      html,
+    })
+  } catch (error) {
+    console.error('Failed to send event cancellation:', error)
+  }
+}

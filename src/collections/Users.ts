@@ -118,7 +118,6 @@ export const Users: CollectionConfig = {
       type: 'array',
       admin: {
         description: 'Aktive Einzeltrainings mit Ablaufdatum',
-        readOnly: true,
       },
       fields: [
         {

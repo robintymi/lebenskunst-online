@@ -6,7 +6,7 @@ export const Orders: CollectionConfig = {
     useAsTitle: 'orderNumber',
     group: 'Shop',
     description: 'Alle Bestellungen und Buchungen',
-    defaultColumns: ['orderNumber', 'customer', 'total', 'paymentType', 'status', 'createdAt'],
+    defaultColumns: ['orderNumber', 'customer', 'total', 'paymentType', 'status', 'fulfillment.shippingStatus', 'createdAt'],
   },
   access: {
     read: ({ req: { user } }) => {
@@ -163,6 +163,39 @@ export const Orders: CollectionConfig = {
         { name: 'city', label: 'Stadt', type: 'text' },
         { name: 'zip', label: 'PLZ', type: 'text' },
         { name: 'country', label: 'Land', type: 'text', defaultValue: 'Deutschland' },
+      ],
+    },
+    {
+      name: 'fulfillment',
+      label: 'Versand & Lieferung',
+      type: 'group',
+      admin: {
+        description: 'Nur für physische Produkte (Bücher, Kunst)',
+      },
+      fields: [
+        {
+          name: 'shippingStatus',
+          label: 'Versandstatus',
+          type: 'select',
+          defaultValue: 'not_applicable',
+          options: [
+            { label: 'Nicht zutreffend (digital)', value: 'not_applicable' },
+            { label: 'Ausstehend', value: 'pending' },
+            { label: 'Versendet', value: 'shipped' },
+            { label: 'Zugestellt', value: 'delivered' },
+          ],
+        },
+        {
+          name: 'trackingNumber',
+          label: 'Sendungsnummer',
+          type: 'text',
+          admin: { description: 'DHL, Hermes, etc.' },
+        },
+        {
+          name: 'shippedAt',
+          label: 'Versanddatum',
+          type: 'date',
+        },
       ],
     },
   ],
