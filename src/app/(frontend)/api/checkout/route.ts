@@ -138,6 +138,29 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    // Guard against duplicate purchases (re-buying already owned items)
+    const existingUser = await payload.findByID({ collection: 'users', id: customerId })
+    const ownedItemIds = ((existingUser as any).purchasedItems || []).map((i: any) =>
+      typeof i === 'string' ? i : i.id,
+    )
+    const ownedBundleIds = ((existingUser as any).purchasedBundles || []).map((i: any) =>
+      typeof i === 'string' ? i : i.id,
+    )
+    for (const item of verifiedItems) {
+      if (item.type === 'shop-item' && ownedItemIds.includes(item.id)) {
+        return NextResponse.json(
+          { error: `Du besitzt "${item.name}" bereits.` },
+          { status: 409 },
+        )
+      }
+      if (item.type === 'bundle' && ownedBundleIds.includes(item.id)) {
+        return NextResponse.json(
+          { error: `Du besitzt das Bundle "${item.name}" bereits.` },
+          { status: 409 },
+        )
+      }
+    }
+
     // Build order items
     const orderItems = verifiedItems.map((item) => ({
       itemType: item.type as 'shop-item' | 'bundle',
@@ -316,8 +339,30 @@ export async function POST(req: NextRequest) {
         },
       })
     } else {
-      const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = verifiedItems.map(
-        (item) => ({
+      let lineItems: Stripe.Checkout.SessionCreateParams.LineItem[]
+
+      if (discountAmount > 0) {
+        // When a discount is applied, show a single line item with the discounted total.
+        // Stripe Checkout does not support negative line items, so we can't show a
+        // "discount" row — combining into one line avoids charging the full price.
+        lineItems = [
+          {
+            price_data: {
+              currency: 'eur',
+              product_data: {
+                name:
+                  verifiedItems.length === 1
+                    ? verifiedItems[0].name
+                    : `Bestellung (${verifiedItems.length} Artikel)`,
+                description: `Rabattcode: ${validatedDiscountCode}`,
+              },
+              unit_amount: Math.round(totalAmount * 100),
+            },
+            quantity: 1,
+          },
+        ]
+      } else {
+        lineItems = verifiedItems.map((item) => ({
           price_data: {
             currency: 'eur',
             product_data: {
@@ -329,8 +374,8 @@ export async function POST(req: NextRequest) {
             unit_amount: Math.round(item.price * 100),
           },
           quantity: item.quantity,
-        }),
-      )
+        }))
+      }
 
       session = await stripe.checkout.sessions.create({
         payment_method_types: ['card', 'sepa_debit'],

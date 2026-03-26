@@ -43,6 +43,34 @@ export async function GET(
 
     const hasDirectPurchase = purchasedIds.includes(id)
 
+    // For einzeltraining: check trainingAccess expiry (time-limited access)
+    if (hasDirectPurchase && item.itemType === 'einzeltraining') {
+      const trainingAccess = (fullUser.trainingAccess || []) as Array<{
+        training: string | { id: string }
+        startDate: string
+        endDate: string
+      }>
+      const entry = trainingAccess.find((a) => {
+        const tid = typeof a.training === 'string' ? a.training : a.training?.id
+        return tid === id
+      })
+      if (entry) {
+        const now = new Date()
+        if (new Date(entry.endDate) < now) {
+          return NextResponse.json(
+            { error: 'Dein Zugang für dieses Training ist abgelaufen.' },
+            { status: 403 },
+          )
+        }
+        if (new Date(entry.startDate) > now) {
+          return NextResponse.json(
+            { error: 'Dein Training beginnt erst am ' + new Date(entry.startDate).toLocaleDateString('de-DE') + '.' },
+            { status: 403 },
+          )
+        }
+      }
+    }
+
     // Check if any purchased bundle contains this item
     let hasBundlePurchase = false
     if (!hasDirectPurchase && purchasedBundleIds.length > 0) {

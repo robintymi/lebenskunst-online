@@ -20,6 +20,14 @@ function getClientIp(req: NextRequest): string {
 
 function isRateLimited(key: string, max: number, windowMs: number): boolean {
   const now = Date.now()
+
+  // Periodically purge expired entries to prevent unbounded Map growth
+  if (Math.random() < 0.01) {
+    for (const [k, v] of rateLimitMap) {
+      if (now > v.resetTime) rateLimitMap.delete(k)
+    }
+  }
+
   const entry = rateLimitMap.get(key)
 
   if (!entry || now > entry.resetTime) {

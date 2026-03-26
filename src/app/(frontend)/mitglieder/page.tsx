@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { useAuth } from '@/lib/auth-context'
 import styles from './mitglieder.module.css'
 
-type View = 'login' | 'register' | 'forgot-password'
+type View = 'login' | 'register'
 
 export default function MitgliederPage() {
   const { isLoggedIn, isLoading, login, register } = useAuth()
@@ -18,7 +18,6 @@ export default function MitgliederPage() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [acceptedTerms, setAcceptedTerms] = useState(false)
-  const [forgotSent, setForgotSent] = useState(false)
 
   // If already logged in, redirect
   useEffect(() => {
@@ -88,28 +87,6 @@ export default function MitgliederPage() {
     setLoading(false)
   }
 
-  const handleForgotPassword = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setError('')
-    setLoading(true)
-
-    const form = new FormData(e.currentTarget)
-    const email = form.get('email') as string
-
-    try {
-      await fetch('/api/users/forgot-password', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
-      })
-    } catch {
-      // Silently catch — always show the same message
-    }
-
-    setForgotSent(true)
-    setLoading(false)
-  }
-
   if (isLoading) {
     return (
       <section className="section">
@@ -129,14 +106,12 @@ export default function MitgliederPage() {
       <div className="container" style={{ maxWidth: '480px' }}>
         <div className={styles.authCard}>
           <h1 className={styles.authTitle}>
-            {view === 'login' ? 'Anmelden' : view === 'register' ? 'Registrieren' : 'Passwort vergessen'}
+            {view === 'login' ? 'Anmelden' : 'Registrieren'}
           </h1>
           <p className={styles.authSubtitle}>
             {view === 'login'
               ? 'Melde dich an, um auf deinen Mitgliederbereich zuzugreifen.'
-              : view === 'register'
-                ? 'Erstelle ein Konto, um Veranstaltungen zu buchen und einzukaufen.'
-                : 'Gib deine E-Mail-Adresse ein und wir senden dir einen Link zum Zurücksetzen.'}
+              : 'Erstelle ein Konto, um Veranstaltungen zu buchen und einzukaufen.'}
           </p>
 
           {error && <p className={styles.error}>{error}</p>}
@@ -160,7 +135,7 @@ export default function MitgliederPage() {
                 {loading ? 'Wird angemeldet...' : 'Anmelden'}
               </button>
             </form>
-          ) : view === 'register' ? (
+          ) : (
             <form onSubmit={handleRegister} className={styles.form}>
               <div className={styles.fieldRow}>
                 <div className={styles.field}>
@@ -211,24 +186,6 @@ export default function MitgliederPage() {
                 {loading ? 'Wird registriert...' : 'Registrieren'}
               </button>
             </form>
-          ) : (
-            <>
-              {forgotSent ? (
-                <div className={styles.successMessage}>
-                  <p>Falls ein Konto mit dieser E-Mail existiert, erhältst du einen Link zum Zurücksetzen.</p>
-                </div>
-              ) : (
-                <form onSubmit={handleForgotPassword} className={styles.form}>
-                  <div className={styles.field}>
-                    <label htmlFor="forgotEmail">E-Mail</label>
-                    <input id="forgotEmail" name="email" type="email" className="input" required />
-                  </div>
-                  <button type="submit" className="btn btn-primary" style={{ width: '100%' }} disabled={loading}>
-                    {loading ? 'Wird gesendet...' : 'Link senden'}
-                  </button>
-                </form>
-              )}
-            </>
           )}
 
           <p className={styles.switchView}>
@@ -239,17 +196,11 @@ export default function MitgliederPage() {
                   Jetzt registrieren
                 </button>
               </>
-            ) : view === 'register' ? (
+            ) : (
               <>
                 Bereits ein Konto?{' '}
                 <button onClick={() => { setView('login'); setError('') }}>
                   Anmelden
-                </button>
-              </>
-            ) : (
-              <>
-                <button onClick={() => { setView('login'); setError(''); setForgotSent(false) }}>
-                  Zurück zur Anmeldung
                 </button>
               </>
             )}
