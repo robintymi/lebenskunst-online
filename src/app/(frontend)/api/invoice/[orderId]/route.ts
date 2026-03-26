@@ -27,6 +27,11 @@ export async function GET(
   }
 
   const customer = typeof order.customer === 'object' ? order.customer : user
+
+  // Escape HTML to prevent injection via user-supplied fields
+  const esc = (s: unknown) =>
+    String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+
   const orderDate = new Date(order.createdAt).toLocaleDateString('de-DE', {
     day: '2-digit', month: '2-digit', year: 'numeric',
   })
@@ -114,9 +119,9 @@ export async function GET(
     <div class="address-block">
       <h3>Rechnungsempfänger</h3>
       <p>
-        ${customer.firstName || ''} ${customer.lastName || ''}<br>
-        ${customer.email || ''}<br>
-        ${order.shippingAddress ? `${order.shippingAddress.street}<br>${order.shippingAddress.zip} ${order.shippingAddress.city}<br>${order.shippingAddress.country || 'Deutschland'}` : ''}
+        ${esc(customer.firstName)} ${esc(customer.lastName)}<br>
+        ${esc(customer.email)}<br>
+        ${order.shippingAddress ? `${esc(order.shippingAddress.street)}<br>${esc(order.shippingAddress.zip)} ${esc(order.shippingAddress.city)}<br>${esc(order.shippingAddress.country || 'Deutschland')}` : ''}
       </p>
     </div>
     <div class="address-block" style="text-align:right">

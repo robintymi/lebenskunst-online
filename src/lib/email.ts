@@ -272,7 +272,7 @@ export async function sendPaymentFailureNotification(
     </p>
     <p style="margin-bottom:16px;">
       Bei Fragen melde dich bitte unter
-      <a href="mailto:joseline148@aol.com" style="color:#BE465A;">joseline148@aol.com</a>.
+      <a href="mailto:${process.env.CONTACT_EMAIL || 'hallo@lebenskunstonline.de'}" style="color:#BE465A;">${process.env.CONTACT_EMAIL || 'hallo@lebenskunstonline.de'}</a>.
     </p>
     <p>Mit herzlichen Grüßen,<br/>Susanne</p>
   `

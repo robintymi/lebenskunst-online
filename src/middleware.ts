@@ -10,6 +10,7 @@ const rateLimitMap = new Map<string, { count: number; resetTime: number }>()
 const RATE_LIMITS: Record<string, { max: number; windowMs: number }> = {
   '/api/checkout': { max: 5, windowMs: 60_000 },
   '/api/users/login': { max: 10, windowMs: 60_000 },
+  '/api/users/forgot-password': { max: 3, windowMs: 60_000 },
 }
 
 function getClientIp(req: NextRequest): string {
@@ -81,6 +82,7 @@ export const config = {
     '/checkout',
     '/api/checkout',
     '/api/users/login',
+    '/api/users/forgot-password',
     '/api/webhooks/:path*',
   ],
 }
