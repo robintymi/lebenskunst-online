@@ -26,7 +26,7 @@ export async function PATCH(req: NextRequest) {
       try {
         await payload.login({
           collection: 'users',
-          data: { email: user.email, password: body.currentPassword },
+          data: { email: user.email as string, password: body.currentPassword },
         })
       } catch {
         return NextResponse.json({ error: 'Das aktuelle Passwort ist falsch.' }, { status: 403 })
