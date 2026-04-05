@@ -14,6 +14,8 @@ COPY . .
 
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
+ENV PAYLOAD_SECRET=build-time-placeholder
+ENV MONGODB_URI=mongodb://placeholder:27017/placeholder
 
 RUN npm run build
 
