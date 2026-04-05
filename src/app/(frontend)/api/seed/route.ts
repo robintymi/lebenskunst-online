@@ -228,7 +228,7 @@ async function uploadImage(payload: any, imagePath: string, altText: string) {
       },
     })
 
-    return media.id
+    return String(media.id)
   } catch (err) {
     console.error(`Failed to upload image ${imagePath}:`, err)
     return null
@@ -266,7 +266,7 @@ export async function POST() {
           slug: name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+/g, '-'),
         },
       })
-      categoryMap[name] = cat.id
+      categoryMap[name] = String(cat.id)
       console.log(`[SEED] Category: ${name}`)
     }
 
