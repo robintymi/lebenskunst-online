@@ -16,6 +16,9 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 ENV PAYLOAD_SECRET=build-time-placeholder
 ENV MONGODB_URI=mongodb://placeholder:27017/placeholder
+ENV STRIPE_SECRET_KEY=sk_test_placeholder
+ENV NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_placeholder
+ENV NEXT_PUBLIC_SERVER_URL=http://localhost:3000
 
 RUN npm run build
 
