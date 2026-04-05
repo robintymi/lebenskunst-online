@@ -6,7 +6,7 @@ export const Users: CollectionConfig = {
   auth: {
     useAPIKey: false,
     forgotPassword: {
-      generateEmailHTML: ({ token, user }) => {
+      generateEmailHTML: ({ token, user }: any) => {
         const resetURL = `${process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'}/passwort-reset?token=${token}`
         const firstName = (user as { firstName?: string }).firstName || ''
         return `<!DOCTYPE html>

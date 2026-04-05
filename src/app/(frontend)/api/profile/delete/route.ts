@@ -29,7 +29,7 @@ export async function DELETE(req: NextRequest) {
 
   // Verify password before deleting
   try {
-    await payload.login({ collection: 'users', data: { email: user.email, password } })
+    await payload.login({ collection: 'users', data: { email: user.email as string, password } })
   } catch {
     return NextResponse.json({ error: 'Passwort falsch' }, { status: 403 })
   }

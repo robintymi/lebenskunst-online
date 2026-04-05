@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
     }
     const payload = await getPayload({ config })
     const result = await payload.find({
-      collection: 'discounts',
+      collection: 'discounts' as any,
       where: { code: { equals: code.toUpperCase().trim() }, active: { equals: true } },
       limit: 1,
     })

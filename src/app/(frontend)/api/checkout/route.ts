@@ -99,7 +99,7 @@ export async function POST(req: NextRequest) {
 
     if (discountCode) {
       const discountResult = await payload.find({
-        collection: 'discounts',
+        collection: 'discounts' as any,
         where: { code: { equals: discountCode.toUpperCase().trim() }, active: { equals: true } },
         limit: 1,
       })
