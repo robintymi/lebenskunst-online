@@ -127,7 +127,7 @@ export async function POST(req: NextRequest) {
         limit: 1,
       })
       if (existingUser.docs[0]) {
-        customerId = existingUser.docs[0].id
+        customerId = String(existingUser.docs[0].id)
       }
     }
 
