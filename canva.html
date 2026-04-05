@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="de" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lebenskunst</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&amp;family=Quicksand:wght@300;400;500&amp;display=swap" rel="stylesheet">
+  <style>
+    html, body { height: 100%; }
+    .font-heading { font-family: 'Cormorant Garamond', serif; }
+    .font-body { font-family: 'Quicksand', sans-serif; }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(3deg); }
+    }
+    
+    @keyframes pulse-soft {
+      0%, 100% { opacity: 0.6; transform: scale(1); }
+      50% { opacity: 0.9; transform: scale(1.05); }
+    }
+    
+    @keyframes fade-in-up {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .animate-float { animation: float 6s ease-in-out infinite; }
+    .animate-float-delay { animation: float 8s ease-in-out infinite 2s; }
+    .animate-pulse-soft { animation: pulse-soft 4s ease-in-out infinite; }
+    .animate-fade-in { animation: fade-in-up 0.8s ease-out forwards; }
+    .animate-delay-1 { animation-delay: 0.2s; opacity: 0; }
+    .animate-delay-2 { animation-delay: 0.4s; opacity: 0; }
+    .animate-delay-3 { animation-delay: 0.6s; opacity: 0; }
+    
+    .card-hover {
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .card-hover:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 25px 50px -12px rgba(190, 70, 90, 0.25);
+    }
+    
+    .btn-glow {
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-glow::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 300%;
+      height: 300%;
+      background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 60%);
+      transform: translate(-50%, -50%) scale(0);
+      transition: transform 0.6s ease;
+    }
+    .btn-glow:hover::before {
+      transform: translate(-50%, -50%) scale(1);
+    }
+    
+    .gradient-text {
+      background: linear-gradient(135deg, #BE465A 0%, #D4707A 50%, #BE465A 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+  </style>
+  <style>body { box-sizing: border-box; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full font-body">
+  <div id="app-wrapper" class="w-full h-full overflow-auto" style="background: linear-gradient(180deg, #FFF5F5 0%, #FFEEF0 50%, #FFF8F8 100%);"><!-- Decorative Elements -->
+   <div class="fixed inset-0 overflow-hidden pointer-events-none">
+    <div class="absolute top-20 left-10 w-64 h-64 rounded-full animate-pulse-soft" style="background: radial-gradient(circle, rgba(212, 112, 122, 0.2) 0%, transparent 70%);"></div>
+    <div class="absolute top-40 right-20 w-96 h-96 rounded-full animate-pulse-soft" style="background: radial-gradient(circle, rgba(190, 70, 90, 0.15) 0%, transparent 70%); animation-delay: 2s;"></div>
+    <div class="absolute bottom-40 left-1/4 w-72 h-72 rounded-full animate-pulse-soft" style="background: radial-gradient(circle, rgba(245, 200, 200, 0.4) 0%, transparent 70%); animation-delay: 1s;"></div>
+   </div><!-- Navigation -->
+   <nav class="relative z-10 px-6 py-6 md:px-12">
+    <div class="max-w-6xl mx-auto flex items-center justify-between">
+     <div class="flex items-center gap-3">
+      <div class="w-12 h-12 rounded-full flex items-center justify-center" style="background: linear-gradient(135deg, #BE465A 0%, #D4707A 100%);">
+       <svg class="w-7 h-7 text-white" viewbox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+       </svg>
+      </div><span class="font-heading text-2xl font-semibold" style="color: #BE465A;">Lebenskunst</span>
+     </div>
+     <div class="hidden md:flex items-center gap-8"><a href="#kreise" class="font-body text-sm tracking-wide hover:opacity-70 transition-opacity" style="color: #8B3A47;">Frauenkreise</a> <a href="#podcast" class="font-body text-sm tracking-wide hover:opacity-70 transition-opacity" style="color: #8B3A47;">Podcast</a> <a href="#kunst" class="font-body text-sm tracking-wide hover:opacity-70 transition-opacity" style="color: #8B3A47;">Kunst</a> <a href="#kontakt" class="font-body text-sm tracking-wide hover:opacity-70 transition-opacity" style="color: #8B3A47;">Kontakt</a>
+     </div>
+    </div>
+   </nav><!-- Hero Section -->
+   <section class="relative z-10 px-6 md:px-12 pt-12 pb-24">
+    <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+     <div class="animate-fade-in">
+      <p class="font-body text-sm tracking-widest uppercase mb-4" style="color: #D4707A;">Willkommen bei</p>
+      <h1 id="hero-title" class="font-heading text-5xl md:text-7xl font-medium leading-tight mb-6 gradient-text">Lebenskunst</h1>
+      <p id="hero-subtitle" class="font-body text-lg md:text-xl leading-relaxed mb-8" style="color: #8B3A47;">Raum für Weiblichkeit, Kreativität und tiefe Verbindung. Ein Ort, an dem du ankommen darfst – so wie du bist.</p><button id="hero-button" class="btn-glow font-body text-white px-8 py-4 rounded-full text-sm tracking-wide shadow-lg hover:shadow-xl transition-all duration-300" style="background: linear-gradient(135deg, #BE465A 0%, #D4707A 100%);"> Entdecke mehr ✨ </button>
+     </div>
+     <div class="relative flex justify-center">
+      <div class="animate-float">
+       <svg class="w-72 h-72 md:w-96 md:h-96" viewbox="0 0 400 400" fill="none"><circle cx="200" cy="200" r="180" fill="url(#grad1)" opacity="0.3" /> <circle cx="200" cy="200" r="140" fill="url(#grad2)" opacity="0.5" /> <circle cx="200" cy="200" r="100" fill="url(#grad3)" opacity="0.7" /> <!-- Flower/Lotus Design --> <g transform="translate(200, 200)">
+         <ellipse cx="0" cy="-50" rx="25" ry="50" fill="#D4707A" opacity="0.8" transform="rotate(0)" />
+         <ellipse cx="0" cy="-50" rx="25" ry="50" fill="#BE465A" opacity="0.7" transform="rotate(45)" />
+         <ellipse cx="0" cy="-50" rx="25" ry="50" fill="#D4707A" opacity="0.8" transform="rotate(90)" />
+         <ellipse cx="0" cy="-50" rx="25" ry="50" fill="#BE465A" opacity="0.7" transform="rotate(135)" />
+         <ellipse cx="0" cy="-50" rx="25" ry="50" fill="#D4707A" opacity="0.8" transform="rotate(180)" />
+         <ellipse cx="0" cy="-50" rx="25" ry="50" fill="#BE465A" opacity="0.7" transform="rotate(225)" />
+         <ellipse cx="0" cy="-50" rx="25" ry="50" fill="#D4707A" opacity="0.8" transform="rotate(270)" />
+         <ellipse cx="0" cy="-50" rx="25" ry="50" fill="#BE465A" opacity="0.7" transform="rotate(315)" />
+         <circle cx="0" cy="0" r="30" fill="#FFF5F5" />
+         <circle cx="0" cy="0" r="20" fill="#D4707A" />
+        </g> <defs>
+         <radialgradient id="grad1" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" style="stop-color:#D4707A;stop-opacity:0.5" />
+          <stop offset="100%" style="stop-color:#FFF5F5;stop-opacity:0" />
+         </radialgradient>
+         <radialgradient id="grad2" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" style="stop-color:#BE465A;stop-opacity:0.4" />
+          <stop offset="100%" style="stop-color:#D4707A;stop-opacity:0.1" />
+         </radialgradient>
+         <radialgradient id="grad3" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" style="stop-color:#FFF5F5;stop-opacity:0.9" />
+          <stop offset="100%" style="stop-color:#D4707A;stop-opacity:0.3" />
+         </radialgradient>
+        </defs>
+       </svg>
+      </div>
+     </div>
+    </div>
+   </section><!-- Frauenkreise Section -->
+   <section id="kreise" class="relative z-10 px-6 md:px-12 py-24" style="background: linear-gradient(180deg, transparent 0%, rgba(190, 70, 90, 0.05) 50%, transparent 100%);">
+    <div class="max-w-6xl mx-auto">
+     <div class="text-center mb-16 animate-fade-in animate-delay-1"><span class="font-body text-sm tracking-widest uppercase" style="color: #D4707A;">Gemeinsam wachsen</span>
+      <h2 id="circles-title" class="font-heading text-4xl md:text-5xl font-medium mt-4 gradient-text">Frauenkreise</h2>
+     </div>
+     <div class="grid md:grid-cols-3 gap-8">
+      <div class="card-hover rounded-3xl p-8 animate-fade-in animate-delay-1" style="background: linear-gradient(180deg, #FFFFFF 0%, #FFF8F8 100%); border: 1px solid rgba(212, 112, 122, 0.2);">
+       <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-6" style="background: linear-gradient(135deg, rgba(190, 70, 90, 0.1) 0%, rgba(212, 112, 122, 0.2) 100%);">
+        <svg class="w-8 h-8" style="color: #BE465A;" viewbox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+        </svg>
+       </div>
+       <h3 class="font-heading text-2xl font-medium mb-3" style="color: #BE465A;">Neumond-Kreise</h3>
+       <p class="font-body leading-relaxed" style="color: #8B3A47;">Jeden Neumond kommen wir zusammen, um Intentionen zu setzen und in die Stille zu lauschen.</p>
+      </div>
+      <div class="card-hover rounded-3xl p-8 animate-fade-in animate-delay-2" style="background: linear-gradient(180deg, #FFFFFF 0%, #FFF8F8 100%); border: 1px solid rgba(212, 112, 122, 0.2);">
+       <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-6" style="background: linear-gradient(135deg, rgba(190, 70, 90, 0.1) 0%, rgba(212, 112, 122, 0.2) 100%);">
+        <svg class="w-8 h-8" style="color: #BE465A;" viewbox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+        </svg>
+       </div>
+       <h3 class="font-heading text-2xl font-medium mb-3" style="color: #BE465A;">Healing Circles</h3>
+       <p class="font-body leading-relaxed" style="color: #8B3A47;">Ein geschützter Raum für Austausch, Heilung und tiefe weibliche Verbundenheit.</p>
+      </div>
+      <div class="card-hover rounded-3xl p-8 animate-fade-in animate-delay-3" style="background: linear-gradient(180deg, #FFFFFF 0%, #FFF8F8 100%); border: 1px solid rgba(212, 112, 122, 0.2);">
+       <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-6" style="background: linear-gradient(135deg, rgba(190, 70, 90, 0.1) 0%, rgba(212, 112, 122, 0.2) 100%);">
+        <svg class="w-8 h-8" style="color: #BE465A;" viewbox="0 0 24 24" fill="currentColor"><path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z" />
+        </svg>
+       </div>
+       <h3 class="font-heading text-2xl font-medium mb-3" style="color: #BE465A;">Kreativ-Retreats</h3>
+       <p class="font-body leading-relaxed" style="color: #8B3A47;">Wochenenden voller Kunst, Bewegung und Selbstentdeckung an besonderen Orten.</p>
+      </div>
+     </div>
+     <p id="circles-description" class="font-body text-center mt-12 max-w-2xl mx-auto leading-relaxed" style="color: #8B3A47;">In unseren Kreisen feiern wir die Kraft der Weiblichkeit – durch Rituale, Gespräche und kreative Praktiken, die uns mit uns selbst und anderen verbinden.</p>
+    </div>
+   </section><!-- Podcast Section -->
+   <section id="podcast" class="relative z-10 px-6 md:px-12 py-24">
+    <div class="max-w-6xl mx-auto">
+     <div class="grid md:grid-cols-2 gap-12 items-center">
+      <div class="order-2 md:order-1">
+       <div class="relative">
+        <div class="absolute inset-0 rounded-3xl transform rotate-3" style="background: linear-gradient(135deg, #D4707A 0%, #BE465A 100%); opacity: 0.2;"></div>
+        <div class="relative rounded-3xl p-8 shadow-xl" style="background: linear-gradient(180deg, #FFFFFF 0%, #FFF5F5 100%);">
+         <div class="flex items-center gap-4 mb-6">
+          <div class="w-20 h-20 rounded-2xl flex items-center justify-center" style="background: linear-gradient(135deg, #BE465A 0%, #D4707A 100%);">
+           <svg class="w-10 h-10 text-white" viewbox="0 0 24 24" fill="currentColor"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.91-3c-.49 0-.9.36-.98.85C16.52 14.2 14.47 16 12 16s-4.52-1.8-4.93-4.15c-.08-.49-.49-.85-.98-.85-.61 0-1.09.54-1 1.14.49 3 2.89 5.35 5.91 5.78V20c0 .55.45 1 1 1s1-.45 1-1v-2.08c3.02-.43 5.42-2.78 5.91-5.78.1-.6-.39-1.14-1-1.14z" />
+           </svg>
+          </div>
+          <div>
+           <h4 class="font-heading text-xl font-medium" style="color: #BE465A;">Aktuelle Episode</h4>
+           <p class="font-body text-sm" style="color: #8B3A47;">Episode 24 • 45 min</p>
+          </div>
+         </div>
+         <h3 class="font-heading text-2xl font-medium mb-3" style="color: #BE465A;">"Die Kunst des Loslassens"</h3>
+         <p class="font-body text-sm mb-6 leading-relaxed" style="color: #8B3A47;">Ein Gespräch über Transformation, Vertrauen und den Mut, Neues zu wagen.</p>
+         <div class="flex items-center gap-4"><button class="w-14 h-14 rounded-full flex items-center justify-center shadow-lg hover:scale-105 transition-transform" style="background: linear-gradient(135deg, #BE465A 0%, #D4707A 100%);">
+           <svg class="w-6 h-6 text-white ml-1" viewbox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z" />
+           </svg></button>
+          <div class="flex-1 h-2 rounded-full overflow-hidden" style="background: rgba(190, 70, 90, 0.2);">
+           <div class="h-full w-1/3 rounded-full" style="background: linear-gradient(90deg, #BE465A 0%, #D4707A 100%);"></div>
+          </div><span class="font-body text-sm" style="color: #8B3A47;">15:23</span>
+         </div>
+        </div>
+       </div>
+      </div>
+      <div class="order-1 md:order-2"><span class="font-body text-sm tracking-widest uppercase" style="color: #D4707A;">Höre rein</span>
+       <h2 id="podcast-title" class="font-heading text-4xl md:text-5xl font-medium mt-4 mb-6 gradient-text">Der Podcast</h2>
+       <p id="podcast-description" class="font-body text-lg leading-relaxed mb-8" style="color: #8B3A47;">Inspirierende Gespräche über Lebenskunst, Weiblichkeit, Kreativität und persönliches Wachstum. Jede Woche neue Impulse für dein Herz und deine Seele.</p>
+       <div class="flex flex-wrap gap-3"><span class="px-4 py-2 rounded-full font-body text-sm" style="background: rgba(190, 70, 90, 0.1); color: #BE465A;">Weiblichkeit</span> <span class="px-4 py-2 rounded-full font-body text-sm" style="background: rgba(190, 70, 90, 0.1); color: #BE465A;">Kreativität</span> <span class="px-4 py-2 rounded-full font-body text-sm" style="background: rgba(190, 70, 90, 0.1); color: #BE465A;">Spiritualität</span> <span class="px-4 py-2 rounded-full font-body text-sm" style="background: rgba(190, 70, 90, 0.1); color: #BE465A;">Healing</span>
+       </div>
+      </div>
+     </div>
+    </div>
+   </section><!-- Kunst Section -->
+   <section id="kunst" class="relative z-10 px-6 md:px-12 py-24" style="background: linear-gradient(180deg, transparent 0%, rgba(190, 70, 90, 0.08) 50%, transparent 100%);">
+    <div class="max-w-6xl mx-auto">
+     <div class="text-center mb-16"><span class="font-body text-sm tracking-widest uppercase" style="color: #D4707A;">Seelische Ausdrücke</span>
+      <h2 id="art-title" class="font-heading text-4xl md:text-5xl font-medium mt-4 gradient-text">Kunstwerke</h2>
+      <p id="art-description" class="font-body mt-6 max-w-2xl mx-auto leading-relaxed" style="color: #8B3A47;">Jedes Werk erzählt eine Geschichte von Transformation, Liebe und der unendlichen Schönheit des weiblichen Seins.</p>
+     </div>
+     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="card-hover rounded-2xl overflow-hidden aspect-square" style="background: linear-gradient(135deg, #BE465A 0%, #D4707A 50%, #F5C8C8 100%);">
+       <div class="w-full h-full flex items-center justify-center">
+        <svg class="w-16 h-16 text-white opacity-80" viewbox="0 0 100 100"><circle cx="50" cy="35" r="20" fill="currentColor" /> <path d="M50 60 C20 60, 15 90, 50 95 C85 90, 80 60, 50 60" fill="currentColor" />
+        </svg>
+       </div>
+      </div>
+      <div class="card-hover rounded-2xl overflow-hidden aspect-square md:row-span-2 md:aspect-auto" style="background: linear-gradient(180deg, #FFF5F5 0%, #F5C8C8 50%, #D4707A 100%);">
+       <div class="w-full h-full flex items-center justify-center p-6">
+        <svg class="w-full h-full max-w-32" viewbox="0 0 100 150" fill="none"><path d="M50 10 C30 30, 20 50, 20 80 C20 110, 35 140, 50 140 C65 140, 80 110, 80 80 C80 50, 70 30, 50 10" fill="#BE465A" opacity="0.6" /> <path d="M50 30 C35 45, 30 60, 30 85 C30 105, 40 125, 50 125 C60 125, 70 105, 70 85 C70 60, 65 45, 50 30" fill="#D4707A" opacity="0.7" /> <circle cx="50" cy="70" r="15" fill="#FFF5F5" opacity="0.8" />
+        </svg>
+       </div>
+      </div>
+      <div class="card-hover rounded-2xl overflow-hidden aspect-square" style="background: linear-gradient(45deg, #F5C8C8 0%, #FFFFFF 50%, #D4707A 100%);">
+       <div class="w-full h-full flex items-center justify-center">
+        <svg class="w-16 h-16" style="color: #BE465A;" viewbox="0 0 100 100"><path d="M50 10 L60 40 L90 40 L65 60 L75 90 L50 70 L25 90 L35 60 L10 40 L40 40 Z" fill="currentColor" opacity="0.7" />
+        </svg>
+       </div>
+      </div>
+      <div class="card-hover rounded-2xl overflow-hidden aspect-square" style="background: linear-gradient(135deg, #D4707A 0%, #BE465A 100%);">
+       <div class="w-full h-full flex items-center justify-center">
+        <svg class="w-20 h-20 text-white opacity-80" viewbox="0 0 100 100"><circle cx="50" cy="50" r="35" fill="none" stroke="currentColor" stroke-width="3" /> <circle cx="50" cy="50" r="25" fill="none" stroke="currentColor" stroke-width="2" /> <circle cx="50" cy="50" r="15" fill="currentColor" opacity="0.5" />
+        </svg>
+       </div>
+      </div>
+      <div class="card-hover rounded-2xl overflow-hidden aspect-square col-span-2" style="background: linear-gradient(90deg, #FFF5F5 0%, #F5C8C8 30%, #D4707A 70%, #BE465A 100%);">
+       <div class="w-full h-full flex items-center justify-center gap-6 p-6">
+        <svg class="w-12 h-12" style="color: #BE465A;" viewbox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+        </svg><span class="font-heading text-3xl font-medium" style="color: #BE465A;">Liebe</span>
+        <svg class="w-12 h-12" style="color: #BE465A;" viewbox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+        </svg>
+       </div>
+      </div>
+      <div class="card-hover rounded-2xl overflow-hidden aspect-square" style="background: linear-gradient(180deg, #FFFFFF 0%, #F5C8C8 100%);">
+       <div class="w-full h-full flex items-center justify-center">
+        <svg class="w-16 h-16" style="color: #BE465A;" viewbox="0 0 100 100"><path d="M50 5 Q80 25, 80 50 Q80 75, 50 95 Q20 75, 20 50 Q20 25, 50 5" fill="currentColor" opacity="0.6" /> <path d="M50 20 Q65 35, 65 50 Q65 65, 50 80 Q35 65, 35 50 Q35 35, 50 20" fill="currentColor" opacity="0.8" />
+        </svg>
+       </div>
+      </div>
+     </div>
+    </div>
+   </section><!-- Quote Section -->
+   <section class="relative z-10 px-6 md:px-12 py-24">
+    <div class="max-w-4xl mx-auto text-center">
+     <svg class="w-16 h-16 mx-auto mb-8 opacity-30" style="color: #BE465A;" viewbox="0 0 24 24" fill="currentColor"><path d="M6 17h3l2-4V7H5v6h3zm8 0h3l2-4V7h-6v6h3z" />
+     </svg>
+     <blockquote class="font-heading text-3xl md:text-4xl font-medium italic leading-relaxed mb-8 gradient-text">
+      "Die größte Kunst ist es, sich selbst treu zu bleiben und dabei immer wieder neu zu erblühen."
+     </blockquote>
+     <div class="flex items-center justify-center gap-3">
+      <div class="w-12 h-12 rounded-full" style="background: linear-gradient(135deg, #BE465A 0%, #D4707A 100%);"></div>
+      <div class="text-left">
+       <p class="font-body font-medium" style="color: #BE465A;">Lebenskunst</p>
+       <p class="font-body text-sm" style="color: #8B3A47;">Gründerin &amp; Künstlerin</p>
+      </div>
+     </div>
+    </div>
+   </section><!-- Newsletter Section -->
+   <section id="kontakt" class="relative z-10 px-6 md:px-12 py-24">
+    <div class="max-w-2xl mx-auto">
+     <div class="rounded-3xl p-8 md:p-12 text-center" style="background: linear-gradient(135deg, rgba(190, 70, 90, 0.1) 0%, rgba(212, 112, 122, 0.15) 100%); border: 1px solid rgba(212, 112, 122, 0.2);">
+      <div class="w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center" style="background: linear-gradient(135deg, #BE465A 0%, #D4707A 100%);">
+       <svg class="w-10 h-10 text-white" viewbox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
+       </svg>
+      </div>
+      <h3 class="font-heading text-3xl font-medium mb-4 gradient-text">Bleib verbunden</h3>
+      <p class="font-body mb-8 leading-relaxed" style="color: #8B3A47;">Erhalte inspirierende Impulse, Einladungen zu Kreisen und Neuigkeiten direkt in dein Postfach.</p>
+      <form class="flex flex-col sm:flex-row gap-4" onsubmit="event.preventDefault(); this.querySelector('button').textContent = 'Danke! 💕'; this.querySelector('input').value = '';"><input type="email" placeholder="Deine E-Mail-Adresse" required class="flex-1 px-6 py-4 rounded-full font-body text-sm focus:outline-none focus:ring-2 shadow-inner" style="background: #FFFFFF; color: #8B3A47; border: 1px solid rgba(212, 112, 122, 0.3); --tw-ring-color: #D4707A;"> <button type="submit" class="btn-glow px-8 py-4 rounded-full font-body text-sm text-white shadow-lg hover:shadow-xl transition-all duration-300" style="background: linear-gradient(135deg, #BE465A 0%, #D4707A 100%);"> Anmelden ✨ </button>
+      </form>
+     </div>
+    </div>
+   </section><!-- Footer -->
+   <footer class="relative z-10 px-6 md:px-12 py-12" style="background: linear-gradient(180deg, transparent 0%, rgba(190, 70, 90, 0.05) 100%);">
+    <div class="max-w-6xl mx-auto">
+     <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+      <div class="flex items-center gap-3">
+       <div class="w-10 h-10 rounded-full flex items-center justify-center" style="background: linear-gradient(135deg, #BE465A 0%, #D4707A 100%);">
+        <svg class="w-5 h-5 text-white" viewbox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+        </svg>
+       </div><span class="font-heading text-xl font-medium" style="color: #BE465A;">Lebenskunst</span>
+      </div>
+      <div class="flex items-center gap-6"><a href="#" class="w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 transition-transform" style="background: rgba(190, 70, 90, 0.1);">
+        <svg class="w-5 h-5" style="color: #BE465A;" viewbox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+        </svg></a> <a href="#" class="w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 transition-transform" style="background: rgba(190, 70, 90, 0.1);">
+        <svg class="w-5 h-5" style="color: #BE465A;" viewbox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1-.1z" />
+        </svg></a> <a href="#" class="w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 transition-transform" style="background: rgba(190, 70, 90, 0.1);">
+        <svg class="w-5 h-5" style="color: #BE465A;" viewbox="0 0 24 24" fill="currentColor"><path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
+        </svg></a>
+      </div>
+      <p id="footer-text" class="font-body text-sm" style="color: #8B3A47;">© 2024 Lebenskunst. Mit Liebe gemacht 💕</p>
+     </div>
+    </div>
+   </footer>
+  </div>
+  <script>
+    const defaultConfig = {
+      background_color: '#FFF5F5',
+      surface_color: '#FFFFFF',
+      text_color: '#8B3A47',
+      primary_action_color: '#BE465A',
+      secondary_action_color: '#D4707A',
+      font_family: 'Cormorant Garamond',
+      font_size: 16,
+      hero_title: 'Lebenskunst',
+      hero_subtitle: 'Raum für Weiblichkeit, Kreativität und tiefe Verbindung. Ein Ort, an dem du ankommen darfst – so wie du bist.',
+      hero_button: 'Entdecke mehr ✨',
+      circles_title: 'Frauenkreise',
+      circles_description: 'In unseren Kreisen feiern wir die Kraft der Weiblichkeit – durch Rituale, Gespräche und kreative Praktiken, die uns mit uns selbst und anderen verbinden.',
+      podcast_title: 'Der Podcast',
+      podcast_description: 'Inspirierende Gespräche über Lebenskunst, Weiblichkeit, Kreativität und persönliches Wachstum. Jede Woche neue Impulse für dein Herz und deine Seele.',
+      art_title: 'Kunstwerke',
+      art_description: 'Jedes Werk erzählt eine Geschichte von Transformation, Liebe und der unendlichen Schönheit des weiblichen Seins.',
+      footer_text: '© 2024 Lebenskunst. Mit Liebe gemacht 💕'
+    };
+
+    async function onConfigChange(config) {
+      const bg = config.background_color || defaultConfig.background_color;
+      const surface = config.surface_color || defaultConfig.surface_color;
+      const text = config.text_color || defaultConfig.text_color;
+      const primary = config.primary_action_color || defaultConfig.primary_action_color;
+      const secondary = config.secondary_action_color || defaultConfig.secondary_action_color;
+      const fontFamily = config.font_family || defaultConfig.font_family;
+      const fontSize = config.font_size || defaultConfig.font_size;
+
+      // Background
+      document.getElementById('app-wrapper').style.background = `linear-gradient(180deg, ${bg} 0%, ${bg}ee 50%, ${bg} 100%)`;
+      
+      // Update text content
+      document.getElementById('hero-title').textContent = config.hero_title || defaultConfig.hero_title;
+      document.getElementById('hero-subtitle').textContent = config.hero_subtitle || defaultConfig.hero_subtitle;
+      document.getElementById('hero-button').textContent = config.hero_button || defaultConfig.hero_button;
+      document.getElementById('circles-title').textContent = config.circles_title || defaultConfig.circles_title;
+      document.getElementById('circles-description').textContent = config.circles_description || defaultConfig.circles_description;
+      document.getElementById('podcast-title').textContent = config.podcast_title || defaultConfig.podcast_title;
+      document.getElementById('podcast-description').textContent = config.podcast_description || defaultConfig.podcast_description;
+      document.getElementById('art-title').textContent = config.art_title || defaultConfig.art_title;
+      document.getElementById('art-description').textContent = config.art_description || defaultConfig.art_description;
+      document.getElementById('footer-text').textContent = config.footer_text || defaultConfig.footer_text;
+
+      // Update font family
+      const headingElements = document.querySelectorAll('.font-heading');
+      const bodyElements = document.querySelectorAll('.font-body');
+      headingElements.forEach(el => el.style.fontFamily = `${fontFamily}, serif`);
+      bodyElements.forEach(el => el.style.fontFamily = `Quicksand, ${fontFamily}, sans-serif`);
+
+      // Update font sizes proportionally
+      document.querySelectorAll('h1').forEach(el => el.style.fontSize = `${fontSize * 3.5}px`);
+      document.querySelectorAll('h2').forEach(el => el.style.fontSize = `${fontSize * 2.5}px`);
+      document.querySelectorAll('h3').forEach(el => el.style.fontSize = `${fontSize * 1.5}px`);
+      document.querySelectorAll('p').forEach(el => {
+        if (!el.classList.contains('text-sm') && !el.classList.contains('text-lg')) {
+          el.style.fontSize = `${fontSize}px`;
+        }
+      });
+
+      // Update colors - gradient text
+      const gradientStyle = `linear-gradient(135deg, ${primary} 0%, ${secondary} 50%, ${primary} 100%)`;
+      document.querySelectorAll('.gradient-text').forEach(el => {
+        el.style.background = gradientStyle;
+        el.style.webkitBackgroundClip = 'text';
+        el.style.webkitTextFillColor = 'transparent';
+        el.style.backgroundClip = 'text';
+      });
+
+      // Update primary action buttons
+      document.querySelectorAll('.btn-glow').forEach(el => {
+        el.style.background = `linear-gradient(135deg, ${primary} 0%, ${secondary} 100%)`;
+      });
+
+      // Update text colors
+      document.querySelectorAll('[style*="color: #8B3A47"]').forEach(el => {
+        el.style.color = text;
+      });
+
+      // Update secondary colors and accents
+      document.querySelectorAll('[style*="color: #D4707A"]').forEach(el => {
+        el.style.color = secondary;
+      });
+      document.querySelectorAll('[style*="color: #BE465A"]').forEach(el => {
+        el.style.color = primary;
+      });
+    }
+
+    function mapToCapabilities(config) {
+      return {
+        recolorables: [
+          {
+            get: () => config.background_color || defaultConfig.background_color,
+            set: (value) => { config.background_color = value; window.elementSdk.setConfig({ background_color: value }); }
+          },
+          {
+            get: () => config.surface_color || defaultConfig.surface_color,
+            set: (value) => { config.surface_color = value; window.elementSdk.setConfig({ surface_color: value }); }
+          },
+          {
+            get: () => config.text_color || defaultConfig.text_color,
+            set: (value) => { config.text_color = value; window.elementSdk.setConfig({ text_color: value }); }
+          },
+          {
+            get: () => config.primary_action_color || defaultConfig.primary_action_color,
+            set: (value) => { config.primary_action_color = value; window.elementSdk.setConfig({ primary_action_color: value }); }
+          },
+          {
+            get: () => config.secondary_action_color || defaultConfig.secondary_action_color,
+            set: (value) => { config.secondary_action_color = value; window.elementSdk.setConfig({ secondary_action_color: value }); }
+          }
+        ],
+        borderables: [],
+        fontEditable: {
+          get: () => config.font_family || defaultConfig.font_family,
+          set: (value) => { config.font_family = value; window.elementSdk.setConfig({ font_family: value }); }
+        },
+        fontSizeable: {
+          get: () => config.font_size || defaultConfig.font_size,
+          set: (value) => { config.font_size = value; window.elementSdk.setConfig({ font_size: value }); }
+        }
+      };
+    }
+
+    function mapToEditPanelValues(config) {
+      return new Map([
+        ['hero_title', config.hero_title || defaultConfig.hero_title],
+        ['hero_subtitle', config.hero_subtitle || defaultConfig.hero_subtitle],
+        ['hero_button', config.hero_button || defaultConfig.hero_button],
+        ['circles_title', config.circles_title || defaultConfig.circles_title],
+        ['circles_description', config.circles_description || defaultConfig.circles_description],
+        ['podcast_title', config.podcast_title || defaultConfig.podcast_title],
+        ['podcast_description', config.podcast_description || defaultConfig.podcast_description],
+        ['art_title', config.art_title || defaultConfig.art_title],
+        ['art_description', config.art_description || defaultConfig.art_description],
+        ['footer_text', config.footer_text || defaultConfig.footer_text]
+      ]);
+    }
+
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange,
+        mapToCapabilities,
+        mapToEditPanelValues
+      });
+    }
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9d6b08461658469d',t:'MTc3MjU2NTk4MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
