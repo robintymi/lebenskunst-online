@@ -14,6 +14,10 @@ Stand: 20. April 2026
   - `admin`: darf Inhalte, Einstellungen, Bestellungen, Media verwalten
   - `member`: Kundenkonto (Mitgliederbereich), keine Admin-Rechte
 
+**Erst-Einrichtung (nur wenn noch kein Admin existiert):**
+- Standard: Beim ersten Aufruf erscheint `.../admin/create-first-user`. Dort wird der **erste User automatisch als Admin** angelegt (nur E-Mail + Passwort erforderlich).
+- Optional (Technik/Agentur): Admin kann auch automatisch beim Start angelegt werden über `.env` (`BOOTSTRAP_ADMIN_EMAIL`, `BOOTSTRAP_ADMIN_PASSWORD`).
+
 ### Technische Zugänge (für Betreuung/Agentur)
 - GitHub-Repository: `robintymi/lebenskunst-online`
 - Server/VPS, MongoDB, Stripe, E-Mail (Resend): Zugangsdaten liegen **nicht** im Repo und sollten getrennt (Passwort-Manager) gepflegt werden.

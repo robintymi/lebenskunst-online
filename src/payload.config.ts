@@ -52,6 +52,27 @@ export default buildConfig({
   sharp,
   globals: [SiteSettings],
   plugins: [],
+  onInit: async (payload) => {
+    const email = process.env.BOOTSTRAP_ADMIN_EMAIL
+    const password = process.env.BOOTSTRAP_ADMIN_PASSWORD
+
+    if (!email || !password) return
+
+    const existing = await payload.find({ collection: 'users', limit: 1 })
+    if ((existing?.docs?.length || 0) > 0) return
+
+    await payload.create({
+      collection: 'users',
+      data: {
+        email,
+        password,
+        role: 'admin',
+      },
+      overrideAccess: true,
+    })
+
+    payload.logger.info(`Bootstrap admin user created: ${email}`)
+  },
   email: process.env.RESEND_API_KEY
     ? nodemailerAdapter({
         defaultFromAddress: 'noreply@lebenskunstonline.de',

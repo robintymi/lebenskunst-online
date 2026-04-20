@@ -73,6 +73,17 @@ export const Users: CollectionConfig = {
       defaultValue: 'member',
       required: true,
       access: {
+        create: async ({ req }) => {
+          if (req.user?.role === 'admin') return true
+
+          // Allow setting role only for the very first user (create-first-user flow)
+          try {
+            const existing = await req.payload.find({ collection: 'users', limit: 1 })
+            return (existing?.docs?.length || 0) === 0
+          } catch {
+            return false
+          }
+        },
         update: ({ req: { user } }) => Boolean(user?.role === 'admin'),
       },
       admin: {
@@ -84,16 +95,25 @@ export const Users: CollectionConfig = {
       name: 'firstName',
       label: 'Vorname',
       type: 'text',
+      admin: {
+        condition: (data) => data?.role === 'member',
+      },
     },
     {
       name: 'lastName',
       label: 'Nachname',
       type: 'text',
+      admin: {
+        condition: (data) => data?.role === 'member',
+      },
     },
     {
       name: 'phone',
       label: 'Telefon',
       type: 'text',
+      admin: {
+        condition: (data) => data?.role === 'member',
+      },
     },
     {
       name: 'purchasedItems',
@@ -103,6 +123,7 @@ export const Users: CollectionConfig = {
       hasMany: true,
       admin: {
         description: 'Alle gekauften/gebuchten Shop-Items',
+        condition: (data) => data?.role === 'member',
       },
     },
     {
@@ -111,6 +132,9 @@ export const Users: CollectionConfig = {
       type: 'relationship',
       relationTo: 'bundles',
       hasMany: true,
+      admin: {
+        condition: (data) => data?.role === 'member',
+      },
     },
     {
       name: 'trainingAccess',
@@ -118,6 +142,7 @@ export const Users: CollectionConfig = {
       type: 'array',
       admin: {
         description: 'Aktive Einzeltrainings mit Ablaufdatum',
+        condition: (data) => data?.role === 'member',
       },
       fields: [
         {
@@ -142,6 +167,24 @@ export const Users: CollectionConfig = {
     },
   ],
   hooks: {
+    beforeValidate: [
+      async ({ data, operation, req }) => {
+        if (operation !== 'create') return data
+
+        // If this is the very first user, always make it an admin user so the CMS is accessible.
+        try {
+          const existing = await req.payload.find({ collection: 'users', limit: 1 })
+          const hasUsers = (existing?.docs?.length || 0) > 0
+          if (!hasUsers) {
+            return { ...data, role: 'admin' }
+          }
+        } catch {
+          // If we cannot determine user count, do not change defaults.
+        }
+
+        return data
+      },
+    ],
     afterChange: [
       async ({ doc, operation }) => {
         if (operation === 'create' && doc.role === 'member') {
