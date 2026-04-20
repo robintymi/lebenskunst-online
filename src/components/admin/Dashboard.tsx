@@ -12,17 +12,37 @@ interface Stats {
   upcomingEvents: { title: string; date: string; participants: number; max: number }[]
 }
 
+interface SiteSettings {
+  heroImage?:
+    | string
+    | {
+        url?: string
+        sizes?: {
+          thumbnail?: { url?: string }
+          hero?: { url?: string }
+        }
+      }
+}
+
 export default function AdminDashboard() {
   const [stats, setStats] = useState<Stats | null>(null)
   const [loading, setLoading] = useState(true)
   const [csvFrom, setCsvFrom] = useState('')
   const [csvTo, setCsvTo] = useState('')
+  const [siteSettings, setSiteSettings] = useState<SiteSettings | null>(null)
 
   useEffect(() => {
     fetch('/api/admin/stats', { credentials: 'include' })
       .then((r) => r.json())
       .then((data) => { setStats(data); setLoading(false) })
       .catch(() => setLoading(false))
+  }, [])
+
+  useEffect(() => {
+    fetch('/api/globals/site-settings?depth=1')
+      .then((r) => r.json())
+      .then((data) => setSiteSettings(data))
+      .catch(() => setSiteSettings(null))
   }, [])
 
   const fmt = (n: number) => `€${n.toFixed(2).replace('.', ',')}`
@@ -34,6 +54,10 @@ export default function AdminDashboard() {
     window.open(`/api/admin/export-orders?${params}`, '_blank')
   }
 
+  const openSiteSettings = () => {
+    window.location.href = '/admin/globals/site-settings'
+  }
+
   const cardStyle = {
     background: 'white',
     border: '1px solid #f0e0e0',
@@ -41,12 +65,42 @@ export default function AdminDashboard() {
     padding: '20px',
   }
 
+  const heroImageUrl =
+    typeof siteSettings?.heroImage === 'string'
+      ? null
+      : siteSettings?.heroImage?.sizes?.thumbnail?.url || siteSettings?.heroImage?.url || null
+
   return (
     <div style={{ padding: '32px', fontFamily: 'system-ui, sans-serif', maxWidth: '1100px' }}>
       <h1 style={{ fontSize: '26px', color: '#BE465A', marginBottom: '4px' }}>Übersicht</h1>
       <p style={{ color: '#aaa', fontSize: '14px', marginBottom: '32px' }}>
         {new Date().toLocaleDateString('de-DE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
       </p>
+
+      <div style={{ ...cardStyle, marginBottom: '24px' }}>
+        <h2 style={{ fontSize: '15px', fontWeight: '600', marginBottom: '14px', color: '#2d1b1b' }}>Startseite</h2>
+        <div style={{ display: 'flex', gap: '16px', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: '14px', alignItems: 'center' }}>
+            <div style={{ width: '56px', height: '56px', borderRadius: '999px', overflow: 'hidden', border: '1px solid #f0e0e0', background: '#fff5f5' }}>
+              {heroImageUrl ? (
+                <img src={heroImageUrl} alt="Startseiten-Bild" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+              ) : (
+                <div style={{ width: '100%', height: '100%', display: 'grid', placeItems: 'center', color: '#c9a6ab', fontSize: '12px' }}>Kein Bild</div>
+              )}
+            </div>
+            <div>
+              <div style={{ fontSize: '14px', fontWeight: '600', color: '#2d1b1b' }}>Startseiten-Bild</div>
+              <div style={{ fontSize: '12px', color: '#999' }}>Kann in den Seiteneinstellungen geändert werden</div>
+            </div>
+          </div>
+          <button
+            onClick={openSiteSettings}
+            style={{ padding: '9px 16px', background: '#BE465A', color: 'white', border: 'none', borderRadius: '999px', cursor: 'pointer', fontSize: '13px', fontWeight: '600' }}
+          >
+            Seiteneinstellungen öffnen
+          </button>
+        </div>
+      </div>
 
       {loading && <p style={{ color: '#aaa' }}>Wird geladen…</p>}
 
