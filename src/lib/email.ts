@@ -290,6 +290,63 @@ export async function sendPaymentFailureNotification(
   }
 }
 
+export async function sendWiderrufConfirmation(data: {
+  customerName: string
+  customerEmail: string
+  orderNumber: string
+  reason: string
+}): Promise<void> {
+  const { customerName, customerEmail, orderNumber, reason } = data
+  const adminEmail = process.env.ADMIN_EMAIL || 'info@lebenskunstonline.de'
+
+  if (!resend) {
+    devLog('Widerruf-Bestätigung', customerEmail, `Widerruf: ${orderNumber}`)
+    return
+  }
+
+  const customerContent = `
+    <h2 style="color:#BE465A;margin-bottom:8px;">Dein Widerruf wurde eingegangen</h2>
+    <p>Hallo ${customerName},</p>
+    <p>wir haben deinen Widerruf für folgende Bestellung erhalten:</p>
+    <div style="background:#fff0f2;border-left:4px solid #BE465A;padding:16px;border-radius:4px;margin-bottom:16px;">
+      <strong>Bestellnummer: ${orderNumber}</strong><br/>
+      Eingangsdatum: ${new Date().toLocaleDateString('de-DE')}<br/>
+      ${reason !== 'Kein Grund angegeben' ? `Grund: ${reason}` : ''}
+    </div>
+    <p>Wir bearbeiten deinen Widerruf und erstatten dir den Kaufpreis innerhalb von 14 Tagen auf dein ursprüngliches Zahlungsmittel.</p>
+    <p>Bei Fragen erreichst du uns unter info@lebenskunstonline.de.</p>
+    <p>Mit herzlichen Grüßen,<br/>Susanne &amp; das Lebenskunst-Team</p>
+  `
+
+  const adminContent = `
+    <h2>Neuer Widerruf eingegangen</h2>
+    <p><strong>Bestellnummer:</strong> ${orderNumber}</p>
+    <p><strong>Kunde:</strong> ${customerName} (${customerEmail})</p>
+    <p><strong>Datum:</strong> ${new Date().toLocaleDateString('de-DE')}</p>
+    <p><strong>Grund:</strong> ${reason}</p>
+    <p>Bitte veranlasse die Erstattung im Stripe-Dashboard.</p>
+  `
+
+  try {
+    await Promise.all([
+      resend.emails.send({
+        from: FROM_EMAIL,
+        to: customerEmail,
+        subject: `Widerruf bestätigt – Bestellung ${orderNumber}`,
+        html: baseTemplate(customerContent),
+      }),
+      resend.emails.send({
+        from: FROM_EMAIL,
+        to: adminEmail,
+        subject: `[Widerruf] Bestellung ${orderNumber} – ${customerName}`,
+        html: baseTemplate(adminContent),
+      }),
+    ])
+  } catch (error) {
+    console.error('Failed to send widerruf confirmation:', error)
+  }
+}
+
 export async function sendEventCancellation(data: EventCancellationEmailData): Promise<void> {
   const { customerName, customerEmail, eventTitle, orderNumber, cancellationReason } = data
 

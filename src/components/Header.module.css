@@ -92,6 +92,113 @@
   gap: 1rem;
 }
 
+/* Search */
+.searchWrap {
+  position: relative;
+}
+
+.searchIcon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  transition: color 0.2s;
+}
+
+.searchIcon:hover {
+  color: var(--color-primary);
+}
+
+.searchBar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: #fff;
+  border: 1.5px solid var(--color-primary);
+  border-radius: 999px;
+  padding: 0.25rem 0.5rem 0.25rem 0.875rem;
+  box-shadow: 0 2px 12px rgba(190, 70, 90, 0.1);
+  animation: searchSlideIn 0.2s ease;
+}
+
+@keyframes searchSlideIn {
+  from { opacity: 0; transform: scaleX(0.7); }
+  to { opacity: 1; transform: scaleX(1); }
+}
+
+.searchInput {
+  border: none;
+  outline: none;
+  font-size: 0.9rem;
+  width: 180px;
+  background: transparent;
+  color: var(--color-text);
+  font-family: inherit;
+}
+
+.searchSubmit,
+.searchClose {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem;
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  transition: color 0.2s;
+}
+
+.searchSubmit:hover { color: var(--color-primary); }
+.searchClose:hover { color: var(--color-text); }
+
+.suggestions {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  overflow: hidden;
+  z-index: 200;
+  min-width: 240px;
+}
+
+.suggestionsLabel {
+  padding: 0.5rem 0.875rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.suggestionItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.625rem 0.875rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: var(--color-text);
+  text-align: left;
+  transition: background 0.15s;
+}
+
+.suggestionItem:hover {
+  background: var(--color-bg-secondary);
+}
+
 .cartLink {
   position: relative;
   color: var(--color-text);

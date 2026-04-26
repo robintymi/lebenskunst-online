@@ -165,14 +165,41 @@ export default function OrdersPage() {
             </div>
 
             {(order.status === 'paid' || order.status === 'installment_active') && (
-              <a
-                href={`/api/invoice/${order.id}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.invoiceLink}
-              >
-                Rechnung anzeigen
-              </a>
+              <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', marginTop: '0.75rem' }}>
+                <a
+                  href={`/api/invoice/${order.id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.invoiceLink}
+                  style={{ marginTop: 0 }}
+                >
+                  Rechnung anzeigen
+                </a>
+                {(() => {
+                  const daysSince = (Date.now() - new Date(order.createdAt).getTime()) / (1000 * 60 * 60 * 24)
+                  if (daysSince > 14) return null
+                  return (
+                    <Link
+                      href={`/widerruf?bestellung=${encodeURIComponent(order.orderNumber)}`}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.375rem',
+                        padding: '0.4rem 0.875rem',
+                        border: '1px solid #BE465A',
+                        borderRadius: '999px',
+                        color: '#BE465A',
+                        fontSize: '0.8125rem',
+                        fontWeight: 500,
+                        textDecoration: 'none',
+                        transition: 'background 0.2s',
+                      }}
+                    >
+                      Widerruf einlegen
+                    </Link>
+                  )
+                })()}
+              </div>
             )}
           </div>
         ))

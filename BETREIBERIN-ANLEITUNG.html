@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Lebenskunst Online – Anleitung für die Betreiberin</title>
+<style>
+  @page { margin: 2.5cm; }
+  body {
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    max-width: 780px;
+    margin: 40px auto;
+    padding: 0 30px 60px;
+    color: #2D1B4E;
+    line-height: 1.7;
+    background: #FAFAFE;
+  }
+  h1 {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    color: #6B4C9A;
+    font-size: 2.25rem;
+    border-bottom: 3px solid #9B6DB7;
+    padding-bottom: 0.5rem;
+    margin-top: 0;
+  }
+  h2 {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    color: #6B4C9A;
+    font-size: 1.6rem;
+    margin-top: 2.2rem;
+    border-left: 4px solid #9B6DB7;
+    padding-left: 0.75rem;
+  }
+  h3 {
+    color: #2D1B4E;
+    font-size: 1.15rem;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+  p, li { font-size: 1rem; }
+  ul, ol { padding-left: 1.5rem; }
+  li { margin-bottom: 0.35rem; }
+  code {
+    background: #F4F1F9;
+    color: #6B4C9A;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 0.95em;
+  }
+  strong { color: #6B4C9A; }
+  hr {
+    border: none;
+    border-top: 1px solid #E8E0F4;
+    margin: 2rem 0;
+  }
+  .stand {
+    color: #7E6E96;
+    font-style: italic;
+    margin-bottom: 2rem;
+  }
+  .tip {
+    background: #F4F1F9;
+    border-left: 4px solid #9B6DB7;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    margin: 1rem 0;
+    font-size: 0.95rem;
+  }
+  @media print {
+    body { background: white; margin: 0; }
+    h2 { page-break-after: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<h1>Lebenskunst Online – Anleitung für die Betreiberin (Admin)</h1>
+<p class="stand">Stand: 20. April 2026</p>
+
+<h2>1) Zugänge (Übersicht)</h2>
+
+<h3>Website</h3>
+<ul>
+  <li>Öffentliche Website: <code>https://lebenskunstonline.de</code></li>
+</ul>
+
+<h3>Admin (Payload CMS)</h3>
+<ul>
+  <li>Admin-Login: <code>https://lebenskunstonline.de/admin</code></li>
+  <li>Anmeldung: E-Mail + Passwort (im Passwort-Manager der Betreiberin/Agentur)</li>
+  <li>Rollen:
+    <ul>
+      <li><code>admin</code>: darf Inhalte, Einstellungen, Bestellungen, Media verwalten</li>
+      <li><code>member</code>: Kundenkonto (Mitgliederbereich), keine Admin-Rechte</li>
+    </ul>
+  </li>
+</ul>
+
+<p><strong>Erst-Einrichtung (nur wenn noch kein Admin existiert):</strong></p>
+<ul>
+  <li>Standard: Beim ersten Aufruf erscheint <code>.../admin/create-first-user</code>. Dort wird der <strong>erste User automatisch als Admin</strong> angelegt (nur E-Mail + Passwort erforderlich).</li>
+  <li>Optional (Technik/Agentur): Admin kann auch automatisch beim Start angelegt werden über <code>.env</code> (<code>BOOTSTRAP_ADMIN_EMAIL</code>, <code>BOOTSTRAP_ADMIN_PASSWORD</code>).</li>
+</ul>
+
+<h3>Technische Zugänge (für Betreuung/Agentur)</h3>
+<ul>
+  <li>GitHub-Repository: <code>robintymi/lebenskunst-online</code></li>
+  <li>Server/VPS, MongoDB, Stripe, E-Mail (Resend): Zugangsdaten liegen <strong>nicht</strong> im Repo und sollten getrennt (Passwort-Manager) gepflegt werden.</li>
+</ul>
+
+<h2>2) Wichtigste Funktionen im Admin</h2>
+
+<h3>Dashboard („Übersicht")</h3>
+<ul>
+  <li>Kennzahlen: Einnahmen, Bestellungen, neue Mitglieder, Events</li>
+  <li>CSV-Export: Bestellungen als CSV herunterladen (optional Zeitraum „Von/Bis")</li>
+  <li>Startseite: Shortcut zu den Seiteneinstellungen (inkl. Startseiten-Bild)</li>
+</ul>
+
+<h3>Seiteneinstellungen (Startseite & allgemeine Inhalte)</h3>
+<p>Menüpunkt: <strong>Verwaltung → Seiteneinstellungen</strong></p>
+<p>Hier steuerst du u.a.:</p>
+<ul>
+  <li><strong>Startseiten-Bild</strong> (Portrait im Kreis auf der Startseite)</li>
+  <li><strong>Überschrift</strong> und <strong>Untertitel</strong></li>
+  <li><strong>Zitat</strong></li>
+  <li><strong>Kundenstimmen</strong> (Name, Text, Sterne, Kontext)</li>
+</ul>
+
+<h3>Inhalte / Shop</h3>
+<p>Je nach Menüpunkt kannst du verwalten:</p>
+<ul>
+  <li><strong>Shop-Items</strong>: einzelne Angebote/Produkte (Preis, Beschreibung, Bilder, Kategorie, „featured")</li>
+  <li><strong>Bundles</strong>: Pakete/Bundle-Angebote mit Rabatt</li>
+  <li><strong>Podcasts</strong>: Podcast-Episoden (Titel, Beschreibung, Medien/Dateien)</li>
+  <li><strong>Kategorien</strong>: Shop-Kategorien</li>
+  <li><strong>Rabatte</strong>: Discount-Codes/Regeln</li>
+  <li><strong>Reviews</strong>: (falls genutzt) Bewertungen im System</li>
+</ul>
+
+<h3>Bestellungen & Nutzer</h3>
+<ul>
+  <li><strong>Orders</strong>: Bestellungen einsehen, Status prüfen, Export möglich</li>
+  <li><strong>Users</strong>: Admin- und Mitgliederkonten verwalten</li>
+</ul>
+
+<h3>Media (Bilder/Uploads)</h3>
+<ul>
+  <li><strong>Media</strong> ist der zentrale Ort für Bilder-Uploads.</li>
+  <li>Jedes Bild braucht eine <strong>Bildbeschreibung (Alt-Text)</strong> (wichtig für Barrierefreiheit/SEO).</li>
+</ul>
+
+<h2>3) Startseiten-Bild ändern (Schritt für Schritt)</h2>
+<ol>
+  <li>Öffne <code>https://lebenskunstonline.de/admin</code> und melde dich an.</li>
+  <li>Gehe ins Dashboard „Übersicht".</li>
+  <li>Im Kasten <strong>Startseite</strong> klicke auf <strong>„Seiteneinstellungen öffnen"</strong>.</li>
+  <li>Im Feld <strong>„Startseiten-Bild"</strong>:
+    <ul>
+      <li>Bild auswählen/hochladen (ggf. wird automatisch ein Eintrag in <strong>Media</strong> erstellt).</li>
+      <li>Achte darauf, dass eine <strong>Bildbeschreibung (Alt-Text)</strong> vorhanden ist.</li>
+    </ul>
+  </li>
+  <li><strong>Speichern</strong>.</li>
+  <li>Prüfe die Startseite in einem neuen Tab: <code>https://lebenskunstonline.de</code></li>
+</ol>
+
+<div class="tip"><strong>Tipp:</strong> Gute Ergebnisse liefern quadratische oder leicht hochformatige Portraits (das Bild wird als Kreis angezeigt).</div>
+
+<h2>4) Sicherheit & gute Praxis</h2>
+<ul>
+  <li>Admin-Passwort: stark wählen und nur im Passwort-Manager speichern.</li>
+  <li>Nur Bilder hochladen, an denen du die Rechte hast.</li>
+  <li>Alt-Texte kurz und beschreibend halten (z.B. „Susanne Sturm – Portrait").</li>
+</ul>
+
+<h2>5) Falls etwas nicht klappt</h2>
+<ul>
+  <li><strong>Login-Probleme</strong>: „Passwort vergessen" nutzen (falls aktiv) oder die technische Betreuung kontaktieren.</li>
+  <li><strong>Bild wird nicht angezeigt</strong>: Seite hart neu laden (Cache) und prüfen, ob das Bild in <strong>Media</strong> vorhanden ist.</li>
+  <li><strong>Änderungen erscheinen nicht</strong>: Speichern prüfen und danach die Website neu laden.</li>
+</ul>
+
+</body>
+</html>
