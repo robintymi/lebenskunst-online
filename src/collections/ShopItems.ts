@@ -87,7 +87,9 @@ export const ShopItems: CollectionConfig = {
       unique: true,
       admin: {
         position: 'sidebar',
-        description: 'URL-freundlicher Name (z.B. breathwork-workshop-maerz)',
+        components: {
+          Field: '@/components/admin/SlugField#SlugField',
+        },
       },
     },
     {
