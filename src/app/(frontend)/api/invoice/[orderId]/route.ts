@@ -28,7 +28,6 @@ export async function GET(
 
   const customer = typeof order.customer === 'object' ? order.customer : user
 
-  // Escape HTML to prevent injection via user-supplied fields
   const esc = (s: unknown) =>
     String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 
@@ -47,13 +46,21 @@ export async function GET(
       <tr>
         <td>${name}</td>
         <td style="text-align:center">${qty}</td>
-        <td style="text-align:right">€${unitPrice.toFixed(2).replace('.', ',')}</td>
-        <td style="text-align:right">€${total.toFixed(2).replace('.', ',')}</td>
+        <td style="text-align:right">EUR ${unitPrice.toFixed(2).replace('.', ',')}</td>
+        <td style="text-align:right">EUR ${total.toFixed(2).replace('.', ',')}</td>
       </tr>
     `
   }).join('')
 
-  // VAT display: set INVOICE_SHOW_VAT=true in env if Susanne is NOT a Kleinunternehmerin (§19 UStG)
+  const itemSubtotal = (order.items || []).reduce((sum: number, item: any) => {
+    const qty = item.quantity || 1
+    const unitPrice = item.unitPrice || 0
+    return sum + qty * unitPrice
+  }, 0)
+  const subtotal = typeof order.subtotal === 'number' ? order.subtotal : itemSubtotal
+  const discountAmount = typeof order.discountAmount === 'number' ? order.discountAmount : 0
+  const shippingAmount = typeof order.shippingAmount === 'number' ? order.shippingAmount : 0
+
   const showVat = process.env.INVOICE_SHOW_VAT === 'true'
   const netTotal = order.total / 1.19
   const vatAmount = order.total - netTotal
@@ -85,7 +92,7 @@ export async function GET(
     tbody tr { border-bottom: 1px solid #f0e8e8; }
     tbody tr:last-child { border-bottom: none; }
     tbody td { padding: 10px 12px; font-size: 14px; }
-    .totals { margin-left: auto; width: 280px; }
+    .totals { margin-left: auto; width: 320px; }
     .totals-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 14px; border-bottom: 1px solid #f0e8e8; }
     .totals-row.total { font-size: 16px; font-weight: bold; color: #BE465A; border-bottom: none; padding-top: 10px; }
     .payment-info { margin-top: 32px; padding: 16px; background: #FFF5F5; border-left: 4px solid #BE465A; border-radius: 0 4px 4px 0; }
@@ -101,7 +108,7 @@ export async function GET(
   </style>
 </head>
 <body>
-  <button class="print-btn no-print" onclick="window.print()">🖨️ Rechnung drucken / als PDF speichern</button>
+  <button class="print-btn no-print" onclick="window.print()">Rechnung drucken / als PDF speichern</button>
 
   <div class="header">
     <div>
@@ -117,7 +124,7 @@ export async function GET(
 
   <div class="addresses">
     <div class="address-block">
-      <h3>Rechnungsempfänger</h3>
+      <h3>Rechnungsempfaenger</h3>
       <p>
         ${esc(customer.firstName)} ${esc(customer.lastName)}<br>
         ${esc(customer.email)}<br>
@@ -129,7 +136,7 @@ export async function GET(
       <p>
         Susanne Sturm<br>
         Lebenskunst Online<br>
-        Schweriner Straße 44<br>
+        Schweriner Strasse 44<br>
         15757 Halbe<br>
         Deutschland
       </p>
@@ -151,28 +158,32 @@ export async function GET(
   </table>
 
   <div class="totals">
+    <div class="totals-row"><span>Zwischensumme</span><span>EUR ${subtotal.toFixed(2).replace('.', ',')}</span></div>
+    ${discountAmount > 0 ? `<div class="totals-row"><span>Rabatt</span><span>-EUR ${discountAmount.toFixed(2).replace('.', ',')}</span></div>` : ''}
+    ${shippingAmount > 0 ? `<div class="totals-row"><span>Versand</span><span>EUR ${shippingAmount.toFixed(2).replace('.', ',')}</span></div>` : ''}
+    ${shippingAmount === 0 && order.shippingAddress ? `<div class="totals-row"><span>Versand</span><span>Kostenlos</span></div>` : ''}
     ${showVat ? `
-    <div class="totals-row"><span>Nettobetrag</span><span>€${netTotal.toFixed(2).replace('.', ',')}</span></div>
-    <div class="totals-row"><span>MwSt. 19%</span><span>€${vatAmount.toFixed(2).replace('.', ',')}</span></div>
+    <div class="totals-row"><span>Nettobetrag</span><span>EUR ${netTotal.toFixed(2).replace('.', ',')}</span></div>
+    <div class="totals-row"><span>MwSt. 19%</span><span>EUR ${vatAmount.toFixed(2).replace('.', ',')}</span></div>
     ` : ''}
-    <div class="totals-row total"><span>Gesamtbetrag</span><span>€${order.total.toFixed(2).replace('.', ',')}</span></div>
+    <div class="totals-row total"><span>Gesamtbetrag</span><span>EUR ${order.total.toFixed(2).replace('.', ',')}</span></div>
   </div>
 
   <div class="payment-info">
     <h3>Zahlungsstatus</h3>
     <p>
       ${order.paymentType === 'installment'
-        ? `Ratenzahlung — ${order.installmentDetails?.paidInstallments || 0} von ${order.installmentDetails?.totalInstallments || '?'} Raten bezahlt`
-        : `Einmalzahlung — ${order.status === 'paid' ? 'Bezahlt' : 'Ausstehend'}`
+        ? `Ratenzahlung - ${order.installmentDetails?.paidInstallments || 0} von ${order.installmentDetails?.totalInstallments || '?'} Raten bezahlt`
+        : `Einmalzahlung - ${order.status === 'paid' ? 'Bezahlt' : 'Ausstehend'}`
       }
     </p>
-    ${!showVat ? `<p style="margin-top:8px;font-size:12px;color:#888;">Gemäß § 19 UStG wird keine Umsatzsteuer berechnet.</p>` : ''}
+    ${!showVat ? `<p style="margin-top:8px;font-size:12px;color:#888;">Gemaess § 19 UStG wird keine Umsatzsteuer berechnet.</p>` : ''}
   </div>
 
   <div class="footer">
-    <p>Lebenskunst Online · lebenskunstonline.de</p>
-    <p>Bestellnummer: ${order.orderNumber} · Rechnungsnummer: ${invoiceNumber}</p>
-    <p>Vielen Dank für dein Vertrauen!</p>
+    <p>Lebenskunst Online - lebenskunstonline.de</p>
+    <p>Bestellnummer: ${order.orderNumber} - Rechnungsnummer: ${invoiceNumber}</p>
+    <p>Vielen Dank fuer dein Vertrauen!</p>
   </div>
 </body>
 </html>`

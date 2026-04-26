@@ -11,6 +11,8 @@ interface ShopItem {
   title: string
   slug: string
   itemType: string
+  categoryIds?: string[]
+  featured?: boolean
   pricing?: { price?: number; isFree?: boolean }
   image?: { url?: string; sizes?: { thumbnail?: { url?: string } } }
   shortDescription?: string
@@ -50,10 +52,17 @@ export default function RecommendedItems({ allItems, currentItemId, purchasedIte
       // Type affinity
       const typeRank = affinityTypes.indexOf(item.itemType)
       if (typeRank !== -1) score += Math.max(5 - typeRank, 1) * 3
+      // Category affinity
+      const itemCategories = item.categoryIds || []
+      affinityCategories.forEach((categoryId, index) => {
+        if (itemCategories.includes(categoryId)) {
+          score += Math.max(4 - index, 1) * 2
+        }
+      })
       // Viewed items boost category
       if (viewedIds.has(item.id)) score -= 10 // demote already viewed
       // Featured boost
-      if ((item as any).featured) score += 2
+      if (item.featured) score += 2
       // Random spread (prevents always same order)
       score += Math.random() * 2
       return { item, score }

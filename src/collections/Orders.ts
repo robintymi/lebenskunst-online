@@ -78,15 +78,21 @@ export const Orders: CollectionConfig = {
         },
         {
           name: 'unitPrice',
-          label: 'Einzelpreis (€)',
+          label: 'Einzelpreis (EUR)',
           type: 'number',
           required: true,
         },
       ],
     },
     {
+      name: 'subtotal',
+      label: 'Zwischensumme (EUR)',
+      type: 'number',
+      admin: { readOnly: true, position: 'sidebar' },
+    },
+    {
       name: 'total',
-      label: 'Gesamtbetrag (€)',
+      label: 'Gesamtbetrag (EUR)',
       type: 'number',
       required: true,
       admin: { readOnly: true },
@@ -112,9 +118,9 @@ export const Orders: CollectionConfig = {
       },
       fields: [
         { name: 'totalInstallments', label: 'Anzahl Raten', type: 'number' },
-        { name: 'amountPerInstallment', label: 'Betrag pro Rate (€)', type: 'number' },
+        { name: 'amountPerInstallment', label: 'Betrag pro Rate (EUR)', type: 'number' },
         { name: 'paidInstallments', label: 'Bezahlte Raten', type: 'number', defaultValue: 0 },
-        { name: 'nextPaymentDate', label: 'Nächste Zahlung', type: 'date' },
+        { name: 'nextPaymentDate', label: 'Naechste Zahlung', type: 'date' },
       ],
     },
     {
@@ -133,6 +139,13 @@ export const Orders: CollectionConfig = {
       admin: { position: 'sidebar' },
     },
     {
+      name: 'shippingAmount',
+      label: 'Versandbetrag (EUR)',
+      type: 'number',
+      defaultValue: 0,
+      admin: { position: 'sidebar', readOnly: true },
+    },
+    {
       name: 'discountCode',
       label: 'Verwendeter Rabattcode',
       type: 'text',
@@ -140,7 +153,7 @@ export const Orders: CollectionConfig = {
     },
     {
       name: 'discountAmount',
-      label: 'Rabattbetrag (€)',
+      label: 'Rabattbetrag (EUR)',
       type: 'number',
       admin: { position: 'sidebar', readOnly: true },
     },
@@ -167,12 +180,54 @@ export const Orders: CollectionConfig = {
       },
     },
     {
+      name: 'withdrawal',
+      label: 'Widerruf',
+      type: 'group',
+      admin: {
+        position: 'sidebar',
+        description: 'Vom Kunden eingereichte Widerrufsanfrage',
+      },
+      fields: [
+        {
+          name: 'status',
+          label: 'Widerrufsstatus',
+          type: 'select',
+          defaultValue: 'none',
+          options: [
+            { label: 'Nicht angefragt', value: 'none' },
+            { label: 'Angefragt', value: 'requested' },
+            { label: 'Geprueft', value: 'reviewed' },
+            { label: 'Abgeschlossen', value: 'completed' },
+            { label: 'Abgelehnt', value: 'rejected' },
+          ],
+        },
+        {
+          name: 'requestedAt',
+          label: 'Angefragt am',
+          type: 'date',
+          admin: { readOnly: true },
+        },
+        {
+          name: 'requestedByName',
+          label: 'Name',
+          type: 'text',
+          admin: { readOnly: true },
+        },
+        {
+          name: 'requestedByEmail',
+          label: 'E-Mail',
+          type: 'text',
+          admin: { readOnly: true },
+        },
+      ],
+    },
+    {
       name: 'shippingAddress',
       label: 'Lieferadresse',
       type: 'group',
-      admin: { description: 'Nur für physische Produkte (Bücher etc.)' },
+      admin: { description: 'Nur fuer physische Produkte (Buecher etc.)' },
       fields: [
-        { name: 'street', label: 'Straße', type: 'text' },
+        { name: 'street', label: 'Strasse', type: 'text' },
         { name: 'city', label: 'Stadt', type: 'text' },
         { name: 'zip', label: 'PLZ', type: 'text' },
         { name: 'country', label: 'Land', type: 'text', defaultValue: 'Deutschland' },
@@ -183,7 +238,7 @@ export const Orders: CollectionConfig = {
       label: 'Versand & Lieferung',
       type: 'group',
       admin: {
-        description: 'Nur für physische Produkte (Bücher, Kunst)',
+        description: 'Nur fuer physische Produkte (Buecher, Kunst)',
       },
       fields: [
         {

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { getPayload } from 'payload'
 import config from '@payload-config'
+import { getShippingCost, isPhysicalType } from '@/lib/utils'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '')
 
@@ -9,6 +10,7 @@ interface CheckoutItem {
   id: string
   type: 'shop-item' | 'bundle'
   itemType?: string
+  containsPhysical?: boolean
   name: string
   price: number
   quantity: number
@@ -55,11 +57,15 @@ export async function POST(req: NextRequest) {
           const bundle = await payload.find({
             collection: 'bundles',
             where: { id: { equals: item.id } },
+            depth: 1,
             limit: 1,
           })
-          const dbBundle = bundle.docs[0]
+          const dbBundle = bundle.docs[0] as any
           if (!dbBundle) throw new Error(`Bundle ${item.id} nicht gefunden`)
-          return { ...item, price: dbBundle.bundlePrice, name: dbBundle.name }
+          const containsPhysical = (dbBundle.items || []).some((bundleItem: any) =>
+            bundleItem && typeof bundleItem === 'object' && isPhysicalType(bundleItem.itemType || ''),
+          )
+          return { ...item, price: dbBundle.bundlePrice, name: dbBundle.name, containsPhysical }
         }
 
         const shopItem = await payload.find({
@@ -84,7 +90,12 @@ export async function POST(req: NextRequest) {
           }
         }
 
-        return { ...item, price: dbItem.pricing?.price || 0, name: dbItem.title }
+        return {
+          ...item,
+          price: dbItem.pricing?.price || 0,
+          name: dbItem.title,
+          itemType: dbItem.itemType,
+        }
       }),
     )
 
@@ -116,7 +127,19 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const totalAmount = Math.max(0, subtotal - discountAmount)
+    const discountedSubtotal = Math.max(0, subtotal - discountAmount)
+    const hasPhysicalProducts = verifiedItems.some((item) =>
+      item.type === 'bundle' ? item.containsPhysical : isPhysicalType(item.itemType || ''),
+    )
+    const shippingAmount = getShippingCost(discountedSubtotal, hasPhysicalProducts)
+    const totalAmount = discountedSubtotal + shippingAmount
+
+    if (hasPhysicalProducts && (!customer.street || !customer.city || !customer.zip)) {
+      return NextResponse.json(
+        { error: 'Fuer physische Produkte ist eine vollstaendige Lieferadresse erforderlich.' },
+        { status: 400 },
+      )
+    }
 
     // Resolve customer user ID
     let customerId = userId
@@ -187,9 +210,11 @@ export async function POST(req: NextRequest) {
         orderNumber: `LK-${Date.now()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`,
         customer: customerId,
         items: orderItems,
+        subtotal,
         total: totalAmount,
         paymentType,
         status: 'pending',
+        shippingAmount,
         ...(paymentType === 'installment' && {
           installmentDetails: {
             totalInstallments: installmentCount,
@@ -354,7 +379,14 @@ export async function POST(req: NextRequest) {
                   verifiedItems.length === 1
                     ? verifiedItems[0].name
                     : `Bestellung (${verifiedItems.length} Artikel)`,
-                description: `Rabattcode: ${validatedDiscountCode}`,
+                description: [
+                  validatedDiscountCode ? `Rabattcode: ${validatedDiscountCode}` : null,
+                  hasPhysicalProducts
+                    ? shippingAmount === 0
+                      ? 'Versand: kostenlos'
+                      : `Versand: ${shippingAmount.toFixed(2).replace('.', ',')} EUR`
+                    : null,
+                ].filter(Boolean).join(' | '),
               },
               unit_amount: Math.round(totalAmount * 100),
             },
@@ -375,6 +407,19 @@ export async function POST(req: NextRequest) {
           },
           quantity: item.quantity,
         }))
+
+        if (shippingAmount > 0) {
+          lineItems.push({
+            price_data: {
+              currency: 'eur',
+              product_data: {
+                name: 'Versand',
+              },
+              unit_amount: Math.round(shippingAmount * 100),
+            },
+            quantity: 1,
+          })
+        }
       }
 
       session = await stripe.checkout.sessions.create({

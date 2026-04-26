@@ -2,12 +2,12 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>Lebenskunst Online – Anleitung für die Betreiberin</title>
+<title>Lebenskunst Online - Anleitung fuer die Betreiberin</title>
 <style>
   @page { margin: 2.5cm; }
   body {
     font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-    max-width: 780px;
+    max-width: 860px;
     margin: 40px auto;
     padding: 0 30px 60px;
     color: #2D1B4E;
@@ -15,24 +15,22 @@
     background: #FAFAFE;
   }
   h1 {
-    font-family: 'Cormorant Garamond', Georgia, serif;
     color: #6B4C9A;
-    font-size: 2.25rem;
+    font-size: 2.2rem;
     border-bottom: 3px solid #9B6DB7;
     padding-bottom: 0.5rem;
     margin-top: 0;
   }
   h2 {
-    font-family: 'Cormorant Garamond', Georgia, serif;
     color: #6B4C9A;
-    font-size: 1.6rem;
+    font-size: 1.5rem;
     margin-top: 2.2rem;
     border-left: 4px solid #9B6DB7;
     padding-left: 0.75rem;
   }
   h3 {
     color: #2D1B4E;
-    font-size: 1.15rem;
+    font-size: 1.1rem;
     margin-top: 1.5rem;
     margin-bottom: 0.5rem;
   }
@@ -44,15 +42,10 @@
     color: #6B4C9A;
     padding: 0.1rem 0.4rem;
     border-radius: 4px;
-    font-family: 'Consolas', 'Courier New', monospace;
+    font-family: Consolas, 'Courier New', monospace;
     font-size: 0.95em;
   }
   strong { color: #6B4C9A; }
-  hr {
-    border: none;
-    border-top: 1px solid #E8E0F4;
-    margin: 2rem 0;
-  }
   .stand {
     color: #7E6E96;
     font-style: italic;
@@ -61,7 +54,15 @@
   .tip {
     background: #F4F1F9;
     border-left: 4px solid #9B6DB7;
-    padding: 0.75rem 1rem;
+    padding: 0.85rem 1rem;
+    border-radius: 6px;
+    margin: 1rem 0;
+    font-size: 0.95rem;
+  }
+  .warn {
+    background: #FFF5F5;
+    border-left: 4px solid #BE465A;
+    padding: 0.85rem 1rem;
     border-radius: 6px;
     margin: 1rem 0;
     font-size: 0.95rem;
@@ -74,111 +75,155 @@
 </head>
 <body>
 
-<h1>Lebenskunst Online – Anleitung für die Betreiberin (Admin)</h1>
-<p class="stand">Stand: 20. April 2026</p>
+<h1>Lebenskunst Online - Anleitung fuer die Betreiberin</h1>
+<p class="stand">Stand: 26. April 2026</p>
 
-<h2>1) Zugänge (Übersicht)</h2>
+<h2>1) Zug&auml;nge</h2>
 
 <h3>Website</h3>
 <ul>
-  <li>Öffentliche Website: <code>https://lebenskunstonline.de</code></li>
+  <li>&Ouml;ffentliche Website: <code>https://lebenskunstonline.de</code></li>
 </ul>
 
 <h3>Admin (Payload CMS)</h3>
 <ul>
   <li>Admin-Login: <code>https://lebenskunstonline.de/admin</code></li>
-  <li>Anmeldung: E-Mail + Passwort (im Passwort-Manager der Betreiberin/Agentur)</li>
+  <li>Anmeldung: E-Mail + Passwort</li>
   <li>Rollen:
     <ul>
-      <li><code>admin</code>: darf Inhalte, Einstellungen, Bestellungen, Media verwalten</li>
-      <li><code>member</code>: Kundenkonto (Mitgliederbereich), keine Admin-Rechte</li>
+      <li><code>admin</code>: darf Inhalte, Bestellungen, Nutzer, Media und Einstellungen verwalten</li>
+      <li><code>member</code>: Kundenkonto ohne Admin-Rechte</li>
     </ul>
   </li>
 </ul>
 
-<p><strong>Erst-Einrichtung (nur wenn noch kein Admin existiert):</strong></p>
-<ul>
-  <li>Standard: Beim ersten Aufruf erscheint <code>.../admin/create-first-user</code>. Dort wird der <strong>erste User automatisch als Admin</strong> angelegt (nur E-Mail + Passwort erforderlich).</li>
-  <li>Optional (Technik/Agentur): Admin kann auch automatisch beim Start angelegt werden über <code>.env</code> (<code>BOOTSTRAP_ADMIN_EMAIL</code>, <code>BOOTSTRAP_ADMIN_PASSWORD</code>).</li>
-</ul>
-
-<h3>Technische Zugänge (für Betreuung/Agentur)</h3>
+<h3>Technische Zug&auml;nge</h3>
 <ul>
   <li>GitHub-Repository: <code>robintymi/lebenskunst-online</code></li>
-  <li>Server/VPS, MongoDB, Stripe, E-Mail (Resend): Zugangsdaten liegen <strong>nicht</strong> im Repo und sollten getrennt (Passwort-Manager) gepflegt werden.</li>
+  <li>Server/VPS, MongoDB, Stripe und E-Mail-Zug&auml;nge liegen getrennt vom Repo im Passwort-Manager.</li>
 </ul>
 
-<h2>2) Wichtigste Funktionen im Admin</h2>
+<h2>2) Was neu im Shop drin ist</h2>
 
-<h3>Dashboard („Übersicht")</h3>
+<h3>Rechtliches</h3>
 <ul>
-  <li>Kennzahlen: Einnahmen, Bestellungen, neue Mitglieder, Events</li>
-  <li>CSV-Export: Bestellungen als CSV herunterladen (optional Zeitraum „Von/Bis")</li>
-  <li>Startseite: Shortcut zu den Seiteneinstellungen (inkl. Startseiten-Bild)</li>
+  <li><code>/impressum</code>, <code>/datenschutz</code>, <code>/agb</code> und <code>/widerruf</code> sind live.</li>
+  <li>Im Footer ist die Widerrufsfunktion jetzt als klarer Link <strong>&bdquo;Vertrag widerrufen&ldquo;</strong> erreichbar.</li>
+  <li>Im Mitgliederbereich erscheint bei passenden physischen Einzelbestellungen zus&auml;tzlich ein Link <strong>&bdquo;Vertrag widerrufen&ldquo;</strong>.</li>
 </ul>
 
-<h3>Seiteneinstellungen (Startseite & allgemeine Inhalte)</h3>
-<p>Menüpunkt: <strong>Verwaltung → Seiteneinstellungen</strong></p>
-<p>Hier steuerst du u.a.:</p>
+<h3>Suche &amp; Personalisierung</h3>
 <ul>
-  <li><strong>Startseiten-Bild</strong> (Portrait im Kreis auf der Startseite)</li>
-  <li><strong>Überschrift</strong> und <strong>Untertitel</strong></li>
-  <li><strong>Zitat</strong></li>
-  <li><strong>Kundenstimmen</strong> (Name, Text, Sterne, Kontext)</li>
+  <li>Im Header gibt es eine Suchleiste mit letzten Suchbegriffen.</li>
+  <li>Auf Shop- und Produktseiten werden personalisierte Empfehlungen ausgespielt.</li>
+  <li>Die Empfehlungen orientieren sich an zuletzt angesehenen Inhalten, Typen und Kategorien.</li>
 </ul>
 
-<h3>Inhalte / Shop</h3>
-<p>Je nach Menüpunkt kannst du verwalten:</p>
+<h3>Versand</h3>
 <ul>
-  <li><strong>Shop-Items</strong>: einzelne Angebote/Produkte (Preis, Beschreibung, Bilder, Kategorie, „featured")</li>
-  <li><strong>Bundles</strong>: Pakete/Bundle-Angebote mit Rabatt</li>
-  <li><strong>Podcasts</strong>: Podcast-Episoden (Titel, Beschreibung, Medien/Dateien)</li>
-  <li><strong>Kategorien</strong>: Shop-Kategorien</li>
-  <li><strong>Rabatte</strong>: Discount-Codes/Regeln</li>
-  <li><strong>Reviews</strong>: (falls genutzt) Bewertungen im System</li>
+  <li>F&uuml;r physische Produkte (B&uuml;cher, Kunst) werden Versandkosten im Warenkorb/Checkout angezeigt.</li>
+  <li>Versandkostenfrei ab <strong>100,00 EUR</strong>.</li>
+  <li>Darunter pauschal <strong>5,90 EUR</strong>.</li>
+  <li>Es gibt <strong>keinen Mindestbestellwert</strong>.</li>
 </ul>
 
-<h3>Bestellungen & Nutzer</h3>
+<h3>Cookies</h3>
 <ul>
-  <li><strong>Orders</strong>: Bestellungen einsehen, Status prüfen, Export möglich</li>
-  <li><strong>Users</strong>: Admin- und Mitgliederkonten verwalten</li>
+  <li>Aktuell werden nur technisch notwendige Cookies bzw. Session-Funktionen verwendet.</li>
+  <li>Zus&auml;tzlich speichert der Browser lokal letzte Suchbegriffe und betrachtete Produkte f&uuml;r die Personalisierung.</li>
+  <li>Es ist derzeit <strong>kein Marketing-Tracking</strong> und kein externes Analyse-Tool aktiv.</li>
 </ul>
 
-<h3>Media (Bilder/Uploads)</h3>
-<ul>
-  <li><strong>Media</strong> ist der zentrale Ort für Bilder-Uploads.</li>
-  <li>Jedes Bild braucht eine <strong>Bildbeschreibung (Alt-Text)</strong> (wichtig für Barrierefreiheit/SEO).</li>
-</ul>
+<div class="tip"><strong>Wichtig:</strong> Wenn sp&auml;ter Meta Pixel, Google Analytics, Hotjar oder &auml;hnliche Tools dazukommen, muss der Cookie-/Consent-Prozess erweitert werden.</div>
 
-<h2>3) Startseiten-Bild ändern (Schritt für Schritt)</h2>
+<h2>3) Widerrufsfunktion: So funktioniert sie</h2>
+
+<p>Die Website hat bereits eine digitale Widerrufsfunktion mit Zwei-Schritt-Ablauf:</p>
 <ol>
-  <li>Öffne <code>https://lebenskunstonline.de/admin</code> und melde dich an.</li>
-  <li>Gehe ins Dashboard „Übersicht".</li>
-  <li>Im Kasten <strong>Startseite</strong> klicke auf <strong>„Seiteneinstellungen öffnen"</strong>.</li>
-  <li>Im Feld <strong>„Startseiten-Bild"</strong>:
-    <ul>
-      <li>Bild auswählen/hochladen (ggf. wird automatisch ein Eintrag in <strong>Media</strong> erstellt).</li>
-      <li>Achte darauf, dass eine <strong>Bildbeschreibung (Alt-Text)</strong> vorhanden ist.</li>
-    </ul>
-  </li>
-  <li><strong>Speichern</strong>.</li>
-  <li>Prüfe die Startseite in einem neuen Tab: <code>https://lebenskunstonline.de</code></li>
+  <li>Erster Schritt: Link/Button <strong>&bdquo;Vertrag widerrufen&ldquo;</strong></li>
+  <li>Zweiter Schritt: Formularseite mit Best&auml;tigungsbutton <strong>&bdquo;Widerruf best&auml;tigen&ldquo;</strong></li>
+  <li>Danach geht automatisch eine E-Mail als Eingangsbest&auml;tigung raus.</li>
 </ol>
 
-<div class="tip"><strong>Tipp:</strong> Gute Ergebnisse liefern quadratische oder leicht hochformatige Portraits (das Bild wird als Kreis angezeigt).</div>
+<div class="warn">
+  <strong>Rechtsstand:</strong> Nach den aktuell ver&ouml;ffentlichten Informationen beginnt die gesetzliche Pflicht f&uuml;r den neuen Widerrufsbutton in Deutschland am <strong>19. Juni 2026</strong>, nicht am 01.05.2026. Die Funktion ist hier bereits vorzeitig eingebaut.
+</div>
 
-<h2>4) Sicherheit & gute Praxis</h2>
+<h3>Wof&uuml;r die Online-Widerrufsfunktion aktuell gedacht ist</h3>
 <ul>
-  <li>Admin-Passwort: stark wählen und nur im Passwort-Manager speichern.</li>
-  <li>Nur Bilder hochladen, an denen du die Rechte hast.</li>
-  <li>Alt-Texte kurz und beschreibend halten (z.B. „Susanne Sturm – Portrait").</li>
+  <li>Der Online-Widerruf ist aktuell f&uuml;r <strong>physische Einzelbestellungen</strong> gedacht, also vor allem <strong>B&uuml;cher</strong> und <strong>Kunst</strong>.</li>
+  <li>F&uuml;r digitale Inhalte, Veranstaltungen oder gemischte Bestellungen wird aktuell keine automatische Online-Abwicklung erzwungen.</li>
+  <li>Dadurch wird vermieden, dass rechtlich ausgeschlossene oder gemischte F&auml;lle falsch automatisch storniert werden.</li>
 </ul>
 
-<h2>5) Falls etwas nicht klappt</h2>
+<h3>Wie du Widerrufe im Admin bearbeitest</h3>
+<ol>
+  <li>Im Admin zu <strong>Orders</strong> gehen.</li>
+  <li>Bestellung &uuml;ber Bestellnummer finden.</li>
+  <li>In der Sidebar die Gruppe <strong>Widerruf</strong> pr&uuml;fen.</li>
+  <li>Dort siehst du Status, Datum, Name und E-Mail der Anfrage.</li>
+  <li>Nach manueller Pr&uuml;fung im Admin den Status anpassen und ggf. die Erstattung in Stripe ausl&ouml;sen.</li>
+</ol>
+
+<div class="tip"><strong>Praxis-Hinweis:</strong> Die Eingangsbest&auml;tigung best&auml;tigt nur den Eingang der Erkl&auml;rung. Die tats&auml;chliche Pr&uuml;fung und R&uuml;ckabwicklung erfolgt anschlie&szlig;end manuell.</div>
+
+<h2>4) Checkout-Logik</h2>
+
 <ul>
-  <li><strong>Login-Probleme</strong>: „Passwort vergessen" nutzen (falls aktiv) oder die technische Betreuung kontaktieren.</li>
-  <li><strong>Bild wird nicht angezeigt</strong>: Seite hart neu laden (Cache) und prüfen, ob das Bild in <strong>Media</strong> vorhanden ist.</li>
-  <li><strong>Änderungen erscheinen nicht</strong>: Speichern prüfen und danach die Website neu laden.</li>
+  <li>Bei physischen Produkten wird jetzt eine Lieferadresse abgefragt.</li>
+  <li>Die Versandkosten werden im Warenkorb, Checkout und auf der Rechnung ber&uuml;cksichtigt.</li>
+  <li>Die ausdr&uuml;ckliche Zustimmung zum Verlust des Widerrufsrechts wird nur noch bei digitalen bzw. sofort bereitgestellten Leistungen verlangt.</li>
+  <li>Bei reinen physischen Bestellungen wird diese Checkbox nicht mehr erzwungen.</li>
+</ul>
+
+<h2>5) Suche &amp; Empfehlungen im Alltag</h2>
+
+<h3>Suche</h3>
+<ul>
+  <li>Die Suchfunktion sitzt oben im Header.</li>
+  <li>Gespeichert werden letzte Suchbegriffe im Browser des jeweiligen Nutzers.</li>
+  <li>Das ist keine serverseitige Profilbildung, sondern eine lokale Komfortfunktion.</li>
+</ul>
+
+<h3>Empfehlungen</h3>
+<ul>
+  <li>Die Empfehlungsboxen erscheinen im Shop und auf Produktdetailseiten.</li>
+  <li>Sie ber&uuml;cksichtigen zuletzt gesehene Inhalte, Kategorien und Typen.</li>
+  <li>Die Daten liegen browserlokal und dienen der Personalisierung derselben Person auf demselben Ger&auml;t.</li>
+</ul>
+
+<h2>6) Was du selbst im Admin pflegen kannst</h2>
+
+<ul>
+  <li><strong>Shop-Items</strong>: Titel, Preis, Bilder, Kategorien, Beschreibungen, Status</li>
+  <li><strong>Bundles</strong>: Inhalt, Preis, Beschreibung</li>
+  <li><strong>Bestellungen</strong>: Status, Versandstatus, Trackingnummer, Widerrufsstatus</li>
+  <li><strong>Users</strong>: Nutzer und Mitgliederkonten</li>
+  <li><strong>Media</strong>: Bilder und Dateien</li>
+</ul>
+
+<div class="warn">
+  <strong>Nicht im Admin pflegbar:</strong> Die statischen Rechtstexte (<code>/agb</code>, <code>/widerruf</code>, <code>/datenschutz</code>, <code>/impressum</code>) sind derzeit im Code hinterlegt. Wenn sich Anschrift, Versandregel oder Rechtstexte &auml;ndern, muss das aktuell technisch angepasst und neu deployed werden.
+</div>
+
+<h2>7) Checkliste bei neuen physischen Produkten</h2>
+
+<ol>
+  <li>Produkt im Admin anlegen.</li>
+  <li>Typ korrekt setzen: <strong>Buch</strong> oder <strong>Kunst</strong>.</li>
+  <li>Bild und Alt-Text pflegen.</li>
+  <li>Preis pr&uuml;fen.</li>
+  <li>Shop-Seite kontrollieren.</li>
+  <li>Testweise Warenkorb/Checkout mit Versandanzeige pr&uuml;fen.</li>
+</ol>
+
+<h2>8) Wenn etwas nicht klappt</h2>
+
+<ul>
+  <li><strong>Widerruf kommt nicht an:</strong> Bestellung im Admin suchen und pr&uuml;fen, ob unter <strong>Widerruf</strong> ein Eintrag gespeichert wurde.</li>
+  <li><strong>Versand fehlt im Checkout:</strong> Pr&uuml;fen, ob das Produkt wirklich als <strong>Buch</strong> oder <strong>Kunst</strong> angelegt ist.</li>
+  <li><strong>Empfehlungen wirken leer:</strong> Im Browser wurde evtl. noch nichts gesucht oder angesehen.</li>
+  <li><strong>Rechtstexte sollen ge&auml;ndert werden:</strong> Technische Betreuung/Agentur informieren.</li>
 </ul>
 
 </body>

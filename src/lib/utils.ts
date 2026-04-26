@@ -43,10 +43,26 @@ export const itemTypeGroups: Record<string, string[]> = {
   'Kunst': ['kunst'],
 }
 
+export const FREE_SHIPPING_THRESHOLD = 100
+export const STANDARD_SHIPPING_COST = 5.9
+
 export function isEventType(itemType: string): boolean {
   return ['seminar', 'workshop', 'vortrag'].includes(itemType)
 }
 
 export function isDigitalType(itemType: string): boolean {
   return ['video', 'audio', 'begleitmaterial', 'einzeltraining'].includes(itemType)
+}
+
+export function isPhysicalType(itemType: string): boolean {
+  return ['buch', 'kunst'].includes(itemType)
+}
+
+export function isImmediateAccessType(itemType: string): boolean {
+  return ['video', 'audio', 'begleitmaterial', 'einzeltraining'].includes(itemType)
+}
+
+export function getShippingCost(orderValue: number, hasPhysicalProducts: boolean): number {
+  if (!hasPhysicalProducts) return 0
+  return orderValue >= FREE_SHIPPING_THRESHOLD ? 0 : STANDARD_SHIPPING_COST
 }

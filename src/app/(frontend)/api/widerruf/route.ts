@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import config from '@payload-config'
+import { isPhysicalType } from '@/lib/utils'
 
 export const dynamic = 'force-dynamic'
 
 export async function POST(req: NextRequest) {
   try {
-    const { orderNumber, name, email, reason } = await req.json()
+    const { orderNumber, name, email } = await req.json()
 
     if (!orderNumber || !name || !email) {
       return NextResponse.json({ error: 'Pflichtfelder fehlen.' }, { status: 400 })
@@ -14,32 +15,33 @@ export async function POST(req: NextRequest) {
 
     const payload = await getPayload({ config })
 
-    // Find the order
     const orders = await payload.find({
       collection: 'orders',
       where: { orderNumber: { equals: orderNumber } },
+      depth: 2,
       limit: 1,
     })
 
     const order = orders.docs[0] as any
     if (!order) {
       return NextResponse.json(
-        { error: 'Bestellung nicht gefunden. Bitte prüfe die Bestellnummer.' },
+        { error: 'Bestellung nicht gefunden. Bitte pruefe die Bestellnummer.' },
         { status: 404 },
       )
     }
 
-    // Check 14-day window
-    const orderDate = new Date(order.createdAt)
-    const daysSince = (Date.now() - orderDate.getTime()) / (1000 * 60 * 60 * 24)
-    if (daysSince > 14) {
+    const customerEmail =
+      typeof order.customer === 'object' && order.customer?.email
+        ? String(order.customer.email).trim().toLowerCase()
+        : ''
+
+    if (!customerEmail || customerEmail !== String(email).trim().toLowerCase()) {
       return NextResponse.json(
-        { error: 'Die 14-tägige Widerrufsfrist für diese Bestellung ist abgelaufen.' },
-        { status: 400 },
+        { error: 'Die E-Mail-Adresse passt nicht zu dieser Bestellung.' },
+        { status: 403 },
       )
     }
 
-    // Only allow withdrawal for withdrawable statuses
     if (['cancelled', 'refunded'].includes(order.status)) {
       return NextResponse.json(
         { error: 'Diese Bestellung wurde bereits storniert oder erstattet.' },
@@ -47,20 +49,56 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // Update order status to cancelled
+    const alreadyRequested =
+      order.withdrawal?.status &&
+      order.withdrawal.status !== 'none' &&
+      order.withdrawal.status !== 'rejected'
+
+    if (alreadyRequested) {
+      return NextResponse.json(
+        { error: 'Fuer diese Bestellung liegt bereits eine Widerrufsanfrage vor.' },
+        { status: 400 },
+      )
+    }
+
+    const isWithdrawableOrder = Array.isArray(order.items) && order.items.length > 0 && order.items.every((item: any) => {
+      if (item.itemType !== 'shop-item') return false
+      const shopItem = item.shopItem
+      if (!shopItem || typeof shopItem === 'string') return false
+      return isPhysicalType(shopItem.itemType || '')
+    })
+
+    if (!isWithdrawableOrder) {
+      return NextResponse.json(
+        {
+          error:
+            'Diese Online-Widerrufsfunktion steht derzeit nur fuer physische Einzelbestellungen (Buecher/Kunst) zur Verfuegung. Bei digitalen Inhalten, Veranstaltungen oder gemischten Bestellungen kontaktiere uns bitte direkt.',
+        },
+        { status: 400 },
+      )
+    }
+
+    const requestedAt = new Date().toISOString()
+
     await payload.update({
       collection: 'orders',
       id: order.id,
-      data: { status: 'cancelled' } as any,
+      data: {
+        withdrawal: {
+          status: 'requested',
+          requestedAt,
+          requestedByName: name,
+          requestedByEmail: email,
+        },
+      } as any,
     })
 
-    // Send confirmation emails
     const { sendWiderrufConfirmation } = await import('@/lib/email')
     await sendWiderrufConfirmation({
       customerName: name,
       customerEmail: email,
       orderNumber,
-      reason: reason || 'Kein Grund angegeben',
+      requestedAt,
     })
 
     return NextResponse.json({ success: true })

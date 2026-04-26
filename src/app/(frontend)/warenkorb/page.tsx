@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useCart } from '@/lib/cart-context'
-import { formatPrice, itemTypeLabels, isEventType } from '@/lib/utils'
+import { formatPrice, getShippingCost, isEventType, isPhysicalType, itemTypeLabels } from '@/lib/utils'
 import Link from 'next/link'
 import styles from './warenkorb.module.css'
 
@@ -11,6 +11,9 @@ export default function CartPage() {
   const [discountCode, setDiscountCode] = useState('')
   const [discountError, setDiscountError] = useState('')
   const [discountLoading, setDiscountLoading] = useState(false)
+  const hasPhysicalProducts = items.some((item) => isPhysicalType(item.itemType || ''))
+  const shippingCost = getShippingCost(finalPrice, hasPhysicalProducts)
+  const totalWithShipping = finalPrice + shippingCost
 
   const handleApplyDiscount = async () => {
     if (!discountCode.trim()) return
@@ -32,10 +35,10 @@ export default function CartPage() {
         })
         setDiscountCode('')
       } else {
-        setDiscountError(data.error || 'Ungültiger Code')
+        setDiscountError(data.error || 'Ungueltiger Code')
       }
     } catch {
-      setDiscountError('Fehler beim Prüfen des Codes')
+      setDiscountError('Fehler beim Pruefen des Codes')
     } finally {
       setDiscountLoading(false)
     }
@@ -132,7 +135,7 @@ export default function CartPage() {
               <div className={styles.discountApplied}>
                 <div className={styles.discountRow}>
                   <span>Rabatt ({appliedDiscount.code})</span>
-                  <span className={styles.discountAmount}>−{formatPrice(appliedDiscount.discountAmount)}</span>
+                  <span className={styles.discountAmount}>-{formatPrice(appliedDiscount.discountAmount)}</span>
                 </div>
                 <button className={styles.removeDiscount} onClick={removeDiscount}>
                   Entfernen
@@ -153,18 +156,30 @@ export default function CartPage() {
                   onClick={handleApplyDiscount}
                   disabled={discountLoading || !discountCode.trim()}
                 >
-                  {discountLoading ? '...' : 'Einlösen'}
+                  {discountLoading ? '...' : 'Einloesen'}
                 </button>
                 {discountError && <p className={styles.discountError}>{discountError}</p>}
+              </div>
+            )}
+
+            {hasPhysicalProducts && (
+              <div className={styles.summaryRow}>
+                <span>Versand</span>
+                <span>{shippingCost === 0 ? 'Kostenlos' : formatPrice(shippingCost)}</span>
               </div>
             )}
 
             <div className={`${styles.summaryRow} ${styles.total}`}>
               <strong>Gesamt</strong>
               <strong className="price" style={{ fontSize: '1.25rem' }}>
-                {formatPrice(finalPrice)}
+                {formatPrice(totalWithShipping)}
               </strong>
             </div>
+            {hasPhysicalProducts && (
+              <p style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', marginBottom: '1rem' }}>
+                Versandkostenfrei ab {formatPrice(100)}, darunter {formatPrice(5.9)}. Kein Mindestbestellwert.
+              </p>
+            )}
             <Link href="/checkout" className="btn btn-accent" style={{ width: '100%' }}>
               Zur Kasse
             </Link>

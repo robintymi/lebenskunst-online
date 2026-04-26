@@ -294,10 +294,17 @@ export async function sendWiderrufConfirmation(data: {
   customerName: string
   customerEmail: string
   orderNumber: string
-  reason: string
+  requestedAt: string
 }): Promise<void> {
-  const { customerName, customerEmail, orderNumber, reason } = data
+  const { customerName, customerEmail, orderNumber, requestedAt } = data
   const adminEmail = process.env.ADMIN_EMAIL || 'info@lebenskunstonline.de'
+  const requestedAtLabel = new Intl.DateTimeFormat('de-DE', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(new Date(requestedAt))
 
   if (!resend) {
     devLog('Widerruf-Bestätigung', customerEmail, `Widerruf: ${orderNumber}`)
@@ -305,15 +312,14 @@ export async function sendWiderrufConfirmation(data: {
   }
 
   const customerContent = `
-    <h2 style="color:#BE465A;margin-bottom:8px;">Dein Widerruf wurde eingegangen</h2>
+    <h2 style="color:#BE465A;margin-bottom:8px;">Eingangsbestätigung deines Widerrufs</h2>
     <p>Hallo ${customerName},</p>
-    <p>wir haben deinen Widerruf für folgende Bestellung erhalten:</p>
+    <p>wir haben deine Widerrufserklärung für folgende Bestellung erhalten:</p>
     <div style="background:#fff0f2;border-left:4px solid #BE465A;padding:16px;border-radius:4px;margin-bottom:16px;">
       <strong>Bestellnummer: ${orderNumber}</strong><br/>
-      Eingangsdatum: ${new Date().toLocaleDateString('de-DE')}<br/>
-      ${reason !== 'Kein Grund angegeben' ? `Grund: ${reason}` : ''}
+      Eingegangen am: ${requestedAtLabel}
     </div>
-    <p>Wir bearbeiten deinen Widerruf und erstatten dir den Kaufpreis innerhalb von 14 Tagen auf dein ursprüngliches Zahlungsmittel.</p>
+    <p>Diese E-Mail bestätigt den Eingang deiner Erklärung. Wir prüfen den Vorgang nun anhand der Bestellung und melden uns bei Bedarf separat zur weiteren Abwicklung.</p>
     <p>Bei Fragen erreichst du uns unter info@lebenskunstonline.de.</p>
     <p>Mit herzlichen Grüßen,<br/>Susanne &amp; das Lebenskunst-Team</p>
   `
@@ -322,9 +328,8 @@ export async function sendWiderrufConfirmation(data: {
     <h2>Neuer Widerruf eingegangen</h2>
     <p><strong>Bestellnummer:</strong> ${orderNumber}</p>
     <p><strong>Kunde:</strong> ${customerName} (${customerEmail})</p>
-    <p><strong>Datum:</strong> ${new Date().toLocaleDateString('de-DE')}</p>
-    <p><strong>Grund:</strong> ${reason}</p>
-    <p>Bitte veranlasse die Erstattung im Stripe-Dashboard.</p>
+    <p><strong>Eingangszeit:</strong> ${requestedAtLabel}</p>
+    <p>Bitte Bestellung prüfen und Widerruf im Admin bearbeiten.</p>
   `
 
   try {

@@ -4,11 +4,11 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@/lib/auth-context'
 import styles from '../dashboard.module.css'
-import { formatPrice, formatDateShort } from '@/lib/utils'
+import { formatPrice, formatDateShort, isPhysicalType } from '@/lib/utils'
 
 interface OrderItem {
   itemType?: 'shop-item' | 'bundle'
-  shopItem: { id: string; title: string } | string | null
+  shopItem: { id: string; title: string; itemType?: string } | string | null
   bundle?: { id: string; name: string } | string | null
   unitPrice: number
   quantity: number
@@ -30,6 +30,10 @@ interface Order {
   createdAt: string
   items: OrderItem[]
   installmentDetails?: InstallmentDetails
+  withdrawal?: {
+    status?: 'none' | 'requested' | 'reviewed' | 'completed' | 'rejected'
+    requestedAt?: string
+  }
 }
 
 const statusLabels: Record<string, string> = {
@@ -70,7 +74,7 @@ export default function OrdersPage() {
           setOrders(data.docs || [])
         }
       } catch {
-        setError('Bestellungen konnten nicht geladen werden. Bitte versuche es später erneut.')
+        setError('Bestellungen konnten nicht geladen werden. Bitte versuche es spaeter erneut.')
       } finally {
         setLoading(false)
       }
@@ -84,7 +88,7 @@ export default function OrdersPage() {
       <div>
         <div className={styles.pageHeader}>
           <h1>Meine Bestellungen</h1>
-          <p>Deine Bestellhistorie im Überblick.</p>
+          <p>Deine Bestellhistorie im Ueberblick.</p>
         </div>
         <div className={styles.emptyState}>
           <p>Bestellungen werden geladen...</p>
@@ -97,7 +101,7 @@ export default function OrdersPage() {
     <div>
       <div className={styles.pageHeader}>
         <h1>Meine Bestellungen</h1>
-        <p>Deine Bestellhistorie im Überblick.</p>
+        <p>Deine Bestellhistorie im Ueberblick.</p>
       </div>
 
       {error && (
@@ -127,7 +131,6 @@ export default function OrdersPage() {
             <div className={styles.orderMeta}>
               <span>{formatDateShort(order.createdAt)}</span>
               <span>{order.paymentType === 'installment' ? 'Ratenzahlung' : 'Einmalzahlung'}</span>
-
               <strong>{formatPrice(order.total)}</strong>
             </div>
 
@@ -176,8 +179,33 @@ export default function OrdersPage() {
                   Rechnung anzeigen
                 </a>
                 {(() => {
-                  const daysSince = (Date.now() - new Date(order.createdAt).getTime()) / (1000 * 60 * 60 * 24)
-                  if (daysSince > 14) return null
+                  const isWithdrawableOrder = order.items.length > 0 && order.items.every((item) => {
+                    if (item.itemType !== 'shop-item') return false
+                    if (!item.shopItem || typeof item.shopItem === 'string') return false
+                    return isPhysicalType(item.shopItem.itemType || '')
+                  })
+                  if (!isWithdrawableOrder) return null
+
+                  if (order.withdrawal?.status && order.withdrawal.status !== 'none' && order.withdrawal.status !== 'rejected') {
+                    return (
+                      <span
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '0.375rem',
+                          padding: '0.4rem 0.875rem',
+                          border: '1px solid #D9C2C7',
+                          borderRadius: '999px',
+                          color: '#8B5F68',
+                          fontSize: '0.8125rem',
+                          fontWeight: 500,
+                        }}
+                      >
+                        Widerruf angefragt
+                      </span>
+                    )
+                  }
+
                   return (
                     <Link
                       href={`/widerruf?bestellung=${encodeURIComponent(order.orderNumber)}`}
@@ -195,7 +223,7 @@ export default function OrdersPage() {
                         transition: 'background 0.2s',
                       }}
                     >
-                      Widerruf einlegen
+                      Vertrag widerrufen
                     </Link>
                   )
                 })()}

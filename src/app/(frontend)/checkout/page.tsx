@@ -2,14 +2,14 @@
 
 import { useCart } from '@/lib/cart-context'
 import { useAuth } from '@/lib/auth-context'
-import { formatPrice } from '@/lib/utils'
+import { formatPrice, getShippingCost, isImmediateAccessType, isPhysicalType } from '@/lib/utils'
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import styles from './checkout.module.css'
 
 export default function CheckoutPage() {
-  const { items, totalPrice, clearCart, hasInstallmentItems, appliedDiscount, finalPrice } = useCart()
+  const { items, clearCart, hasInstallmentItems, appliedDiscount, finalPrice } = useCart()
   const { user, isLoggedIn, isLoading: authLoading } = useAuth()
   const searchParams = useSearchParams()
   const [step, setStep] = useState<'form' | 'processing' | 'success'>('form')
@@ -28,7 +28,6 @@ export default function CheckoutPage() {
     zip: '',
   })
 
-  // Handle Stripe return with success param
   useEffect(() => {
     if (searchParams.get('success') === 'true') {
       clearCart()
@@ -36,7 +35,6 @@ export default function CheckoutPage() {
     }
   }, [searchParams, clearCart])
 
-  // Pre-fill form with user data
   useEffect(() => {
     if (user) {
       setFormData((prev) => ({
@@ -49,7 +47,10 @@ export default function CheckoutPage() {
     }
   }, [user])
 
-  const hasPhysicalProducts = items.some((item) => item.itemType === 'buch')
+  const hasPhysicalProducts = items.some((item) => isPhysicalType(item.itemType || ''))
+  const hasImmediateAccessItems = items.some((item) => isImmediateAccessType(item.itemType || ''))
+  const shippingCost = getShippingCost(finalPrice, hasPhysicalProducts)
+  const totalWithShipping = finalPrice + shippingCost
 
   if (authLoading) {
     return (
@@ -75,10 +76,10 @@ export default function CheckoutPage() {
             Bestellung erfolgreich!
           </h1>
           <p style={{ marginBottom: '0.75rem', color: 'var(--color-text-light)' }}>
-            Vielen Dank für deine Bestellung!
+            Vielen Dank fuer deine Bestellung!
           </p>
           <p style={{ marginBottom: '2rem', fontSize: '0.9375rem', color: 'var(--color-text-muted)' }}>
-            Eine Bestellbestätigung wurde an deine E-Mail-Adresse gesendet.
+            Eine Bestellbestaetigung wurde an deine E-Mail-Adresse gesendet.
           </p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
             <Link href="/mitglieder/dashboard/inhalte" className="btn btn-primary">
@@ -107,14 +108,13 @@ export default function CheckoutPage() {
     )
   }
 
-  // Require login before checkout
   if (!isLoggedIn) {
     return (
       <section className="section">
         <div className="container" style={{ textAlign: 'center', maxWidth: '500px' }}>
           <h1 style={{ marginBottom: '1rem' }}>Anmelden</h1>
           <p style={{ color: 'var(--color-text-muted)', marginBottom: '2rem' }}>
-            Bitte melde dich an oder registriere dich, um deine Bestellung abzuschließen.
+            Bitte melde dich an oder registriere dich, um deine Bestellung abzuschliessen.
           </p>
           <Link
             href={`/mitglieder?redirect=/checkout`}
@@ -124,7 +124,7 @@ export default function CheckoutPage() {
             Anmelden
           </Link>
           <Link href="/warenkorb" className="btn btn-secondary">
-            Zurück zum Warenkorb
+            Zurueck zum Warenkorb
           </Link>
         </div>
       </section>
@@ -168,14 +168,13 @@ export default function CheckoutPage() {
     setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
-  // Calculate installment info — use max installmentCount across all eligible items (matches server logic)
-  const installmentItems = items.filter((i) => i.installmentEnabled && i.installmentCount)
+  const installmentItems = items.filter((item) => item.installmentEnabled && item.installmentCount)
   const installmentCount = installmentItems.length > 0
-    ? Math.max(...installmentItems.map((i) => i.installmentCount || 1))
+    ? Math.max(...installmentItems.map((item) => item.installmentCount || 1))
     : 1
   const installmentItem = installmentItems.length > 0 ? installmentItems[0] : null
   const installmentMonthly = installmentItem
-    ? Math.round((finalPrice / installmentCount) * 100) / 100
+    ? Math.round((totalWithShipping / installmentCount) * 100) / 100
     : 0
 
   return (
@@ -247,7 +246,7 @@ export default function CheckoutPage() {
               <>
                 <h2 style={{ marginTop: '1.5rem' }}>Lieferadresse</h2>
                 <div className={styles.field}>
-                  <label htmlFor="street">Straße + Hausnummer *</label>
+                  <label htmlFor="street">Strasse + Hausnummer *</label>
                   <input
                     id="street"
                     className="input"
@@ -264,7 +263,7 @@ export default function CheckoutPage() {
                       className="input"
                       required
                       pattern="[0-9]{5}"
-                      title="Bitte gib eine gültige PLZ ein (5 Ziffern)"
+                      title="Bitte gib eine gueltige PLZ ein (5 Ziffern)"
                       value={formData.zip}
                       onChange={(e) => updateField('zip', e.target.value)}
                     />
@@ -283,7 +282,6 @@ export default function CheckoutPage() {
               </>
             )}
 
-            {/* Zahlungsart */}
             {hasInstallmentItems && (
               <>
                 <h2 style={{ marginTop: '1.5rem' }}>Zahlungsart</h2>
@@ -298,7 +296,7 @@ export default function CheckoutPage() {
                     />
                     <div>
                       <strong>Einmalzahlung</strong>
-                      <span>{formatPrice(totalPrice)}</span>
+                      <span>{formatPrice(totalWithShipping)}</span>
                     </div>
                   </label>
                   <label className={`${styles.paymentOption} ${paymentType === 'installment' ? styles.paymentActive : ''}`}>
@@ -334,33 +332,45 @@ export default function CheckoutPage() {
             {appliedDiscount && (
               <div className={styles.orderItem} style={{ color: '#16a34a' }}>
                 <span>Rabatt ({appliedDiscount.code})</span>
-                <span>−{formatPrice(appliedDiscount.discountAmount)}</span>
+                <span>-{formatPrice(appliedDiscount.discountAmount)}</span>
+              </div>
+            )}
+            {hasPhysicalProducts && (
+              <div className={styles.orderItem}>
+                <span>Versand</span>
+                <span>{shippingCost === 0 ? 'Kostenlos' : formatPrice(shippingCost)}</span>
               </div>
             )}
             <div className={styles.orderTotal}>
               <strong>Gesamt</strong>
-              <strong className="price">{formatPrice(finalPrice)}</strong>
+              <strong className="price">{formatPrice(totalWithShipping)}</strong>
             </div>
             {paymentType === 'installment' && installmentItem && (
               <div className={styles.installmentSummary}>
                 {installmentCount}x {formatPrice(installmentMonthly)} / Monat
               </div>
             )}
-            <div className={styles.checkboxGroup}>
-              <label className={styles.checkboxLabel}>
-                <input
-                  type="checkbox"
-                  checked={widerrufsAccepted}
-                  onChange={(e) => setWiderrufsAccepted(e.target.checked)}
-                  className={styles.checkbox}
-                  required
-                />
-                <span>
-                  Ich stimme ausdrücklich zu, dass die Bereitstellung digitaler Inhalte sofort
-                  beginnt und ich damit mein Widerrufsrecht verliere.
-                </span>
-              </label>
-            </div>
+            {hasPhysicalProducts && (
+              <p className={styles.installmentSummary}>
+                Versandkostenfrei ab {formatPrice(100)}, darunter {formatPrice(5.9)}. Kein Mindestbestellwert.
+              </p>
+            )}
+            {hasImmediateAccessItems && (
+              <div className={styles.checkboxGroup}>
+                <label className={styles.checkboxLabel}>
+                  <input
+                    type="checkbox"
+                    checked={widerrufsAccepted}
+                    onChange={(e) => setWiderrufsAccepted(e.target.checked)}
+                    className={styles.checkbox}
+                    required
+                  />
+                  <span>
+                    Ich stimme ausdruecklich zu, dass digitale Inhalte oder sofort freigeschaltete Leistungen direkt bereitgestellt werden und ich dadurch mein Widerrufsrecht insoweit verliere.
+                  </span>
+                </label>
+              </div>
+            )}
             <div className={styles.checkboxGroup}>
               <label className={styles.checkboxLabel}>
                 <input
@@ -383,7 +393,7 @@ export default function CheckoutPage() {
                 />
                 <span>
                   Ich habe die{' '}
-                  <Link href="/datenschutz" target="_blank">Datenschutzerklärung</Link>{' '}
+                  <Link href="/datenschutz" target="_blank">Datenschutzerklaerung</Link>{' '}
                   gelesen
                 </span>
               </label>
@@ -392,13 +402,13 @@ export default function CheckoutPage() {
               type="submit"
               className="btn btn-accent"
               style={{ width: '100%' }}
-              disabled={step === 'processing' || !agbAccepted || !datenschutzAccepted || !widerrufsAccepted}
+              disabled={step === 'processing' || !agbAccepted || !datenschutzAccepted || (hasImmediateAccessItems && !widerrufsAccepted)}
             >
               {step === 'processing'
                 ? 'Wird verarbeitet...'
                 : paymentType === 'installment'
                   ? `${formatPrice(installmentMonthly)} / Monat starten`
-                  : `${formatPrice(finalPrice)} bezahlen`}
+                  : `${formatPrice(totalWithShipping)} bezahlen`}
             </button>
           </div>
         </form>

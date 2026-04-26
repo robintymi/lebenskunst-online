@@ -8,7 +8,6 @@ interface FormData {
   orderNumber: string
   name: string
   email: string
-  reason: string
   confirmed: boolean
 }
 
@@ -18,7 +17,6 @@ export default function WiderrufForm() {
     orderNumber: '',
     name: '',
     email: '',
-    reason: '',
     confirmed: false,
   })
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
@@ -32,7 +30,6 @@ export default function WiderrufForm() {
         email: user.email || '',
       }))
     }
-    // Pre-fill from URL param
     const params = new URLSearchParams(window.location.search)
     const orderParam = params.get('bestellung')
     if (orderParam) setForm((prev) => ({ ...prev, orderNumber: orderParam }))
@@ -41,7 +38,7 @@ export default function WiderrufForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!form.confirmed) {
-      setErrorMsg('Bitte bestätige, dass du den Widerruf einlegen möchtest.')
+      setErrorMsg('Bitte bestaetige, dass du den Widerruf einlegen moechtest.')
       return
     }
     setStatus('loading')
@@ -55,7 +52,6 @@ export default function WiderrufForm() {
           orderNumber: form.orderNumber,
           name: form.name,
           email: form.email,
-          reason: form.reason,
         }),
       })
       if (res.ok) {
@@ -79,9 +75,8 @@ export default function WiderrufForm() {
         </svg>
         <h3>Widerruf eingegangen</h3>
         <p>
-          Dein Widerruf wurde erfolgreich übermittelt. Du erhältst in Kürze eine
-          Bestätigung per E-Mail. Wir bearbeiten deinen Widerruf innerhalb von
-          14 Werktagen.
+          Deine Widerrufserklaerung wurde erfolgreich uebermittelt. Du erhaeltst in Kuerze
+          eine Eingangsbestaetigung per E-Mail mit Datum und Uhrzeit.
         </p>
       </div>
     )
@@ -99,7 +94,7 @@ export default function WiderrufForm() {
           placeholder="z.B. LK-2026-0042"
           required
         />
-        <span className={styles.hint}>Findest du in deiner Bestellbestätigung oder im Mitgliederbereich.</span>
+        <span className={styles.hint}>Findest du in deiner Bestellbestaetigung oder im Mitgliederbereich.</span>
       </div>
 
       <div className={styles.row}>
@@ -125,17 +120,6 @@ export default function WiderrufForm() {
         </div>
       </div>
 
-      <div className={styles.field}>
-        <label htmlFor="reason">Grund (optional)</label>
-        <textarea
-          id="reason"
-          value={form.reason}
-          onChange={(e) => setForm({ ...form, reason: e.target.value })}
-          rows={3}
-          placeholder="Optionaler Hinweis zum Widerruf …"
-        />
-      </div>
-
       <div className={styles.checkboxField}>
         <input
           id="confirmed"
@@ -144,7 +128,7 @@ export default function WiderrufForm() {
           onChange={(e) => setForm({ ...form, confirmed: e.target.checked })}
         />
         <label htmlFor="confirmed">
-          Hiermit erkläre ich ausdrücklich meinen Widerruf des abgeschlossenen Kaufvertrags.
+          Hiermit erklaere ich ausdruecklich meinen Widerruf des abgeschlossenen Kaufvertrags.
         </label>
       </div>
 
@@ -155,7 +139,7 @@ export default function WiderrufForm() {
         className={styles.submitBtn}
         disabled={status === 'loading'}
       >
-        {status === 'loading' ? 'Wird übermittelt …' : 'Widerruf jetzt einlegen'}
+        {status === 'loading' ? 'Wird uebermittelt ...' : 'Widerruf bestaetigen'}
       </button>
     </form>
   )

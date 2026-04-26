@@ -3,6 +3,7 @@ import { formatPrice, formatDate, itemTypeLabels, isEventType, itemTypeGroups } 
 import Link from 'next/link'
 import type { Metadata } from 'next'
 import ShopFilters from '@/components/ShopFilters'
+import RecommendedItems from '@/components/RecommendedItems'
 import styles from './shop.module.css'
 
 export const metadata: Metadata = {
@@ -252,6 +253,29 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
           )}
         </div>
       </section>
+
+      {!activeSearch && !activeType && !activeCategory && items.length > 0 && (
+        <section className="section" style={{ paddingTop: 0 }}>
+          <div className="container">
+            <RecommendedItems
+              allItems={items.map((item: any) => ({
+                id: item.id,
+                title: item.title,
+                slug: item.slug,
+                itemType: item.itemType,
+                categoryIds: (item.categories || []).map((category: any) =>
+                  typeof category === 'string' ? category : category.id,
+                ),
+                featured: item.featured,
+                pricing: item.pricing,
+                image: item.image && typeof item.image !== 'string' ? item.image : undefined,
+                shortDescription: item.shortDescription,
+              }))}
+              purchasedItemIds={purchasedItemIds}
+            />
+          </div>
+        </section>
+      )}
     </>
   )
 }

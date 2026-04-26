@@ -64,7 +64,7 @@ export default function Footer() {
             <Link href="/impressum">Impressum</Link>
             <Link href="/datenschutz">Datenschutz</Link>
             <Link href="/agb">AGB</Link>
-            <Link href="/widerruf">Widerrufsrecht</Link>
+            <Link href="/widerruf">Vertrag widerrufen</Link>
           </div>
         </div>
       </div>
