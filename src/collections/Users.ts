@@ -96,7 +96,7 @@ export const Users: CollectionConfig = {
       label: 'Vorname',
       type: 'text',
       admin: {
-        condition: (data) => data?.role === 'member',
+        condition: (data, siblingData, { user }) => Boolean(user?.role === 'admin' && data?.role === 'member'),
       },
     },
     {
@@ -104,7 +104,7 @@ export const Users: CollectionConfig = {
       label: 'Nachname',
       type: 'text',
       admin: {
-        condition: (data) => data?.role === 'member',
+        condition: (data, siblingData, { user }) => Boolean(user?.role === 'admin' && data?.role === 'member'),
       },
     },
     {
@@ -112,7 +112,7 @@ export const Users: CollectionConfig = {
       label: 'Telefon',
       type: 'text',
       admin: {
-        condition: (data) => data?.role === 'member',
+        condition: (data, siblingData, { user }) => Boolean(user?.role === 'admin' && data?.role === 'member'),
       },
     },
     {
@@ -123,7 +123,7 @@ export const Users: CollectionConfig = {
       hasMany: true,
       admin: {
         description: 'Alle gekauften/gebuchten Shop-Items',
-        condition: (data) => data?.role === 'member',
+        condition: (data, siblingData, { user }) => Boolean(user?.role === 'admin' && data?.role === 'member'),
       },
     },
     {
@@ -133,7 +133,7 @@ export const Users: CollectionConfig = {
       relationTo: 'bundles',
       hasMany: true,
       admin: {
-        condition: (data) => data?.role === 'member',
+        condition: (data, siblingData, { user }) => Boolean(user?.role === 'admin' && data?.role === 'member'),
       },
     },
     {
@@ -142,7 +142,7 @@ export const Users: CollectionConfig = {
       type: 'array',
       admin: {
         description: 'Aktive Einzeltrainings mit Ablaufdatum',
-        condition: (data) => data?.role === 'member',
+        condition: (data, siblingData, { user }) => Boolean(user?.role === 'admin' && data?.role === 'member'),
       },
       fields: [
         {
