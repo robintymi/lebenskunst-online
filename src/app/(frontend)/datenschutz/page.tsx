@@ -1,18 +1,34 @@
 import type { Metadata } from 'next'
 import styles from '../impressum/impressum.module.css'
+import { getSiteTexts } from '@/lib/site-texts'
+import { convertLexicalToHTML } from '@payloadcms/richtext-lexical/html'
+import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 
 export const metadata: Metadata = {
   title: 'Datenschutzerklärung',
   description: 'Datenschutzerklärung gemäß DSGVO',
 }
 
-export default function DatenschutzPage() {
+export default async function DatenschutzPage() {
+  const siteTexts = await getSiteTexts()
+  const cms = siteTexts?.legal?.datenschutz || {}
+  const pageTitle = cms?.title || 'Datenschutzerklärung'
+  const subtitle = cms?.subtitle || 'Stand: März 2026'
+
+  const cmsContent = cms?.content as DefaultTypedEditorState | undefined
+  const cmsHTML =
+    cmsContent?.root?.children?.length ? convertLexicalToHTML({ data: cmsContent }) : null
+
   return (
     <main className={styles.page}>
       <div className={styles.container}>
-        <h1>Datenschutzerklärung</h1>
-        <p className={styles.subtitle}>Stand: März 2026</p>
+        <h1>{pageTitle}</h1>
+        <p className={styles.subtitle}>{subtitle}</p>
 
+        {cmsHTML ? (
+          <section className={styles.section} dangerouslySetInnerHTML={{ __html: cmsHTML }} />
+        ) : (
+          <>
         <section className={styles.section}>
           <h2>1. Verantwortlicher</h2>
           <p>
@@ -132,6 +148,8 @@ export default function DatenschutzPage() {
             Wir bearbeiten Anfragen innerhalb von 30 Tagen.
           </p>
         </section>
+          </>
+        )}
       </div>
     </main>
   )

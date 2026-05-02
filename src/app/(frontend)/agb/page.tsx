@@ -1,17 +1,33 @@
 import type { Metadata } from 'next'
 import styles from '../impressum/impressum.module.css'
+import { getSiteTexts } from '@/lib/site-texts'
+import { convertLexicalToHTML } from '@payloadcms/richtext-lexical/html'
+import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 
 export const metadata: Metadata = {
   title: 'AGB – Allgemeine Geschäftsbedingungen',
 }
 
-export default function AgbPage() {
+export default async function AgbPage() {
+  const siteTexts = await getSiteTexts()
+  const cms = siteTexts?.legal?.agb || {}
+  const pageTitle = cms?.title || 'Allgemeine Geschäftsbedingungen'
+  const subtitle = cms?.subtitle || 'Stand: Mai 2026'
+
+  const cmsContent = cms?.content as DefaultTypedEditorState | undefined
+  const cmsHTML =
+    cmsContent?.root?.children?.length ? convertLexicalToHTML({ data: cmsContent }) : null
+
   return (
     <main className={styles.page}>
       <div className={styles.container}>
-        <h1>Allgemeine Geschäftsbedingungen</h1>
-        <p className={styles.subtitle}>Stand: Mai 2026</p>
+        <h1>{pageTitle}</h1>
+        <p className={styles.subtitle}>{subtitle}</p>
 
+        {cmsHTML ? (
+          <section className={styles.section} dangerouslySetInnerHTML={{ __html: cmsHTML }} />
+        ) : (
+          <>
         <section className={styles.section}>
           <h2>§ 1 Geltungsbereich</h2>
           <p>
@@ -64,7 +80,7 @@ export default function AgbPage() {
             Sie auf unserer{' '}
             <a href="/widerruf" style={{ color: 'var(--color-primary)' }}>Widerrufsseite</a>.
             Sie können Ihren Widerruf auch direkt in Ihrem Mitgliederbereich unter
-            „Meine Bestellungen" mit einem Klick einlegen.
+            „Meine Bestellungen“ mit einem Klick einlegen.
           </p>
           <p>
             <strong>Digitale Produkte:</strong> Das Widerrufsrecht erlischt bei digitalen
@@ -119,6 +135,8 @@ export default function AgbPage() {
             Verbraucherschlichtungsstelle nicht teil.
           </p>
         </section>
+          </>
+        )}
       </div>
     </main>
   )

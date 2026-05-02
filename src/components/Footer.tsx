@@ -2,6 +2,18 @@ import Link from 'next/link'
 import Image from 'next/image'
 import styles from './Footer.module.css'
 
+type FooterLink = { href: string; label: string }
+type FooterTexts = Partial<{
+  tagline: string
+  brandDescription: string
+  exploreTitle: string
+  exploreLinks: FooterLink[]
+  legalTitle: string
+  legalLinks: FooterLink[]
+  bottomText: string
+  adminLinkLabel: string
+}>
+
 const socialLinks = [
   {
     href: 'https://www.instagram.com/kreativ_unangepasst/',
@@ -20,7 +32,33 @@ const socialLinks = [
   },
 ]
 
-export default function Footer() {
+export default function Footer({ texts }: { texts?: FooterTexts }) {
+  const tagline = texts?.tagline || 'Deine Reise zu dir selbst'
+  const brandDescription =
+    texts?.brandDescription ||
+    'Bewusstseinstraining, Workshops, Einzeltrainings, Podcast und mehr für dein persönliches Wachstum.'
+  const exploreTitle = texts?.exploreTitle || 'Entdecken'
+  const exploreLinks: FooterLink[] =
+    texts?.exploreLinks?.length
+      ? texts.exploreLinks
+      : [
+          { href: '/shop', label: 'Shop' },
+          { href: '/podcast', label: 'Podcast' },
+          { href: '/mitglieder', label: 'Mitgliederbereich' },
+        ]
+  const legalTitle = texts?.legalTitle || 'Rechtliches'
+  const legalLinks: FooterLink[] =
+    texts?.legalLinks?.length
+      ? texts.legalLinks
+      : [
+          { href: '/impressum', label: 'Impressum' },
+          { href: '/datenschutz', label: 'Datenschutz' },
+          { href: '/agb', label: 'AGB' },
+          { href: '/widerruf', label: 'Vertrag widerrufen' },
+        ]
+  const bottomText = texts?.bottomText || 'Lebenskunst — Susanne Sturm. Mit Herz gemacht.'
+  const adminLinkLabel = texts?.adminLinkLabel || 'Admin'
+
   return (
     <footer className={styles.footer}>
       <div className={styles.inner}>
@@ -29,9 +67,9 @@ export default function Footer() {
             <Image src="/images/logo.png" alt="Lebenskunst" width={36} height={36} className={styles.logoImage} />
             Lebenskunst
           </h3>
-          <p className={styles.tagline}>Deine Reise zu dir selbst</p>
+          <p className={styles.tagline}>{tagline}</p>
           <p className={styles.description}>
-            Bewusstseinstraining, Workshops, Einzeltrainings, Podcast und mehr für dein persönliches Wachstum.
+            {brandDescription}
           </p>
 
           <div className={styles.social}>
@@ -54,24 +92,23 @@ export default function Footer() {
 
         <div className={styles.links}>
           <div className={styles.column}>
-            <h4>Entdecken</h4>
-            <Link href="/shop">Shop</Link>
-            <Link href="/podcast">Podcast</Link>
-            <Link href="/mitglieder">Mitgliederbereich</Link>
+            <h4>{exploreTitle}</h4>
+            {exploreLinks.map((link) => (
+              <Link key={link.href} href={link.href}>{link.label}</Link>
+            ))}
           </div>
           <div className={styles.column}>
-            <h4>Rechtliches</h4>
-            <Link href="/impressum">Impressum</Link>
-            <Link href="/datenschutz">Datenschutz</Link>
-            <Link href="/agb">AGB</Link>
-            <Link href="/widerruf">Vertrag widerrufen</Link>
+            <h4>{legalTitle}</h4>
+            {legalLinks.map((link) => (
+              <Link key={link.href} href={link.href}>{link.label}</Link>
+            ))}
           </div>
         </div>
       </div>
 
       <div className={styles.bottom}>
-        <p>&copy; {new Date().getFullYear()} Lebenskunst — Susanne Sturm. Mit Herz gemacht.</p>
-        <Link href="/admin" className={styles.adminLink}>Admin</Link>
+        <p>&copy; {new Date().getFullYear()} {bottomText}</p>
+        <Link href="/admin" className={styles.adminLink}>{adminLinkLabel}</Link>
       </div>
     </footer>
   )

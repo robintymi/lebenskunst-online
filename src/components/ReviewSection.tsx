@@ -12,6 +12,29 @@ interface Review {
   createdAt: string
 }
 
+type ReviewTexts = Partial<{
+  subtitle: string
+  title: string
+  writeButton: string
+  formTitle: string
+  formLabelName: string
+  formLabelRating: string
+  formLabelContext: string
+  formLabelExperience: string
+  formPlaceholderName: string
+  formPlaceholderContext: string
+  formPlaceholderExperience: string
+  cancelButton: string
+  submitButton: string
+  submittingLabel: string
+  successMessage: string
+  loadingText: string
+  emptyText: string
+  summaryText: string
+  summaryLabelSingle: string
+  summaryLabelPlural: string
+}>
+
 function StarDisplay({ rating }: { rating: number }) {
   return (
     <span>
@@ -63,7 +86,7 @@ function formatDate(dateString: string): string {
   })
 }
 
-export default function ReviewSection() {
+export default function ReviewSection({ texts }: { texts?: ReviewTexts }) {
   const [reviews, setReviews] = useState<Review[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
@@ -75,6 +98,28 @@ export default function ReviewSection() {
   const [formText, setFormText] = useState('')
   const [formRating, setFormRating] = useState(5)
   const [formContext, setFormContext] = useState('')
+
+  const subtitle = texts?.subtitle || 'Erfahrungen'
+  const title = texts?.title || 'Was Teilnehmer sagen'
+  const writeButton = texts?.writeButton || 'Bewertung schreiben'
+  const formTitle = texts?.formTitle || 'Deine Bewertung'
+  const formLabelName = texts?.formLabelName || 'Name *'
+  const formLabelRating = texts?.formLabelRating || 'Bewertung *'
+  const formLabelContext = texts?.formLabelContext || 'Kontext (optional)'
+  const formLabelExperience = texts?.formLabelExperience || 'Deine Erfahrung *'
+  const formPlaceholderName = texts?.formPlaceholderName || 'Dein Name'
+  const formPlaceholderContext = texts?.formPlaceholderContext || 'z.B. \"Workshop-Teilnehmerin\"'
+  const formPlaceholderExperience = texts?.formPlaceholderExperience || 'Erzähle von deiner Erfahrung...'
+  const cancelButton = texts?.cancelButton || 'Abbrechen'
+  const submitButton = texts?.submitButton || 'Bewertung absenden'
+  const submittingLabel = texts?.submittingLabel || 'Wird gesendet...'
+  const successMessageText = texts?.successMessage || 'Vielen Dank für deine Bewertung!'
+  const loadingText = texts?.loadingText || 'Bewertungen werden geladen...'
+  const emptyText =
+    texts?.emptyText || 'Noch keine Bewertungen vorhanden. Sei die erste Person, die eine Bewertung schreibt!'
+  const summaryText = texts?.summaryText || '{{avg}} von 5 Sternen — {{count}} {{label}}'
+  const summaryLabelSingle = texts?.summaryLabelSingle || 'Bewertung'
+  const summaryLabelPlural = texts?.summaryLabelPlural || 'Bewertungen'
 
   const fetchReviews = useCallback(async () => {
     try {
@@ -139,7 +184,7 @@ export default function ReviewSection() {
 
       setShowForm(false)
       resetForm()
-      setSuccessMessage('Vielen Dank für deine Bewertung!')
+      setSuccessMessage(successMessageText)
       setTimeout(() => setSuccessMessage(''), 5000)
     } catch {
       setErrorMessage('Bewertung konnte nicht gesendet werden. Bitte versuche es erneut.')
@@ -156,8 +201,8 @@ export default function ReviewSection() {
   return (
     <section className={styles.section}>
       <div className={styles.container}>
-        <p className={styles.subtitle}>Erfahrungen</p>
-        <h2 className={styles.title}>Was Teilnehmer sagen</h2>
+        <p className={styles.subtitle}>{subtitle}</p>
+        <h2 className={styles.title}>{title}</h2>
 
         {reviews.length > 0 && (
           <div className={styles.summary}>
@@ -165,8 +210,10 @@ export default function ReviewSection() {
               <StarDisplay rating={Math.round(averageRating)} />
             </span>
             <span className={styles.summaryText}>
-              {averageRating.toFixed(1)} von 5 Sternen — {reviews.length}{' '}
-              {reviews.length === 1 ? 'Bewertung' : 'Bewertungen'}
+              {summaryText
+                .replace('{{avg}}', averageRating.toFixed(1))
+                .replace('{{count}}', String(reviews.length))
+                .replace('{{label}}', reviews.length === 1 ? summaryLabelSingle : summaryLabelPlural)}
             </span>
           </div>
         )}
@@ -182,7 +229,7 @@ export default function ReviewSection() {
               className="btn btn-secondary"
               onClick={() => setShowForm(true)}
             >
-              Bewertung schreiben
+              {writeButton}
             </button>
           </div>
         )}
@@ -190,7 +237,7 @@ export default function ReviewSection() {
         {/* Review Form */}
         {showForm && (
           <div className={styles.formCard}>
-            <h3 className={styles.formTitle}>Deine Bewertung</h3>
+            <h3 className={styles.formTitle}>{formTitle}</h3>
             <form onSubmit={handleSubmit}>
               {errorMessage && (
                 <div className={styles.errorMessage}>{errorMessage}</div>
@@ -198,7 +245,7 @@ export default function ReviewSection() {
 
               <div className={styles.formGroup}>
                 <label className={styles.formLabel} htmlFor="review-name">
-                  Name *
+                  {formLabelName}
                 </label>
                 <input
                   id="review-name"
@@ -206,20 +253,20 @@ export default function ReviewSection() {
                   className={styles.formInput}
                   value={formName}
                   onChange={(e) => setFormName(e.target.value)}
-                  placeholder="Dein Name"
+                  placeholder={formPlaceholderName}
                   maxLength={100}
                   required
                 />
               </div>
 
               <div className={styles.formGroup}>
-                <label className={styles.formLabel}>Bewertung *</label>
+                <label className={styles.formLabel}>{formLabelRating}</label>
                 <StarRatingInput value={formRating} onChange={setFormRating} />
               </div>
 
               <div className={styles.formGroup}>
                 <label className={styles.formLabel} htmlFor="review-context">
-                  Kontext (optional)
+                  {formLabelContext}
                 </label>
                 <input
                   id="review-context"
@@ -227,21 +274,21 @@ export default function ReviewSection() {
                   className={styles.formInput}
                   value={formContext}
                   onChange={(e) => setFormContext(e.target.value)}
-                  placeholder='z.B. "Workshop-Teilnehmerin"'
+                  placeholder={formPlaceholderContext}
                   maxLength={100}
                 />
               </div>
 
               <div className={styles.formGroup}>
                 <label className={styles.formLabel} htmlFor="review-text">
-                  Deine Erfahrung *
+                  {formLabelExperience}
                 </label>
                 <textarea
                   id="review-text"
                   className={styles.formTextarea}
                   value={formText}
                   onChange={(e) => setFormText(e.target.value)}
-                  placeholder="Erzähle von deiner Erfahrung..."
+                  placeholder={formPlaceholderExperience}
                   maxLength={1000}
                   required
                 />
@@ -254,14 +301,14 @@ export default function ReviewSection() {
                   className={styles.cancelButton}
                   onClick={handleCancel}
                 >
-                  Abbrechen
+                  {cancelButton}
                 </button>
                 <button
                   type="submit"
                   className={styles.submitButton}
                   disabled={isSubmitting || !formName.trim() || !formText.trim()}
                 >
-                  {isSubmitting ? 'Wird gesendet...' : 'Bewertung absenden'}
+                  {isSubmitting ? submittingLabel : submitButton}
                 </button>
               </div>
             </form>
@@ -270,7 +317,7 @@ export default function ReviewSection() {
 
         {/* Reviews Grid */}
         {isLoading ? (
-          <div className={styles.loading}>Bewertungen werden geladen...</div>
+          <div className={styles.loading}>{loadingText}</div>
         ) : reviews.length > 0 ? (
           <div className={styles.grid}>
             {reviews.map((review) => (
@@ -299,8 +346,7 @@ export default function ReviewSection() {
           </div>
         ) : (
           <div className={styles.empty}>
-            Noch keine Bewertungen vorhanden. Sei die erste Person, die eine
-            Bewertung schreibt!
+            {emptyText}
           </div>
         )}
       </div>

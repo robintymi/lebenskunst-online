@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import styles from './CookieBanner.module.css'
 
-export default function CookieBanner() {
+export default function CookieBanner({ text, buttonLabel }: { text?: string; buttonLabel?: string }) {
   const [visible, setVisible] = useState(false)
 
   useEffect(() => {
@@ -24,10 +24,10 @@ export default function CookieBanner() {
     <div className={styles.banner}>
       <div className={styles.content}>
         <p className={styles.text}>
-          Diese Website verwendet nur technisch notwendige Cookies für die Anmeldung. Keine Tracking-Cookies.
+          {text || 'Diese Website verwendet nur technisch notwendige Cookies für die Anmeldung. Keine Tracking-Cookies.'}
         </p>
         <button className={styles.button} onClick={handleAccept}>
-          Verstanden
+          {buttonLabel || 'Verstanden'}
         </button>
       </div>
     </div>

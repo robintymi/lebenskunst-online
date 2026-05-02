@@ -9,14 +9,29 @@ import { useAuth } from '@/lib/auth-context'
 import { trackSearch, getRecentSearches } from '@/lib/personalization'
 import styles from './Header.module.css'
 
-const navLinks = [
+type NavLink = { href: string; label: string }
+type HeaderTexts = Partial<{
+  logoText: string
+  navLinks: NavLink[]
+  membersLabelLoading: string
+  membersLabelLoggedOut: string
+  membersLabelFallbackName: string
+  searchPlaceholder: string
+  recentSearchesLabel: string
+  ariaSearchOpen: string
+  ariaSearch: string
+  ariaClose: string
+  ariaMenu: string
+}>
+
+const defaultNavLinks: NavLink[] = [
   { href: '/', label: 'Home' },
   { href: '/leistungen', label: 'Meine Leistungen' },
   { href: '/shop', label: 'Shop' },
   { href: '/podcast', label: 'Podcast' },
 ]
 
-export default function Header() {
+export default function Header({ texts }: { texts?: HeaderTexts }) {
   const pathname = usePathname()
   const router = useRouter()
   const { totalItems } = useCart()
@@ -62,18 +77,30 @@ export default function Header() {
     if (e.key === 'Escape') { setSearchOpen(false); setSearchQuery('') }
   }
 
+  const navLinks = texts?.navLinks?.length ? texts.navLinks : defaultNavLinks
+  const logoText = texts?.logoText || 'Lebenskunst'
+  const membersLabelLoading = texts?.membersLabelLoading || 'Mitgliederbereich'
+  const membersLabelLoggedOut = texts?.membersLabelLoggedOut || 'Anmelden'
+  const membersLabelFallbackName = texts?.membersLabelFallbackName || 'Mein Konto'
+  const searchPlaceholder = texts?.searchPlaceholder || 'Suchen …'
+  const recentSearchesLabel = texts?.recentSearchesLabel || 'Zuletzt gesucht'
+  const ariaSearchOpen = texts?.ariaSearchOpen || 'Suche öffnen'
+  const ariaSearch = texts?.ariaSearch || 'Suchen'
+  const ariaClose = texts?.ariaClose || 'Schließen'
+  const ariaMenu = texts?.ariaMenu || 'Menü'
+
   return (
     <header className={styles.header}>
       <div className={styles.inner}>
         <Link href="/" className={styles.logo}>
           <Image
             src="/images/logo.png"
-            alt="Lebenskunst"
+            alt={logoText}
             width={44}
             height={44}
             className={styles.logoImage}
           />
-          <span className={styles.logoText}>Lebenskunst</span>
+          <span className={styles.logoText}>{logoText}</span>
         </Link>
 
         <nav className={`${styles.nav} ${menuOpen ? styles.navOpen : ''}`}>
@@ -92,7 +119,7 @@ export default function Header() {
             className={`${styles.navLink} ${pathname.startsWith('/mitglieder') ? styles.active : ''}`}
             onClick={() => setMenuOpen(false)}
           >
-            {isLoading ? 'Mitgliederbereich' : isLoggedIn ? (user?.firstName || 'Mein Konto') : 'Anmelden'}
+            {isLoading ? membersLabelLoading : isLoggedIn ? (user?.firstName || membersLabelFallbackName) : membersLabelLoggedOut}
           </Link>
         </nav>
 
@@ -108,13 +135,13 @@ export default function Header() {
                   onChange={(e) => { setSearchQuery(e.target.value); setShowSuggestions(true) }}
                   onKeyDown={handleKeyDown}
                   onFocus={() => setShowSuggestions(true)}
-                  placeholder="Suchen …"
+                  placeholder={searchPlaceholder}
                   className={styles.searchInput}
                 />
                 <button
                   onClick={() => handleSearch(searchQuery)}
                   className={styles.searchSubmit}
-                  aria-label="Suchen"
+                  aria-label={ariaSearch}
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                     <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
@@ -123,7 +150,7 @@ export default function Header() {
                 <button
                   onClick={() => { setSearchOpen(false); setSearchQuery('') }}
                   className={styles.searchClose}
-                  aria-label="Schließen"
+                  aria-label={ariaClose}
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                     <path d="M18 6 6 18M6 6l12 12" />
@@ -132,7 +159,7 @@ export default function Header() {
 
                 {showSuggestions && recentSearches.length > 0 && !searchQuery && (
                   <div className={styles.suggestions}>
-                    <p className={styles.suggestionsLabel}>Zuletzt gesucht</p>
+                    <p className={styles.suggestionsLabel}>{recentSearchesLabel}</p>
                     {recentSearches.map((s) => (
                       <button
                         key={s}
@@ -152,7 +179,7 @@ export default function Header() {
               <button
                 onClick={() => setSearchOpen(true)}
                 className={styles.searchIcon}
-                aria-label="Suche öffnen"
+                aria-label={ariaSearchOpen}
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
@@ -173,7 +200,7 @@ export default function Header() {
           <button
             className={styles.menuToggle}
             onClick={() => setMenuOpen(!menuOpen)}
-            aria-label="Menü"
+            aria-label={ariaMenu}
           >
             <span className={`${styles.hamburger} ${menuOpen ? styles.hamburgerOpen : ''}`} />
           </button>

@@ -16,6 +16,7 @@ import { Orders } from './collections/Orders'
 import { Categories } from './collections/Categories'
 import { ContentFiles } from './collections/ContentFiles'
 import { SiteSettings } from './collections/SiteSettings'
+import { SiteTexts } from './collections/SiteTexts'
 import { Reviews } from './collections/Reviews'
 import { Discounts } from './collections/Discounts'
 
@@ -50,7 +51,7 @@ export default buildConfig({
     url: process.env.MONGODB_URI || '',
   }),
   sharp,
-  globals: [SiteSettings],
+  globals: [SiteSettings, SiteTexts],
   plugins: [],
   onInit: async (payload) => {
     const email = process.env.BOOTSTRAP_ADMIN_EMAIL

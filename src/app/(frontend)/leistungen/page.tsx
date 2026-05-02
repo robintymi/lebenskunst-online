@@ -1,12 +1,13 @@
 import type { Metadata } from 'next'
 import styles from './leistungen.module.css'
+import { getSiteTexts } from '@/lib/site-texts'
 
 export const metadata: Metadata = {
   title: 'Meine Leistungen — Lebenskunst',
   description: 'Erfahrungsräume, Bewusstheitsräume und Verbindungsräume — Training, Seminare und Begegnung für dein persönliches Wachstum.',
 }
 
-const raeume = [
+const defaultRooms = [
   {
     id: 'erfahrungsraeume',
     emoji: '\u{1F33F}',
@@ -56,22 +57,32 @@ const raeume = [
   },
 ]
 
-export default function LeistungenPage() {
+export default async function LeistungenPage() {
+  const siteTexts = await getSiteTexts()
+  const leistungen = siteTexts?.leistungen || {}
+
+  const heroTitle = leistungen?.heroTitle || 'Meine Leistungen'
+  const heroText =
+    leistungen?.heroText ||
+    'Drei Räume für dein persönliches Wachstum — jeder mit einem eigenen Fokus, alle verbunden durch die Einladung, dir selbst zu begegnen.'
+  const formateHeading = leistungen?.formateHeading || 'Formate'
+  const beispieleHeading = leistungen?.beispieleHeading || 'Beispiele'
+
+  const rooms =
+    Array.isArray(leistungen?.rooms) && leistungen.rooms.length > 0 ? leistungen.rooms : defaultRooms
+
   return (
     <>
       <section className={styles.hero}>
         <div className="container">
-          <h1 className={styles.heroTitle}>Meine Leistungen</h1>
-          <p className={styles.heroText}>
-            Drei Räume für dein persönliches Wachstum — jeder mit einem eigenen Fokus,
-            alle verbunden durch die Einladung, dir selbst zu begegnen.
-          </p>
+          <h1 className={styles.heroTitle}>{heroTitle}</h1>
+          <p className={styles.heroText}>{heroText}</p>
         </div>
       </section>
 
       <section className={styles.raeume}>
         <div className="container">
-          {raeume.map((raum) => (
+          {rooms.map((raum) => (
             <article
               key={raum.id}
               id={raum.id}
@@ -89,23 +100,29 @@ export default function LeistungenPage() {
               <p className={styles.intro}>{raum.intro}</p>
 
               <div className={styles.formate}>
-                <h3>Formate</h3>
+                <h3>{formateHeading}</h3>
                 <ul>
-                  {raum.formate.map((f) => (
-                    <li key={f}>{f}</li>
-                  ))}
+                  {(raum.formate || []).map((f) => {
+                    const value = typeof f === 'string' ? f : f?.text
+                    if (!value) return null
+                    return <li key={value}>{value}</li>
+                  })}
                 </ul>
               </div>
 
               <p className={styles.description}>{raum.description}</p>
 
-              {raum.beispiele.length > 0 && (
+              {(raum.beispiele || []).length > 0 && (
                 <div className={styles.beispiele}>
-                  <h3>Beispiele</h3>
+                  <h3>{beispieleHeading}</h3>
                   <div className={styles.beispielTags}>
-                    {raum.beispiele.map((b) => (
-                      <span key={b} className={styles.tag}>{b}</span>
-                    ))}
+                    {(raum.beispiele || []).map((b) => {
+                      const value = typeof b === 'string' ? b : b?.text
+                      if (!value) return null
+                      return (
+                        <span key={value} className={styles.tag}>{value}</span>
+                      )
+                    })}
                   </div>
                 </div>
               )}

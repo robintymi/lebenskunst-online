@@ -38,6 +38,19 @@ Hier steuerst du u.a.:
 - **Zitat**
 - **Kundenstimmen** (Name, Text, Sterne, Kontext)
 
+### Seitentexte (alle öffentlichen Website-Texte)
+Menüpunkt: **Verwaltung → Seitentexte**
+
+Hier kannst du (als Admin) zentrale Texte der öffentlichen Website ändern, ohne Code anzufassen, z.B.:
+- **Header**: Navigation, Beschriftungen, Suche-Placeholder/Labels
+- **Footer**: Spaltentitel/Links, Tagline/Beschreibung, Copyright-Text
+- **Cookie-Banner**: Text + Button
+- **Startseite**: Hero-Kicker + Buttons, Trust-Bar, Intro-Texte, Feature-Kacheln, CTA
+- **Leistungen**: Hero-Text + die drei Räume inkl. Texte/Listen/Beispiele
+- **Rechtliches**: Impressum/Datenschutz/AGB/Widerruf (RichText-Inhalte)
+
+Hinweis: Bei den Rechtstexten gilt: **Wenn das RichText-Feld leer bleibt**, wird die im Code hinterlegte Standard-Version angezeigt.
+
 ### Inhalte / Shop
 Je nach Menüpunkt kannst du verwalten:
 - **Shop-Items**: einzelne Angebote/Produkte (Preis, Beschreibung, Bilder, Kategorie, „featured“)

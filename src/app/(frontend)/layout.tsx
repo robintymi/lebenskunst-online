@@ -5,6 +5,7 @@ import Footer from '@/components/Footer'
 import CookieBanner from '@/components/CookieBanner'
 import { CartProvider } from '@/lib/cart-context'
 import { AuthProvider } from '@/lib/auth-context'
+import { getSiteTexts } from '@/lib/site-texts'
 
 export const metadata: Metadata = {
   title: {
@@ -30,18 +31,20 @@ export const metadata: Metadata = {
   },
 }
 
-export default function FrontendLayout({ children }: { children: React.ReactNode }) {
+export default async function FrontendLayout({ children }: { children: React.ReactNode }) {
+  const siteTexts = await getSiteTexts()
+
   return (
     <html lang="de">
       <body>
         <AuthProvider>
           <CartProvider>
-            <Header />
+            <Header texts={siteTexts?.header || undefined} />
             <main style={{ minHeight: `calc(100vh - var(--header-height) - 200px)`, position: 'relative', zIndex: 1 }}>
               {children}
             </main>
-            <Footer />
-            <CookieBanner />
+            <Footer texts={siteTexts?.footer || undefined} />
+            <CookieBanner text={siteTexts?.cookieBanner?.text} buttonLabel={siteTexts?.cookieBanner?.buttonLabel} />
           </CartProvider>
         </AuthProvider>
       </body>
