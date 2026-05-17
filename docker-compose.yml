@@ -45,6 +45,12 @@ services:
     depends_on:
       - app
 
+  helfende:
+    image: php:8.2-apache
+    restart: always
+    volumes:
+      - /opt/helfende-haende:/var/www/html
+
   certbot:
     image: certbot/certbot
     volumes:
