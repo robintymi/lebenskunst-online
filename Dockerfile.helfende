@@ -5,6 +5,9 @@ RUN apt-get update && apt-get install -y msmtp ca-certificates && rm -rf /var/li
 RUN echo 'sendmail_path = "/usr/bin/msmtp -t --read-envelope-from"' \
     > /usr/local/etc/php/conf.d/mail.ini
 
+RUN a2enmod rewrite && \
+    sed -i 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.conf
+
 COPY docker-helfende-entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
