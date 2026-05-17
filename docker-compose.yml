@@ -46,10 +46,14 @@ services:
       - app
 
   helfende:
-    image: php:8.2-apache
+    build:
+      context: .
+      dockerfile: Dockerfile.helfende
     restart: always
     volumes:
       - /opt/helfende-haende:/var/www/html
+    environment:
+      - RESEND_API_KEY=${RESEND_API_KEY}
 
   certbot:
     image: certbot/certbot
